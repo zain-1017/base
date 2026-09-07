@@ -14,10 +14,20 @@ has a `£` in it the app files it as a spend — everything else keeps as a note
 Below that: your net for the month, what needs you today, this week's training,
 and the next seven days of bills.
 
-**Money** keeps a bill list that ticks itself off as the date passes, with a
-manual override for the ones that fail or go early. *Edit* turns the list into
-fields so a name, amount or day changes in place; *Grid* opens the lot at once
-and takes a paste straight out of a spreadsheet. There's a subscription audit
+**Money** answers one question before anything else: *how much do I still need
+this month?* That figure is the headline, and under it every remaining bill sits
+in date order with a running column — read across any row and you have what it
+costs to cover everything up to that date. Tap a date to fix the headline on it
+("£206.54 needed by the 17th, £120 more after that") and the rows up to it light
+up. Bills already paid fold into one line so the live ones are what you see.
+
+The list ticks itself off as the date passes, with a manual override for the
+ones that fail or go early. *Edit* turns it into fields so a name, amount or day
+changes in place; *Grid* opens the lot at once and takes a paste straight out of
+a spreadsheet. Add a bill any time and the totals, the running column and the
+date chips all follow. A **round-up** setting lifts every bill to the nearest
+£1, £5 or £10 as a cushion for the month — it changes what the app asks you to
+set aside, never what you typed, and never a payment that has already gone. There's a subscription audit
 sorted by annual cost, annual bills amortised to monthly, and a five-year
 projection of your net position that steps up each time a debt ends.
 
