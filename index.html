@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=6,viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Daybook</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   Tokens. Monochrome by design — the only two hues in the app are
+   --pos and --crit, and they only ever encode state, never identity.
+   Emphasis is an inverted black fill, not a colour.
+   ═══════════════════════════════════════════════════════════════ */
+:root{
+  --bg:#fff; --ink:#0a0a0a; --mut:#8b8b90; --dim:#bcbcc2;
+  --line:#ededf0; --line2:#dcdce1; --hl:#f7f7f8;
+  --pos:#12693a; --crit:#9b3a31;
+  --safe-t:env(safe-area-inset-top,0px); --safe-b:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#000; --ink:#f2f2f4; --mut:#8b8b90; --dim:#4a4a50;
+        --line:#1e1e21; --line2:#2e2e33; --hl:#131316;
+        --pos:#4ad07d; --crit:#d97b70;}
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{height:100%;-webkit-text-size-adjust:100%}
+body{height:100%;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',Arial,sans-serif;
+  font-size:15px;line-height:1.3;overflow:hidden;font-variant-numeric:tabular-nums}
+#app{position:fixed;inset:0;bottom:calc(50px + var(--safe-b));overflow-y:auto;
+  -webkit-overflow-scrolling:touch;padding-top:var(--safe-t)}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;touch-action:manipulation}
+input,select,textarea{font-family:inherit;font-size:16px;color:inherit;background:var(--bg);border:none}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible{outline:2px solid var(--ink);outline-offset:1px}
+
+/* ── page chrome ───────────────────────────────────────────── */
+.top{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--line);
+  padding:14px 16px 11px;display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.top h1{font-size:19px;font-weight:800;letter-spacing:-.5px}
+.top .meta{font-size:11px;font-weight:800;color:var(--mut);letter-spacing:.4px;flex-shrink:0}
+
+/* Big thin numeral against tiny fat label — the whole personality. */
+.hero{padding:20px 16px 18px}
+.hero .v{font-size:52px;font-weight:300;letter-spacing:-3px;line-height:1}
+.hero .v.neg{color:var(--crit)}
+.hero .v small{font-size:26px;font-weight:400;letter-spacing:-1px;color:var(--mut)}
+.hero .u{font-size:11px;font-weight:700;color:var(--mut);margin-top:9px;letter-spacing:.2px;line-height:1.5}
+.hero .u b{color:var(--ink);font-weight:800}
+
+.lab{font-size:9px;font-weight:800;letter-spacing:1.2px;color:var(--mut);
+  padding:22px 16px 8px;text-transform:uppercase;display:flex;align-items:baseline;gap:8px}
+.lab .r{margin-left:auto;font-weight:800;color:var(--dim);letter-spacing:.6px}
+.lab button{font-size:9px;font-weight:800;letter-spacing:.8px;color:var(--ink);
+  border-bottom:1px solid var(--line2);padding-bottom:1px}
+
+/* ── rows. No cards anywhere: hairlines and air only. ──────── */
+.row{display:flex;align-items:center;gap:10px;padding:10px 16px;border-top:1px solid var(--line);
+  width:100%;text-align:left}
+.row:first-of-type{border-top:none}
+.row.tap:active{background:var(--hl)}
+.row .nm{flex:1;min-width:0;font-size:14px;font-weight:600;letter-spacing:-.2px}
+.row .nm i{display:block;font-style:normal;font-size:10.5px;font-weight:600;color:var(--mut);
+  margin-top:2px;line-height:1.4}
+.row .nm i.warn{color:var(--crit);font-weight:700}
+.row .d{font-size:10px;font-weight:800;color:var(--dim);width:26px;flex-shrink:0;letter-spacing:.3px}
+.row .v{font-size:14px;font-weight:700;letter-spacing:-.3px;flex-shrink:0}
+.row .v.mut{color:var(--dim);font-weight:600}
+.row .v.pos{color:var(--pos)}
+.row .v.crit{color:var(--crit)}
+.row .dot{width:6px;height:6px;border-radius:50%;background:var(--ink);flex-shrink:0}
+.row .dot.o{background:none;border:1.5px solid var(--dim)}
+.row .dot.due{background:var(--crit);border-color:var(--crit)}
+.row.paid .nm{color:var(--mut)}
+.row.today{background:var(--hl)}
+
+.bar{height:3px;background:var(--line2);flex:1;min-width:36px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--ink)}
+
+/* ── debt block ────────────────────────────────────────────── */
+.dbt{padding:11px 16px;border-top:1px solid var(--line);width:100%;text-align:left;display:block}
+.dbt:active{background:var(--hl)}
+.dbt .l1{display:flex;align-items:baseline;gap:8px;margin-bottom:7px}
+.dbt .l1 .nm{flex:1;font-size:14px;font-weight:600;letter-spacing:-.2px}
+.dbt .l1 .v{font-size:14px;font-weight:700;letter-spacing:-.3px}
+.dbt .l2{display:flex;align-items:center;gap:9px}
+.dbt .l2 .mo{font-size:9.5px;font-weight:800;color:var(--mut);letter-spacing:.3px;
+  width:104px;flex-shrink:0}
+.dbt .l2 .up{font-size:9.5px;font-weight:800;color:var(--pos);letter-spacing:.2px;flex-shrink:0}
+
+/* ── capture ───────────────────────────────────────────────── */
+.cap{padding:12px 16px 14px;border-bottom:1px solid var(--line)}
+.cap textarea{width:100%;min-height:44px;max-height:150px;border:1px solid var(--line2);
+  border-radius:10px;padding:11px 12px;font-size:16px;font-weight:500;line-height:1.4;resize:none;
+  background:var(--hl)}
+.cap textarea::placeholder{color:var(--mut)}
+.cap .caprow{display:flex;align-items:center;gap:10px;margin-top:8px}
+.cap .hint{flex:1;font-size:10px;font-weight:700;color:var(--mut);line-height:1.4}
+.cap .hint b{color:var(--ink);font-weight:800}
+.cap .add{height:36px;padding:0 18px;border-radius:9px;background:var(--ink);color:var(--bg);
+  font-size:11px;font-weight:800;letter-spacing:.8px;flex-shrink:0}
+.cap .add:disabled{opacity:.3}
+
+.ent{display:flex;align-items:flex-start;gap:10px;padding:9px 16px;border-top:1px solid var(--line)}
+.ent .tm{font-size:9.5px;font-weight:800;color:var(--dim);width:38px;flex-shrink:0;padding-top:2px;letter-spacing:.2px}
+.ent .tx{flex:1;font-size:13.5px;font-weight:500;line-height:1.45;word-break:break-word}
+.ent .am{font-size:13.5px;font-weight:800;letter-spacing:-.3px;flex-shrink:0}
+.ent .rm{font-size:13px;color:var(--dim);font-weight:700;padding:0 2px;flex-shrink:0}
+.ent .rm:active{color:var(--crit)}
+
+/* ── chart ─────────────────────────────────────────────────── */
+.chart{padding:6px 16px 18px}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.chart .cx{font-size:10px;font-weight:700;color:var(--mut);line-height:1.5;margin-top:12px}
+.chart .cx b{color:var(--ink);font-weight:800}
+
+/* ── stat strip ────────────────────────────────────────────── */
+.strip{display:flex;border-top:1px solid var(--line)}
+.strip div{flex:1;padding:14px 8px;text-align:center;border-left:1px solid var(--line)}
+.strip div:first-child{border-left:none}
+.strip .n{font-size:21px;font-weight:300;letter-spacing:-1.2px;line-height:1.1}
+.strip .n.neg{color:var(--crit)}
+.strip .l{font-size:8.5px;font-weight:800;color:var(--mut);letter-spacing:.7px;margin-top:4px}
+
+/* ── settings ──────────────────────────────────────────────── */
+.sr{display:flex;align-items:center;gap:12px;padding:12px 16px;border-top:1px solid var(--line);
+  width:100%;text-align:left}
+.sr:active{background:var(--hl)}
+.sr .l{flex:1;min-width:0}
+.sr .l .t{font-size:15px;font-weight:600}
+.sr .l .d{font-size:11px;color:var(--mut);margin-top:2px;line-height:1.35}
+.sr .val{font-size:14px;font-weight:800;color:var(--mut)}
+.sr .arrow{font-size:16px;color:var(--dim);font-weight:800}
+.sr input.numin{width:92px;height:36px;border:1px solid var(--line2);border-radius:8px;
+  text-align:right;padding:0 10px;font-size:16px;font-weight:800}
+
+/* ── sheet / editor ────────────────────────────────────────── */
+.sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.34);z-index:50;opacity:0;
+  transition:opacity .2s;display:flex;align-items:flex-end}
+.sheet-bg.on{opacity:1}
+.sheet{background:var(--bg);width:100%;border-radius:18px 18px 0 0;
+  padding:20px 18px calc(20px + var(--safe-b));transform:translateY(100%);
+  transition:transform .26s cubic-bezier(.32,.72,0,1);max-height:88vh;overflow-y:auto}
+.sheet-bg.on .sheet{transform:translateY(0)}
+.sheet h2{font-size:17px;font-weight:800;letter-spacing:-.3px;margin-bottom:3px}
+.sheet .sub{font-size:12px;color:var(--mut);font-weight:600;margin-bottom:16px;line-height:1.45}
+.ef{margin-bottom:13px}
+.ef label{display:block;font-size:9px;font-weight:800;letter-spacing:.9px;color:var(--mut);
+  margin-bottom:5px;text-transform:uppercase}
+.ef input,.ef select{width:100%;height:44px;border:1px solid var(--line2);border-radius:10px;
+  padding:0 11px;font-size:16px;font-weight:600}
+.efr{display:flex;gap:9px}.efr .ef{flex:1}
+.eseg{display:flex;border:1px solid var(--line2);border-radius:10px;overflow:hidden}
+.eseg button{flex:1;height:42px;font-size:12px;font-weight:700;background:var(--bg)}
+.eseg button.on{background:var(--ink);color:var(--bg)}
+.tagrow{display:flex;flex-wrap:wrap;gap:6px}
+.tagrow button{height:32px;padding:0 12px;border-radius:16px;border:1px solid var(--line2);
+  font-size:11px;font-weight:800;letter-spacing:.4px;color:var(--mut)}
+.tagrow button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.srow{display:flex;gap:9px;margin-top:6px}
+.sbtn{flex:1;height:46px;border-radius:11px;font-size:13px;font-weight:800;
+  border:1px solid var(--line2);letter-spacing:.2px}
+.sbtn.solid{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.sbtn.danger{color:var(--crit);border-color:var(--line2)}
+.sbtn:active{opacity:.7}
+
+/* ── empty / placeholder ───────────────────────────────────── */
+.empty{padding:52px 28px;text-align:center;color:var(--mut)}
+.empty h3{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:6px;letter-spacing:-.2px}
+.empty p{font-size:13px;line-height:1.55;max-width:32ch;margin:0 auto}
+.stage{border-top:1px solid var(--line);padding:14px 16px;display:flex;gap:11px;align-items:baseline}
+.stage .k{font-size:9px;font-weight:800;letter-spacing:1px;color:var(--dim);width:52px;flex-shrink:0}
+.stage .w{flex:1;font-size:13px;line-height:1.5;color:var(--mut)}
+.stage .w b{color:var(--ink);font-weight:700}
+
+#nav{position:fixed;left:0;right:0;bottom:0;background:var(--bg);border-top:1px solid var(--line);
+  display:flex;z-index:30;padding-bottom:var(--safe-b)}
+.ni{flex:1;height:50px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;color:var(--dim);font-size:8.5px;font-weight:800;letter-spacing:.5px}
+.ni svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.7;
+  stroke-linecap:round;stroke-linejoin:round}
+.ni.on{color:var(--ink)}
+
+.toast{position:fixed;left:50%;bottom:calc(64px + var(--safe-b));transform:translateX(-50%) translateY(8px);
+  background:var(--ink);color:var(--bg);font-size:12px;font-weight:700;padding:10px 15px;
+  border-radius:9px;opacity:0;transition:opacity .2s,transform .2s;z-index:99;pointer-events:none;
+  white-space:nowrap;display:inline-flex;align-items:center;gap:11px;max-width:88vw}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast .u{font-weight:800;letter-spacing:.5px;border:1px solid rgba(127,127,127,.5);
+  padding:3px 8px;border-radius:5px;pointer-events:auto}
+.spacer{height:30px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<nav id="nav">
+  <button class="ni on" id="ni-home" onclick="go('home')">
+    <svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>HOME</button>
+  <button class="ni" id="ni-money" onclick="go('money')">
+    <svg viewBox="0 0 24 24"><line x1="6" y1="8" x2="18" y2="8"/><line x1="6" y1="13" x2="18" y2="13"/><path d="M14 4c-3 0-4 2-4 5v8c0 2-1 3-3 3h11"/></svg>MONEY</button>
+  <button class="ni" id="ni-health" onclick="go('health')">
+    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="1.5"/><line x1="3" y1="9.5" x2="21" y2="9.5"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="13" y1="4" x2="13" y2="20"/></svg>HEALTH</button>
+  <button class="ni" id="ni-car" onclick="go('car')">
+    <svg viewBox="0 0 24 24"><path d="M4 16v-3.2L6 8h12l2 4.8V16"/><path d="M4 16h16"/><circle cx="7.5" cy="17.5" r="1.6"/><circle cx="16.5" cy="17.5" r="1.6"/></svg>CAR</button>
+  <button class="ni" id="ni-goals" onclick="go('goals')">
+    <svg viewBox="0 0 24 24"><path d="M4 20V4"/><path d="M4 5h13l-2.5 3.5L17 12H4"/></svg>GOALS</button>
+</nav>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   DAYBOOK — stage 1
+   Working title. Money + the daily page; Health, Car and Goals
+   land in later stages.
+
+   Four primitives, and everything in the app is one of them:
+     ledger   money moving on a schedule
+     debts    a ledger line with a term, so it can end
+     entries  something written down on a day (the daybook proper)
+     targets  a number with a direction and a finish line
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Seeded from Finance Tracker.xlsx. The two Specsavers lines and the
+   PayPal/Barclays overlap with the debt table are faithful to the sheet:
+   debt payments already sit inside the monthly bills, so cashflow counts
+   them once and the debt table is a view of balances, not extra outgoings. */
+const SEED_LEDGER=[
+ {name:'Netflix',      amount:18,  day:1,  tags:['sub']},
+ {name:'Specsavers',   amount:35,  day:1,  tags:['health']},
+ {name:'Gym',          amount:27,  day:1,  tags:['health']},
+ {name:'Specsavers',   amount:33,  day:1,  tags:['health']},
+ {name:'PayPal',       amount:170, day:1,  tags:['debt'], debt:'PayPal'},
+ {name:'Road Tax',     amount:15,  day:2,  tags:['car']},
+ {name:'Car Finance',  amount:240, day:4,  tags:['car','debt'], debt:'Blue Motor'},
+ {name:'Barclays',     amount:171, day:4,  tags:['debt'], debt:'Barclays'},
+ {name:'Canva',        amount:13,  day:6,  tags:['sub']},
+ {name:'Microsoft',    amount:11,  day:12, tags:['sub']},
+ {name:'Prime',        amount:9,   day:13, tags:['sub']},
+ {name:'ChatGPT',      amount:19,  day:13, tags:['sub']},
+ {name:'o2',           amount:70,  day:15, tags:['debt'], debt:'o2'},
+ {name:'HBOMax',       amount:15,  day:15, tags:['sub']},
+ {name:'Claude',       amount:90,  day:17, tags:['sub']},
+ {name:'Spotify',      amount:22,  day:22, tags:['sub']},
+ {name:'Prime AdFree', amount:3,   day:24, tags:['sub']},
+ {name:'Car Insurance',amount:95,  day:26, tags:['car']}
+];
+const SEED_ANNUAL=[
+ {name:'MOT',     amount:40, day:1,  month:4, tags:['car']},
+ {name:'AdGuard', amount:30, day:15, month:4, tags:['sub']}
+];
+const SEED_DEBTS=[
+ {name:'Barclays',   original:6148,  monthly:170.78, start:'2024-07-15', months:36},
+ {name:'PayPal',     original:4556,  monthly:166,    start:'2026-04-01', months:27},
+ {name:'Blue Motor', original:16334, monthly:240,    start:'2024-12-30', months:66},
+ {name:'o2',         original:865,   monthly:24,     start:'2025-09-29', months:36}
+];
+const TAGS=['sub','car','health','debt','home','other'];
+
+/* ═══ state ═══════════════════════════════════════════════════ */
+const KEY='daybook_v1', BKEY='daybook_v1_bak';
+const DEFAULTS={wage:1400,incomeTarget:3500,savings:100,savingsGoal:10000,
+                food:200,fuel:400,payday:1};
+let D={schema:1,ledger:[],debts:[],entries:[],targets:[],
+       settings:Object.assign({},DEFAULTS),meta:{paid:{}}};
+let TAB='home', DRAFT='';
+
+const uid=p=>(p||'x')+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const today=()=>ymd(new Date());
+const ymOf=d=>d.slice(0,7);
+const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+/* ═══ persistence ═════════════════════════════════════════════
+   Every read and write goes through load/save. That is the only
+   reason a sync backend is a day's work later instead of a rewrite:
+   nothing else in the app knows where the data lives. */
+function load(){
+  let raw=null;
+  try{raw=localStorage.getItem(KEY)||localStorage.getItem(BKEY);}catch(e){}
+  if(raw){
+    try{
+      const d=JSON.parse(raw);
+      D.ledger=Array.isArray(d.ledger)?d.ledger:[];
+      D.debts=Array.isArray(d.debts)?d.debts:[];
+      D.entries=Array.isArray(d.entries)?d.entries:[];
+      D.targets=Array.isArray(d.targets)?d.targets:[];
+      D.settings=Object.assign({},DEFAULTS,d.settings||{});
+      D.meta=Object.assign({paid:{}},d.meta||{});
+      if(!D.meta.paid||typeof D.meta.paid!=='object')D.meta.paid={};
+    }catch(e){console.error('load',e);}
+  }
+  if(!D.ledger.length&&!D.debts.length&&!D.entries.length)seed();
+}
+function seed(){
+  D.debts=SEED_DEBTS.map(s=>Object.assign({id:uid('d')},s));
+  const byName={};D.debts.forEach(d=>byName[d.name]=d.id);
+  D.ledger=SEED_LEDGER.map(s=>({id:uid('l'),name:s.name,amount:s.amount,cadence:'monthly',
+      day:s.day,tags:s.tags.slice(),debtId:s.debt?byName[s.debt]:null,active:true}))
+    .concat(SEED_ANNUAL.map(s=>({id:uid('l'),name:s.name,amount:s.amount,cadence:'annual',
+      day:s.day,month:s.month,tags:s.tags.slice(),debtId:null,active:true})));
+  D.targets=[
+    {id:uid('t'),name:'Clear all debt',    goal:0,     source:'debtTotal',dir:'down',pinned:true},
+    {id:uid('t'),name:'Save £10,000',      goal:10000, source:'savings',  dir:'up'},
+    {id:uid('t'),name:'£3,500 a month in', goal:3500,  source:'income',   dir:'up'}
+  ];
+  save();
+}
+function save(){
+  try{
+    const j=JSON.stringify(D);
+    localStorage.setItem(KEY,j);
+    localStorage.setItem(BKEY,j);
+  }catch(e){toast('Save failed — storage full?');}
+}
+function haptic(p){try{if(navigator.vibrate)navigator.vibrate(p||8);}catch(e){}}
+let toastT=null,undoFn=null;
+function toast(msg,undo){
+  const t=document.getElementById('toast');
+  undoFn=undo||null;
+  t.innerHTML=esc(msg)+(undo?' <button class="u" onclick="doUndo()">UNDO</button>':'');
+  t.classList.add('on');clearTimeout(toastT);
+  toastT=setTimeout(()=>t.classList.remove('on'),undo?5200:1900);
+}
+function doUndo(){if(undoFn){const f=undoFn;undoFn=null;
+  document.getElementById('toast').classList.remove('on');f();}}
+
+/* ═══ formatting ══════════════════════════════════════════════ */
+function money(n,dp){
+  const neg=n<0; n=Math.abs(n);
+  const s=dp?n.toFixed(2):Math.round(n).toLocaleString('en-GB');
+  return (neg?'−£':'£')+(dp?(+s).toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2}):s);
+}
+const MONS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+function monLabel(y,m){return MONS[m]+" '"+String(y).slice(2);}  // m is 0-based; the apostrophe stops "Jul 30" reading as a date
+function ordinal(n){const s=['th','st','nd','rd'],v=n%100;return n+(s[(v-20)%10]||s[v]||s[0]);}
+
+/* ═══ money maths ═════════════════════════════════════════════ */
+const activeLedger=()=>D.ledger.filter(l=>l.active!==false);
+const monthlyLines=()=>activeLedger().filter(l=>l.cadence==='monthly').sort((a,b)=>a.day-b.day||a.name.localeCompare(b.name));
+const annualLines=()=>activeLedger().filter(l=>l.cadence==='annual').sort((a,b)=>(a.month-b.month)||(a.day-b.day));
+const sum=(a,f)=>a.reduce((t,x)=>t+(f?f(x):x),0);
+
+const monthlyTotal=()=>sum(monthlyLines(),l=>+l.amount||0);
+const annualTotal =()=>sum(annualLines(), l=>+l.amount||0);
+const annualPerMonth=()=>annualTotal()/12;
+function outgoings(){
+  const s=D.settings;
+  return monthlyTotal()+(+s.food||0)+(+s.fuel||0)+annualPerMonth();
+}
+const netPosition=()=>(+D.settings.wage||0)-outgoings();
+
+/* Months paid reproduces the spreadsheet's own convention exactly —
+   payment n lands n months after the start date — so the figures carry
+   across from the sheet without a jump on the day you switch over. */
+function debtCalc(d){
+  const s=new Date(d.start+'T00:00'),t=new Date();
+  let n=(t.getFullYear()-s.getFullYear())*12+(t.getMonth()-s.getMonth());
+  if(t.getDate()<s.getDate())n--;
+  n=Math.max(0,Math.min(d.months|0,n));
+  const left=(d.months|0)-n;
+  const remaining=Math.max(0,(+d.original||0)-n*(+d.monthly||0));
+  const end=new Date(s.getFullYear(),s.getMonth()+(d.months|0),1);   // final payment month
+  const free=new Date(end.getFullYear(),end.getMonth()+1,1);          // first month it's yours
+  return {paid:n,left:left,remaining:remaining,
+          progress:d.months?n/(d.months|0):0,
+          endLabel:monLabel(end.getFullYear(),end.getMonth()),
+          freeLabel:monLabel(free.getFullYear(),free.getMonth()),
+          freeY:free.getFullYear(),freeM:free.getMonth(),done:left<=0};
+}
+const debtTotal=()=>sum(D.debts,d=>debtCalc(d).remaining);
+const debtService=()=>sum(D.debts.filter(d=>!debtCalc(d).done),d=>+d.monthly||0);
+
+/* Is a bill paid this month? Auto-ticks as the date passes, exactly like
+   the sheet, but a manual override wins — some things fail, some go early. */
+function paidKey(l,ym){return ym+':'+l.id;}
+function isPaid(l,ym,dayNow){
+  const k=paidKey(l,ym);
+  if(k in D.meta.paid)return !!D.meta.paid[k];
+  return dayNow>=l.day;
+}
+function togglePaid(id){
+  const l=D.ledger.find(x=>x.id===id);if(!l)return;
+  const now=new Date(),ym=ymOf(today()),k=paidKey(l,ym);
+  D.meta.paid[k]=!isPaid(l,ym,now.getDate());
+  save();haptic(6);render();
+}
+
+/* Net position projected forward, stepping up each time a debt ends and
+   its payment stops leaving the account. Zero behaviour change assumed. */
+function projection(months){
+  const base=outgoings(),wage=+D.settings.wage||0,out=[];
+  const now=new Date(),y0=now.getFullYear(),m0=now.getMonth();
+  for(let i=0;i<months;i++){
+    const y=y0+Math.floor((m0+i)/12),m=(m0+i)%12;
+    let freed=0;
+    D.debts.forEach(d=>{
+      const c=debtCalc(d);
+      if(y>c.freeY||(y===c.freeY&&m>=c.freeM))freed+=Math.min(+d.monthly||0,linkedBill(d));
+    });
+    out.push({y:y,m:m,net:wage-(base-freed),freed:freed});
+  }
+  return out;
+}
+/* A debt payment can only free up what actually leaves the account: o2's
+   £70 bill is airtime plus a £24 device plan, so clearing it returns £24. */
+function linkedBill(d){
+  const l=D.ledger.find(x=>x.debtId===d.id&&x.active!==false);
+  return l?Math.min(+l.amount||0,+d.monthly||0):(+d.monthly||0);
+}
+
+/* ═══ entries — the daybook proper ════════════════════════════
+   One capture surface. A line with an amount in it is a spend; a line
+   without one is a note. Nothing else to learn, and nothing is lost:
+   both keep their full text. */
+function parseEntry(text){
+  const m=text.match(/(?:^|\s)£?(\d+(?:\.\d{1,2})?)(?=\s|$)|£(\d+(?:\.\d{1,2})?)/);
+  let amount=null;
+  if(/£/.test(text)){
+    const g=text.match(/£\s?(\d+(?:\.\d{1,2})?)/);
+    if(g)amount=parseFloat(g[1]);
+  }
+  return {amount:amount,text:text.trim()};
+}
+function addEntry(){
+  const t=DRAFT.trim();if(!t)return;
+  const p=parseEntry(t);
+  const e={id:uid('e'),date:today(),ts:Date.now(),text:p.text,amount:p.amount};
+  D.entries.push(e);DRAFT='';save();haptic([8,26,8]);
+  toast(p.amount!=null?('Logged '+money(p.amount,p.amount%1!==0)):'Noted');
+  render();
+}
+function delEntry(id){
+  const i=D.entries.findIndex(e=>e.id===id);if(i<0)return;
+  const snap=D.entries[i];D.entries.splice(i,1);save();render();
+  toast('Deleted',()=>{D.entries.splice(Math.min(i,D.entries.length),0,snap);save();render();});
+}
+const entriesOn=ds=>D.entries.filter(e=>e.date===ds).sort((a,b)=>b.ts-a.ts);
+const spendThisMonth=()=>sum(D.entries.filter(e=>e.amount!=null&&ymOf(e.date)===ymOf(today())),e=>e.amount);
+
+/* ═══ router ══════════════════════════════════════════════════ */
+function go(t){
+  if(TAB===t){document.getElementById('app').scrollTo({top:0,behavior:'smooth'});return;}
+  TAB=t;render();haptic(5);
+  document.getElementById('app').scrollTop=0;
+}
+function render(){
+  const app=document.getElementById('app'),y=app.scrollTop;
+  app.innerHTML={home:renderHome,money:renderMoney,health:renderHealth,
+                 car:renderCar,goals:renderGoals}[TAB]();
+  ['home','money','health','car','goals'].forEach(t=>
+    document.getElementById('ni-'+t).classList.toggle('on',t===TAB));
+  if(TAB!=='home')app.scrollTop=y;
+  const ta=document.getElementById('capin');
+  if(ta){ta.value=DRAFT;autoGrow(ta);}
+}
+function autoGrow(ta){ta.style.height='auto';ta.style.height=Math.min(150,ta.scrollHeight)+'px';}
+function onDraft(v,el){
+  const was=!!DRAFT.trim();DRAFT=v;autoGrow(el);
+  if(was!==!!DRAFT.trim())document.getElementById('capadd').disabled=!DRAFT.trim();
+}
+
+/* ═══ HOME — the day's page ═══════════════════════════════════ */
+function renderHome(){
+  const now=new Date(),ds=today(),ym=ymOf(ds),dayNow=now.getDate();
+  const net=netPosition(),lines=monthlyLines();
+  const paidLines=lines.filter(l=>isPaid(l,ym,dayNow));
+  const paidSum=sum(paidLines,l=>+l.amount||0);
+  const left=monthlyTotal()-paidSum;
+
+  /* Next seven days of bills, wrapping into next month so the end of a
+     month never looks deceptively quiet. */
+  const soon=[];
+  lines.forEach(l=>{
+    let dd=l.day-dayNow;
+    if(dd<0)dd+=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
+    if(dd>=0&&dd<=7)soon.push({l:l,in:dd});
+  });
+  annualLines().forEach(l=>{
+    const due=new Date(now.getFullYear(),(l.month|0)-1,l.day||1);
+    if(due<now)due.setFullYear(due.getFullYear()+1);
+    const dd=Math.round((due-new Date(now.getFullYear(),now.getMonth(),dayNow))/86400000);
+    if(dd>=0&&dd<=7)soon.push({l:l,in:dd,annual:true});
+  });
+  soon.sort((a,b)=>a.in-b.in);
+
+  const todays=entriesOn(ds);
+  const spend=spendThisMonth();
+
+  /* Needs-you-today is generated, never typed. If nothing qualifies the
+     section isn't rendered at all — empty states are clutter. */
+  const alerts=[];
+  const overdue=lines.filter(l=>!isPaid(l,ym,dayNow)&&l.day<dayNow);
+  if(overdue.length)alerts.push({t:overdue.length+' bill'+(overdue.length>1?'s':'')+' marked unpaid past its date',
+    s:overdue.map(l=>l.name).join(', '),warn:true});
+  if(net<0)alerts.push({t:'You are '+money(-net)+' short this month',
+    s:'Outgoings '+money(outgoings())+' against '+money(+D.settings.wage||0)+' in'});
+  if(!todays.length)alerts.push({t:'Nothing written down today',s:'Spends, notes, anything — the page above'});
+
+  const pin=D.targets.find(t=>t.pinned)||D.targets[0];
+
+  let h=`<div class="top"><h1>${DAYS[now.getDay()]}</h1>
+    <div class="meta">${dayNow} ${MONS[now.getMonth()].toUpperCase()}</div></div>
+  <div class="cap">
+    <textarea id="capin" rows="1" placeholder="Write it down…" oninput="onDraft(this.value,this)"
+      onkeydown="if(event.key==='Enter'&&(event.metaKey||event.ctrlKey))addEntry()"></textarea>
+    <div class="caprow">
+      <div class="hint">Put <b>£</b> in the line and it files as a spend. Everything else keeps as a note.</div>
+      <button class="add" id="capadd" onclick="addEntry()" ${DRAFT.trim()?'':'disabled'}>ADD</button>
+    </div>
+  </div>
+
+  <div class="hero">
+    <div class="v${net<0?' neg':''}">${money(net)}</div>
+    <div class="u">NET THIS MONTH · <b>${money(+D.settings.wage||0)}</b> IN · <b>${money(outgoings())}</b> OUT</div>
+  </div>
+  <div class="strip">
+    <div><div class="n">${money(paidSum)}</div><div class="l">PAID · ${paidLines.length}/${lines.length}</div></div>
+    <div><div class="n">${money(left)}</div><div class="l">STILL TO GO</div></div>
+    <div><div class="n">${money(debtTotal())}</div><div class="l">DEBT LEFT</div></div>
+  </div>`;
+
+  if(alerts.length){
+    h+=`<div class="lab">Needs you today</div>`;
+    alerts.forEach(a=>{h+=`<div class="row"><span class="dot${a.warn?' due':''}"></span>
+      <div class="nm">${esc(a.t)}<i${a.warn?' class="warn"':''}>${esc(a.s)}</i></div></div>`;});
+  }
+
+  if(todays.length){
+    h+=`<div class="lab">Today's page<span class="r">${todays.length} ${todays.length>1?'ENTRIES':'ENTRY'}</span></div>`;
+    todays.forEach(e=>{
+      const tm=new Date(e.ts);
+      h+=`<div class="ent"><span class="tm">${String(tm.getHours()).padStart(2,'0')}:${String(tm.getMinutes()).padStart(2,'0')}</span>
+        <span class="tx">${esc(e.text)}</span>
+        ${e.amount!=null?`<span class="am">${money(e.amount,e.amount%1!==0)}</span>`:''}
+        <button class="rm" onclick="delEntry('${e.id}')" aria-label="Delete entry">✕</button></div>`;
+    });
+    if(spend>0)h+=`<div class="row"><div class="nm">Tracked this month</div>
+      <span class="v">${money(spend,spend%1!==0)}</span></div>`;
+  }
+
+  if(soon.length){
+    h+=`<div class="lab">Next seven days<span class="r">${money(sum(soon,s=>+s.l.amount||0))}</span></div>`;
+    soon.forEach(s=>{
+      h+=`<div class="row"><span class="d">${s.annual?MONS[(s.l.month|0)-1].toUpperCase():s.l.day}</span>
+        <div class="nm">${esc(s.l.name)}<i>${s.in===0?'Today':s.in===1?'Tomorrow':'In '+s.in+' days'}${s.annual?' · annual':''}</i></div>
+        <span class="v">${money(s.l.amount)}</span></div>`;
+    });
+  }
+
+  if(pin){
+    const p=targetProgress(pin);
+    h+=`<div class="lab">Pinned</div>
+      <button class="dbt" onclick="go('goals')">
+        <div class="l1"><span class="nm">${esc(pin.name)}</span><span class="v">${p.label}</span></div>
+        <div class="l2"><span class="mo">${p.sub}</span><span class="bar"><i style="width:${Math.round(p.pct*100)}%"></i></span></div>
+      </button>`;
+  }
+  return h+`<div class="spacer"></div>`;
+}
+
+function targetProgress(t){
+  const s=D.settings;
+  if(t.source==='debtTotal'){
+    const total=debtTotal(),start=sum(D.debts,d=>+d.original||0);
+    return {pct:start?1-total/start:0,label:money(total),
+            sub:money(debtService())+'/MO · '+D.debts.filter(d=>!debtCalc(d).done).length+' LEFT'};
+  }
+  if(t.source==='savings'){
+    const v=+s.savings||0;return {pct:t.goal?v/t.goal:0,label:money(v),sub:'OF '+money(t.goal)};
+  }
+  if(t.source==='income'){
+    const v=+s.wage||0;return {pct:t.goal?v/t.goal:0,label:money(v),sub:'OF '+money(t.goal)+' A MONTH'};
+  }
+  const v=+t.current||0;return {pct:t.goal?v/t.goal:0,label:String(v),sub:'OF '+t.goal};
+}
+
+/* ═══ MONEY ═══════════════════════════════════════════════════ */
+function renderMoney(){
+  const now=new Date(),ds=today(),ym=ymOf(ds),dayNow=now.getDate();
+  const lines=monthlyLines(),ann=annualLines();
+  const paidSum=sum(lines.filter(l=>isPaid(l,ym,dayNow)),l=>+l.amount||0);
+  const nPaid=lines.filter(l=>isPaid(l,ym,dayNow)).length;
+
+  let dp=D.settings.payday|0||1,dd=dp-dayNow;
+  if(dd<0)dd+=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
+
+  const subs=activeLedger().filter(l=>(l.tags||[]).includes('sub'));
+  const subMo=sum(subs,l=>l.cadence==='annual'?(+l.amount||0)/12:(+l.amount||0));
+
+  let h=`<div class="top"><h1>${MONS[now.getMonth()]}</h1>
+    <div class="meta">${dd===0?'PAYDAY':dd+' TO PAYDAY'}</div></div>
+  <div class="hero">
+    <div class="v">${money(paidSum)}<small> / ${money(monthlyTotal())}</small></div>
+    <div class="u">BILLS PAID · <b>${nPaid}</b> OF ${lines.length} · <b>${money(monthlyTotal()-paidSum)}</b> STILL TO GO</div>
+  </div>
+  <div class="strip">
+    <div><div class="n">${money(monthlyTotal())}</div><div class="l">FIXED BILLS</div></div>
+    <div><div class="n">${money((+D.settings.food||0)+(+D.settings.fuel||0))}</div><div class="l">FOOD + FUEL</div></div>
+    <div><div class="n${netPosition()<0?' neg':''}">${money(netPosition())}</div><div class="l">NET</div></div>
+  </div>
+
+  <div class="lab">Monthly bills<button onclick="editLedger(null,'monthly')">+ ADD</button></div>`;
+
+  lines.forEach(l=>{
+    const p=isPaid(l,ym,dayNow),over=!p&&l.day<dayNow;
+    h+=`<div class="row tap${p?' paid':''}${l.day===dayNow?' today':''}">
+      <button class="dot${p?'':over?' o due':' o'}" onclick="togglePaid('${l.id}')"
+        aria-label="Mark ${esc(l.name)} ${p?'unpaid':'paid'}" style="padding:0"></button>
+      <span class="d">${l.day}</span>
+      <button class="nm" onclick="editLedger('${l.id}')" style="text-align:left">${esc(l.name)}${
+        l.debtId?'<i>Debt payment</i>':(l.tags||[]).length?'<i>'+esc(l.tags.join(' · '))+'</i>':''}</button>
+      <span class="v${p?' mut':''}">${money(l.amount)}</span></div>`;
+  });
+
+  h+=`<div class="lab">Debt<span class="r">${money(debtTotal())} · ${money(debtService())}/MO</span></div>`;
+  D.debts.slice().sort((a,b)=>debtCalc(a).left-debtCalc(b).left).forEach(d=>{
+    const c=debtCalc(d);
+    h+=`<button class="dbt" onclick="editDebt('${d.id}')">
+      <div class="l1"><span class="nm">${esc(d.name)}</span>
+        <span class="v">${c.done?'Cleared':money(c.remaining)}</span></div>
+      <div class="l2"><span class="mo">${c.done?'DONE':c.left+' MO · '+c.freeLabel.toUpperCase()}</span>
+        <span class="bar"><i style="width:${Math.round(c.progress*100)}%"></i></span>
+        <span class="up">${c.done?'':'+'+money(linkedBill(d))}</span></div></button>`;
+  });
+  h+=`<div class="row tap"><button class="nm" onclick="editDebt(null)" style="color:var(--mut);text-align:left">+ Add a debt</button></div>`;
+
+  h+=renderProjection();
+
+  h+=`<div class="lab">Subscriptions<span class="r">${money(subMo)}/MO · ${money(subMo*12)}/YR</span></div>`;
+  subs.slice().sort((a,b)=>(b.amount||0)-(a.amount||0)).forEach(l=>{
+    const mo=l.cadence==='annual'?(+l.amount||0)/12:(+l.amount||0);
+    h+=`<div class="row tap"><button class="nm" onclick="editLedger('${l.id}')" style="text-align:left">${esc(l.name)}<i>${money(mo*12)} a year</i></button>
+      <span class="v">${money(l.amount)}${l.cadence==='annual'?'<span style="font-size:10px;color:var(--mut)">/yr</span>':''}</span></div>`;
+  });
+
+  h+=`<div class="lab">Annual bills<span class="r">${money(annualTotal())}/YR · ${money(annualPerMonth(),true)}/MO</span>
+    <button onclick="editLedger(null,'annual')">+ ADD</button></div>`;
+  if(!ann.length)h+=`<div class="row"><div class="nm" style="color:var(--mut)">Nothing annual yet</div></div>`;
+  ann.forEach(l=>{
+    h+=`<div class="row tap"><span class="d">${MONS[(l.month|0)-1]||'—'}</span>
+      <button class="nm" onclick="editLedger('${l.id}')" style="text-align:left">${esc(l.name)}<i>${ordinal(l.day||1)} · ${money((+l.amount||0)/12,true)} a month</i></button>
+      <span class="v">${money(l.amount)}</span></div>`;
+  });
+
+  h+=`<div class="lab">Your numbers</div>${settingsRows()}`;
+  return h+`<div class="spacer"></div>`;
+}
+
+/* Net position over five years. One scale, every riser labelled, and the
+   zero crossing called out because that's the date the whole page is about. */
+function renderProjection(){
+  const p=projection(60);
+  if(!p.length)return '';
+  const W=340,H=118,PADL=6,PADR=6,top=10,bot=88;
+  const vals=p.map(x=>x.net),lo=Math.min(...vals,0),hi=Math.max(...vals,0);
+  const span=(hi-lo)||1;
+  const X=i=>PADL+(i/(p.length-1))*(W-PADL-PADR);
+  const Y=v=>bot-((v-lo)/span)*(bot-top);
+  let d='M'+X(0)+','+Y(p[0].net);
+  for(let i=1;i<p.length;i++){
+    if(p[i].net!==p[i-1].net)d+=' L'+X(i)+','+Y(p[i-1].net);
+    d+=' L'+X(i)+','+Y(p[i].net);
+  }
+  const zero=Y(0);
+  const cross=p.findIndex(x=>x.net>=0);
+  const risers=[];
+  D.debts.forEach(dd=>{
+    const c=debtCalc(dd);if(c.done)return;
+    const i=p.findIndex(x=>x.y>c.freeY||(x.y===c.freeY&&x.m>=c.freeM));
+    if(i>0)risers.push({i:i,name:dd.name,label:c.freeLabel});
+  });
+  const yrs=[];
+  p.forEach((x,i)=>{if(x.m===0)yrs.push({i:i,y:x.y});});
+
+  return `<div class="lab">If nothing changes<span class="r">5 YEARS</span></div>
+  <div class="chart">
+    <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Monthly net position projected over five years, rising each time a debt clears">
+      ${lo<0&&hi>0?`<line x1="${PADL}" y1="${zero}" x2="${W-PADR}" y2="${zero}" stroke="var(--line2)" stroke-width="1" stroke-dasharray="2 3"/>
+      <text x="${PADL}" y="${zero-4}" fill="var(--dim)" font-size="7" font-weight="700" letter-spacing=".5">£0</text>`:''}
+      <path d="${d}" fill="none" stroke="var(--ink)" stroke-width="1.6" stroke-linejoin="miter"/>
+      ${risers.map(r=>`<circle cx="${X(r.i)}" cy="${Y(p[r.i].net)}" r="2" fill="var(--ink)"/>`).join('')}
+      <circle cx="${X(0)}" cy="${Y(p[0].net)}" r="2.4" fill="${p[0].net<0?'var(--crit)':'var(--pos)'}"/>
+      ${yrs.map(v=>`<text x="${X(v.i)}" y="${H-2}" fill="var(--dim)" font-size="7" font-weight="700"
+        text-anchor="middle" letter-spacing=".4">${v.y}</text>`).join('')}
+      ${yrs.map(v=>`<line x1="${X(v.i)}" y1="${bot+2}" x2="${X(v.i)}" y2="${bot+5}" stroke="var(--line2)" stroke-width="1"/>`).join('')}
+    </svg>
+    <div class="cx">Today <b>${money(p[0].net)}</b> a month${
+      cross>0?` · turns positive <b>${monLabel(p[cross].y,p[cross].m)}</b>`:
+      cross===0?' · already positive':''} · <b>${money(p[p.length-1].net)}</b> by ${monLabel(p[p.length-1].y,p[p.length-1].m)}.
+      ${risers.length?'Each step is a debt ending: '+risers.map(r=>esc(r.name)+' '+r.label).join(', ')+'.':''}</div>
+  </div>`;
+}
+
+function settingsRows(){
+  const s=D.settings;
+  const f=(k,t,d,pre)=>`<div class="sr"><div class="l"><div class="t">${t}</div><div class="d">${d}</div></div>
+    <input class="numin" type="number" inputmode="decimal" value="${s[k]}" aria-label="${t}"
+      onchange="setNum('${k}',this.value)"></div>`;
+  return f('wage','Monthly wage','What actually lands, after tax')
+    +f('food','Food budget','Groceries and eating out')
+    +f('fuel','Fuel budget','Becomes a real number once the Car page lands')
+    +f('savings','Savings balance','Update whenever you move money')
+    +f('payday','Payday','Day of the month the wage arrives')
+    +`<div class="sr"><div class="l"><div class="t">Back up your data</div>
+      <div class="d">${D.entries.length} entries · ${D.ledger.length} bills · ${D.debts.length} debts. Everything lives on this device only.</div></div>
+      <button class="arrow" onclick="dataSheet()" aria-label="Data options">›</button></div>`;
+}
+function setNum(k,v){D.settings[k]=parseFloat(v)||0;save();render();}
+
+/* ═══ stages still to come ════════════════════════════════════ */
+function stagePage(title,meta,lead,items){
+  return `<div class="top"><h1>${title}</h1><div class="meta">${meta}</div></div>
+  <div class="empty"><h3>Not built yet</h3><p>${lead}</p></div>
+  ${items.map(i=>`<div class="stage"><span class="k">${i[0]}</span><span class="w">${i[1]}</span></div>`).join('')}
+  <div class="spacer"></div>`;
+}
+function renderHealth(){
+  return stagePage('Health','STAGE 3',
+    'The exercise sheet moves across whole — all 102 lifts, the 1RM column, the working weight, history, PRs, the clock and the rest timer.',
+    [['SHEET','All <b>102 exercises</b> grouped by body part, hairline separated, no category tints.'],
+     ['LOG','Sets, reps and weight per session, with <b>estimated 1RM</b> and next-weight suggestions.'],
+     ['SESSION','Today\'s prescription from your own rules — <b>major 3×12 and 5×12</b>, secondary 2×12 and 3×12, six days a week.'],
+     ['FOOD','Target macros, saved recipes and a staples list that becomes the shopping list — which is what turns the <b>£200 food budget</b> into a measured number.']]);
+}
+function renderCar(){
+  return stagePage('Car','STAGE 4',
+    'Fill-ups, service history and the fix list — and the page that turns your £400 fuel estimate into a cost per mile.',
+    [['FUEL','Litres, price and odometer per fill-up. Gives <b>MPG and cost per mile</b>, and replaces the fuel estimate on Money.'],
+     ['DATES','MOT, tax and insurance read the <b>same ledger records</b> Money already holds. One entry, two pages, nothing to keep in sync.'],
+     ['FIXES','What needs doing and what it will cost, so planned work lands in the forecast <b>before</b> it lands on your card.'],
+     ['HISTORY','Every service logged against mileage.']]);
+}
+function renderGoals(){
+  const h=`<div class="top"><h1>Goals</h1><div class="meta">STAGE 4</div></div>`;
+  let g=h+`<div class="lab">Reading live already</div>`;
+  D.targets.forEach(t=>{
+    const p=targetProgress(t);
+    g+=`<div class="dbt"><div class="l1"><span class="nm">${esc(t.name)}</span><span class="v">${p.label}</span></div>
+      <div class="l2"><span class="mo">${p.sub}</span><span class="bar"><i style="width:${Math.round(Math.max(0,Math.min(1,p.pct))*100)}%"></i></span>
+      <span class="up">${Math.round(Math.max(0,Math.min(1,p.pct))*100)}%</span></div></div>`;
+  });
+  return g+`<div class="empty"><h3>The editor comes in stage 4</h3>
+    <p>These three read from real data and move on their own. What's missing is the ability to add your own.</p></div>
+  <div class="stage"><span class="k">ANY</span><span class="w">Unlimited goals, each with its own steps. <b>Any one pinned</b> to Home.</span></div>
+  <div class="stage"><span class="k">BOUND</span><span class="w">A step can watch real data and <b>tick itself</b> — clear Barclays completes when the balance hits zero.</span></div>
+  <div class="stage"><span class="k">LOCKED</span><span class="w">Steps can stay locked until a prerequisite finishes. A tech tree, not a to-do list.</span></div>
+  <div class="stage"><span class="k">TIERS</span><span class="w">Life, year, month, week. The week tier is what feeds <b>Needs you today</b>.</span></div>
+  <div class="spacer"></div>`;
+}
+
+/* ═══ editors ═════════════════════════════════════════════════ */
+let SHEET=null;
+function openSheet(html){
+  closeSheet(true);
+  const bg=document.createElement('div');
+  bg.className='sheet-bg';bg.innerHTML='<div class="sheet">'+html+'</div>';
+  bg.addEventListener('click',e=>{if(e.target===bg)closeSheet();});
+  document.body.appendChild(bg);SHEET=bg;
+  requestAnimationFrame(()=>bg.classList.add('on'));
+}
+function closeSheet(now){
+  if(!SHEET)return;const s=SHEET;SHEET=null;
+  s.classList.remove('on');
+  if(now)s.remove();else setTimeout(()=>s.remove(),260);
+}
+let EDIT=null;
+function editLedger(id,cadence){
+  const l=id?D.ledger.find(x=>x.id===id):null;
+  EDIT=l?JSON.parse(JSON.stringify(l))
+        :{id:null,name:'',amount:'',cadence:cadence||'monthly',day:1,month:1,tags:[],debtId:null,active:true};
+  paintLedger();
+}
+function paintLedger(){
+  const e=EDIT,ann=e.cadence==='annual';
+  openSheet(`<h2>${e.id?'Edit':'New'} ${ann?'annual bill':'bill'}</h2>
+  <div class="sub">${ann?'Divided by twelve for the monthly charge.':'Ticks itself off as the date passes each month.'}</div>
+  <div class="ef"><label>Name</label><input id="e-name" value="${esc(e.name)}" placeholder="Netflix"></div>
+  <div class="efr">
+    <div class="ef"><label>Amount £</label><input id="e-amt" type="number" inputmode="decimal" value="${e.amount}"></div>
+    <div class="ef"><label>Day</label><input id="e-day" type="number" inputmode="numeric" min="1" max="31" value="${e.day||1}"></div>
+    ${ann?`<div class="ef"><label>Month</label><select id="e-mon">${MONS.map((m,i)=>
+      `<option value="${i+1}"${(e.month|0)===i+1?' selected':''}>${m}</option>`).join('')}</select></div>`:''}
+  </div>
+  <div class="ef"><label>Repeats</label><div class="eseg">
+    <button class="${ann?'':'on'}" onclick="flipCadence('monthly')">Monthly</button>
+    <button class="${ann?'on':''}" onclick="flipCadence('annual')">Annual</button></div></div>
+  <div class="ef"><label>Tags</label><div class="tagrow">${TAGS.map(t=>
+    `<button class="${(e.tags||[]).includes(t)?'on':''}" onclick="flipTag('${t}')">${t}</button>`).join('')}</div></div>
+  ${D.debts.length?`<div class="ef"><label>Services a debt</label><select id="e-debt">
+    <option value="">No</option>${D.debts.map(d=>
+    `<option value="${d.id}"${e.debtId===d.id?' selected':''}>${esc(d.name)}</option>`).join('')}</select></div>`:''}
+  <div class="srow"><button class="sbtn solid" onclick="saveLedger()">Save</button>
+    ${e.id?`<button class="sbtn danger" onclick="delLedger()">Delete</button>`:
+           `<button class="sbtn" onclick="closeSheet()">Cancel</button>`}</div>`);
+}
+function grabLedger(){
+  const g=id=>document.getElementById(id);
+  EDIT.name=g('e-name').value;EDIT.amount=parseFloat(g('e-amt').value)||0;
+  EDIT.day=Math.max(1,Math.min(31,parseInt(g('e-day').value)||1));
+  if(g('e-mon'))EDIT.month=parseInt(g('e-mon').value)||1;
+  if(g('e-debt'))EDIT.debtId=g('e-debt').value||null;
+}
+function flipCadence(c){grabLedger();EDIT.cadence=c;paintLedger();}
+function flipTag(t){
+  grabLedger();EDIT.tags=EDIT.tags||[];
+  const i=EDIT.tags.indexOf(t);if(i<0)EDIT.tags.push(t);else EDIT.tags.splice(i,1);
+  paintLedger();
+}
+function saveLedger(){
+  grabLedger();
+  if(!EDIT.name.trim()){toast('Give it a name');return;}
+  if(EDIT.id){const i=D.ledger.findIndex(x=>x.id===EDIT.id);D.ledger[i]=EDIT;}
+  else{EDIT.id=uid('l');D.ledger.push(EDIT);}
+  save();closeSheet();render();haptic(8);toast('Saved');
+}
+function delLedger(){
+  const i=D.ledger.findIndex(x=>x.id===EDIT.id);if(i<0)return;
+  const snap=D.ledger[i];D.ledger.splice(i,1);save();closeSheet();render();
+  toast('Deleted',()=>{D.ledger.splice(Math.min(i,D.ledger.length),0,snap);save();render();});
+}
+
+function editDebt(id){
+  const d=id?D.debts.find(x=>x.id===id):null;
+  EDIT=d?JSON.parse(JSON.stringify(d))
+       :{id:null,name:'',original:'',monthly:'',start:today(),months:12};
+  const c=d?debtCalc(d):null;
+  openSheet(`<h2>${d?'Edit':'New'} debt</h2>
+  <div class="sub">${c?`${c.paid} of ${d.months} paid · ${money(c.remaining)} left · last payment ${c.endLabel}, yours again from ${c.freeLabel}.`
+    :'Balance and months left are worked out from the start date, so they are never stale.'}</div>
+  <div class="ef"><label>Name</label><input id="d-name" value="${esc(EDIT.name)}" placeholder="Barclays"></div>
+  <div class="efr">
+    <div class="ef"><label>Original £</label><input id="d-orig" type="number" inputmode="decimal" value="${EDIT.original}"></div>
+    <div class="ef"><label>Monthly £</label><input id="d-mo" type="number" inputmode="decimal" value="${EDIT.monthly}"></div>
+  </div>
+  <div class="efr">
+    <div class="ef"><label>Start date</label><input id="d-start" type="date" value="${EDIT.start}"></div>
+    <div class="ef"><label>Term months</label><input id="d-months" type="number" inputmode="numeric" value="${EDIT.months}"></div>
+  </div>
+  <div class="srow"><button class="sbtn solid" onclick="saveDebt()">Save</button>
+    ${EDIT.id?`<button class="sbtn danger" onclick="delDebt()">Delete</button>`:
+              `<button class="sbtn" onclick="closeSheet()">Cancel</button>`}</div>`);
+}
+function saveDebt(){
+  const g=id=>document.getElementById(id).value;
+  EDIT.name=g('d-name');EDIT.original=parseFloat(g('d-orig'))||0;
+  EDIT.monthly=parseFloat(g('d-mo'))||0;EDIT.start=g('d-start')||today();
+  EDIT.months=parseInt(g('d-months'))||0;
+  if(!EDIT.name.trim()){toast('Give it a name');return;}
+  if(EDIT.id){const i=D.debts.findIndex(x=>x.id===EDIT.id);D.debts[i]=EDIT;}
+  else{EDIT.id=uid('d');D.debts.push(EDIT);}
+  save();closeSheet();render();haptic(8);toast('Saved');
+}
+function delDebt(){
+  const i=D.debts.findIndex(x=>x.id===EDIT.id);if(i<0)return;
+  const snap=D.debts[i];D.debts.splice(i,1);
+  D.ledger.forEach(l=>{if(l.debtId===snap.id)l.debtId=null;});
+  save();closeSheet();render();
+  toast('Deleted',()=>{D.debts.splice(Math.min(i,D.debts.length),0,snap);save();render();});
+}
+
+/* Export and import are the whole sync story for now — and the reason
+   moving to a real backend later costs a day rather than a rewrite. */
+function dataSheet(){
+  openSheet(`<h2>Your data</h2>
+  <div class="sub">Everything is stored on this device only, so this file is your backup and your way onto another one. Keep a copy somewhere that isn't your phone.</div>
+  <div class="srow"><button class="sbtn solid" onclick="exportData()">Export a copy</button></div>
+  <div class="srow"><button class="sbtn" onclick="document.getElementById('imp').click()">Import a file</button></div>
+  <input type="file" id="imp" accept="application/json,.json" style="display:none" onchange="importData(this)">
+  <div class="srow"><button class="sbtn danger" onclick="resetAll()">Reset to the spreadsheets</button></div>`);
+}
+function exportData(){
+  const blob=new Blob([JSON.stringify(D,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);a.download='daybook-'+today()+'.json';
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+  closeSheet();toast('Exported');
+}
+function importData(input){
+  const f=input.files&&input.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{
+    try{
+      const d=JSON.parse(r.result);
+      if(!d||typeof d!=='object'||!Array.isArray(d.ledger))throw new Error('not a daybook file');
+      D.ledger=d.ledger||[];D.debts=d.debts||[];D.entries=d.entries||[];
+      D.targets=d.targets||[];D.settings=Object.assign({},DEFAULTS,d.settings||{});
+      D.meta=Object.assign({paid:{}},d.meta||{});
+      save();closeSheet();render();toast('Imported');
+    }catch(e){toast("That file isn't a Daybook export");}
+  };
+  r.readAsText(f);
+}
+function resetAll(){
+  if(!confirm('Wipe everything and start again from the spreadsheet figures?'))return;
+  D.ledger=[];D.debts=[];D.entries=[];D.targets=[];
+  D.settings=Object.assign({},DEFAULTS);D.meta={paid:{}};
+  seed();closeSheet();render();toast('Reset');
+}
+
+/* ═══ boot ════════════════════════════════════════════════════ */
+load();render();
+window.addEventListener('pageshow',()=>{if(TAB==='home')render();});
+if('serviceWorker' in navigator)
+  window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+</script>
+</body>
+</html>
