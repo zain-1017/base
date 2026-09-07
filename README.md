@@ -31,9 +31,14 @@ different things:
   to *clear it today*.
 - A **credit line** has no term at all. It carries a balance, a rate and
   whatever you choose to pay, and the app works out how long that takes — or
-  tells you it never finishes, if the payment doesn't cover the interest. It
-  shows how much of each payment is interest, what paying £50 or £100 more
-  would save, and how long the minimum payment alone would run.
+  tells you it never finishes, if the payment doesn't cover the interest.
+
+For a credit line you can say you pay **the minimum** rather than a set amount,
+and it models that honestly: a minimum is a flat percentage of the balance, so
+it shrinks as the balance does and the term runs to decades. The app puts the
+same amount held flat right beside it, shows how much of each payment is
+interest, and flags it when the bill you budgeted doesn't match what actually
+leaves your account.
 
 The gap between those is interest you have not paid yet, and it's the whole
 reason to model it: it tells you what overpaying is worth. Three solvers fill

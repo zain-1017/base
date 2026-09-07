@@ -625,24 +625,34 @@ function amortise(d,upto){
    payment ever stops covering the interest it never ends at all. */
 /* Walk the balance down month by month. The last payment is only ever what is
    left, so counting it as a full one overstates the interest. */
-function runDown(B,r,pay,spend,cap){
+function runDown(B,r,pay,spend,cap,minPct,floor){
   let bal=B,interest=0,paid=0,months=0;
-  cap=cap||1200;
+  cap=cap||2400;
   while(bal>0.005&&months<cap){
-    const i=bal*r;interest+=i;
+    /* A minimum payment is a percentage of the balance, so it shrinks as the
+       balance does — which is why it never finishes. A fixed payment of the
+       same size does, and quickly. */
+    let p=minPct!=null?Math.max(floor||0,bal*(r+minPct)):pay;
+    const i=bal*r;
     const due=bal+i+(spend||0);
-    const p=Math.min(pay,due);
-    bal=due-p;paid+=p;months++;
+    p=Math.min(p,due);
+    if(p<=i+(spend||0))return {months:Infinity,interest:Infinity,paid:Infinity,cleared:false};
+    interest+=i;bal=due-p;paid+=p;months++;
   }
   return {months:months,interest:interest,paid:paid,cleared:bal<=0.005};
 }
 function revolvingCalc(d){
   const B=Math.max(0,+d.balance||0), r=monthlyRate(d.apr);
   const pay=+d.monthly||0, spend=+d.spend||0, opening=+d.opening||B;
-  const interestNow=B*r, net=pay-spend-interestNow;
-  const minPay=interestNow+B*((+d.minPct||0)/100);
-  const stalled=B>0&&net<=0;
-  const run=stalled?{months:Infinity,interest:Infinity,paid:Infinity}:runDown(B,r,pay,spend);
+  const interestNow=B*r, pctMin=(+d.minPct||0)/100, floor=+d.minFloor||5;
+  /* The statement's minimum is a flat percentage of the balance that already
+     includes the interest — 1.80% interest plus 2% capital reads as 3.80%. */
+  const minPay=pctMin>0?Math.max(floor,B*(r+pctMin)):0;
+  const usingMin=!!d.payMin&&pctMin>0;
+  const payNow=usingMin?minPay:pay;
+  const stalled=B>0&&(payNow-spend-interestNow)<=0;
+  const run=stalled?{months:Infinity,interest:Infinity,paid:Infinity}
+    :runDown(B,r,payNow,spend,2400,usingMin?pctMin:null,floor);
   const n=run.months;
   const now=new Date();
   const free=new Date(now.getFullYear(),now.getMonth()+(stalled?600:n)+1,1);
@@ -652,7 +662,8 @@ function revolvingCalc(d){
           paymentsLeft:paymentsLeft,
           settle:B,                                   // a credit line settles at its balance
           interestLeft:run.interest,interestTotal:run.interest,
-          interestNow:interestNow,minPay:minPay,principal:B,ratedKnown:+d.apr>0,
+          interestNow:interestNow,minPay:minPay,payment:payNow,usingMin:usingMin,
+          principal:B,ratedKnown:+d.apr>0,
           progress:opening>0?clamp(1-B/opening,0,1):0,
           endLabel:monLabel(free.getFullYear(),free.getMonth()-1),
           freeLabel:monLabel(free.getFullYear(),free.getMonth()),
@@ -685,7 +696,7 @@ function debtCalc(d){
           interestLeft:interestLeft,        // the difference, and the prize
           interestTotal:interestTotal,      // over the whole agreement
           principal:principal,ratedKnown:known,
-          progress:n?paid/n:0,
+          payment:pay,usingMin:false,progress:n?paid/n:0,
           endLabel:monLabel(end.getFullYear(),end.getMonth()),
           freeLabel:monLabel(free.getFullYear(),free.getMonth()),
           freeY:free.getFullYear(),freeM:free.getMonth(),
@@ -732,7 +743,7 @@ const solvePrincipal=(pay,apr,months,balloon)=>pvOf(+pay||0,months|0,monthlyRate
 const debtSettle=()=>sum(D.debts,d=>debtCalc(d).settle);
 const fin=v=>isFinite(v)?v:0;
 const debtPaymentsLeft=()=>sum(D.debts,d=>fin(debtCalc(d).paymentsLeft));
-const debtService=()=>sum(D.debts.filter(d=>!debtCalc(d).done),d=>+d.monthly||0);
+const debtService=()=>sum(D.debts.filter(d=>!debtCalc(d).done),d=>debtCalc(d).payment);
 const debtInterestLeft=()=>sum(D.debts,d=>fin(debtCalc(d).interestLeft));
 const debtsRated=()=>D.debts.filter(d=>debtCalc(d).ratedKnown).length;
 
@@ -770,8 +781,9 @@ function togglePaid(id){
    bill may be airtime plus a device plan, so clearing it returns only the
    device half. Cap the unlock at whichever is smaller. */
 function linkedBill(d){
+  const pay=debtCalc(d).payment||0;
   const l=D.ledger.find(x=>x.debtId===d.id&&x.active!==false);
-  return l?Math.min(+l.amount||0,+d.monthly||0):(+d.monthly||0);
+  return l?Math.min(+l.amount||0,pay):pay;
 }
 /* Net position projected forward, stepping up each time a debt ends and its
    payment stops leaving the account. Zero behaviour change assumed. */
@@ -1155,7 +1167,9 @@ function renderDebts(){
       <div class="l1"><span class="nm">${esc(d.name)}</span>
         ${c.ratedKnown?`<span class="tag">${(+d.apr).toFixed(1)}% APR</span>`:`<span class="tag">NO RATE</span>`}
         <span class="v">${c.done?'Cleared':money(c.settle)}</span></div>
-      <div class="l2"><span class="mo">${c.done?'DONE':c.left+' MO · '+c.freeLabel.toUpperCase()}</span>
+      <div class="l2"><span class="mo">${c.done?'DONE':isFinite(c.left)
+        ?(c.left>60?(c.left/12).toFixed(0)+' YEARS':c.left+' MO · '+c.freeLabel.toUpperCase())
+        :'NEVER CLEARS'}</span>
         <span class="bar"><i style="width:${pct(c.progress)}"></i></span>
         <span class="up">${c.done?'':'+'+money(linkedBill(d))}</span></div>
       ${c.done?'':`<div class="l3">
@@ -1166,8 +1180,10 @@ function renderDebts(){
           <div class="k">INTEREST LEFT</div></div></div>
         ${c.revolving?`<div class="l4">${
           c.stalled?`Your payment doesn't cover the ${money(c.interestNow)} of interest — this one grows.`
-          :`${money(c.interestNow)} of every ${money(+d.monthly||0)} payment is interest. ${
-            money(Math.max(0,(+d.monthly||0)-(+d.spend||0)-c.interestNow))} comes off the balance.`}</div>`:''}`}
+          :`${money(c.interestNow)} of every ${money(c.payment)} payment${c.usingMin?' (the minimum)':''} is interest. ${
+            money(Math.max(0,c.payment-(+d.spend||0)-c.interestNow))} comes off the balance.${
+            c.usingMin?` The same money as a standing order would clear it in ${
+              runDown(c.settle,monthlyRate(d.apr),c.minPay,+d.spend||0,2400).months} months.`:''}`}</div>`:''}`}
     </button>`;
   });
 
@@ -2000,10 +2016,10 @@ function editDebt(id){
   form({
     title:(ex?'Edit':'New')+' debt',
     sub:'A fixed total knows only what you will hand over. Give it what you borrowed and the rate and it can tell you what clearing it today would cost. A credit line has no end date at all until you decide what to pay.',
-    value:ex?JSON.parse(JSON.stringify(ex))
+    value:ex?Object.assign(JSON.parse(JSON.stringify(ex)),{payMin:ex.payMin?'yes':false})
              :{id:null,name:'',kind:'schedule',total:null,principal:null,apr:null,
                monthly:null,start:today(),months:12,balloon:null,promoMonths:null,promoApr:null,
-               balance:null,spend:0,opening:null,minPct:2},
+               balance:null,spend:0,opening:null,minPct:2,payMin:false,minFloor:5},
     fields:[
       {k:'name',label:'Name',ph:'Car loan'},
       {k:'kind',label:'What kind of debt is it?',type:'seg',
@@ -2019,7 +2035,10 @@ function editDebt(id){
       {k:'apr',label:'APR %',type:'number',step:'0.01',half:true,hide:v=>v.kind!=='revolving'},
       {k:'spend',label:'New spending a month £',type:'number',step:'0.01',half:true,
        hide:v=>v.kind!=='revolving',},
-      {k:'monthly',label:'You pay £',type:'number',step:'0.01',half:true},
+      {k:'payMin',label:'How do you pay it?',type:'seg',hide:v=>v.kind!=='revolving',
+       opts:[{k:false,label:'A set amount'},{k:'yes',label:'The minimum'}]},
+      {k:'monthly',label:'You pay £',type:'number',step:'0.01',half:true,
+       hide:v=>v.kind==='revolving'&&String(v.payMin)==='yes'},
       {k:'months',label:'Term months',type:'number',int:true,half:true,hide:v=>v.kind==='revolving'},
       {k:'opening',label:'Balance when you started £',type:'number',step:'0.01',half:true,
        hide:v=>v.kind!=='revolving'},
@@ -2035,8 +2054,9 @@ function editDebt(id){
       if(!String(v.name||'').trim()){toast('Give it a name');return false;}
       v.months=parseInt(v.months)||0;
       ['total','principal','apr','monthly','balloon','promoMonths','promoApr',
-       'balance','spend','opening','minPct']
+       'balance','spend','opening','minPct','minFloor']
         .forEach(k=>{v[k]=v[k]==null||v[k]===''?null:+v[k];});
+      v.payMin=(String(v.payMin)==='yes'||v.payMin===true);
       if(v.id){const i=D.debts.findIndex(x=>x.id===v.id);D.debts[i]=v;}
       else{v.id=uid('d');D.debts.push(v);}
     },
@@ -2091,12 +2111,12 @@ function debtExtra(v){
 /* The question a credit line actually raises is not "how much is left" but
    "how much of what I pay is doing anything". Everything here answers that. */
 function revolvingExtra(v,c){
-  const pay=+v.monthly||0, off=Math.max(0,pay-(+v.spend||0)-c.interestNow);
+  const pay=c.payment||0, off=Math.max(0,pay-(+v.spend||0)-c.interestNow);
   const bite=pay?c.interestNow/pay:0;
   let h=`<div class="brk"><div class="bh">Where it stands</div>
     <div class="kv"><span class="k">Balance</span><span class="v">${money(c.settle,true)}</span></div>
     <div class="kv"><span class="k">Interest on this balance</span><span class="v crit">${money(c.interestNow,true)}</span></div>
-    <div class="kv"><span class="k">Of your ${money(pay)} payment</span>
+    <div class="kv"><span class="k">Of your ${money(c.payment)} payment${c.usingMin?' (the minimum)':''}</span>
       <span class="v${bite>0.4?' crit':''}">${money(c.interestNow)} is interest</span></div>
     <div class="kv"><span class="k">Actually comes off the balance</span>
       <span class="v${off<=0?' crit':' pos'}">${money(off)}</span></div>`;
@@ -2113,27 +2133,52 @@ function revolvingExtra(v,c){
       <div class="kv"><span class="k">Total you'll hand over</span>
         <span class="v">${money(c.paymentsLeft)}</span></div>`;
   }
+  /* The same money, held flat instead of shrinking, is the comparison that
+     actually changes what someone does. Show it whenever a minimum applies. */
   if(+v.minPct>0){
-    const p=(+v.minPct)/100;
-    const n=Math.ceil(Math.log(5/Math.max(5,c.settle))/Math.log(1-p));
-    h+=`<div class="brk"><div class="bh">If you only paid the minimum</div>
+    const r0=monthlyRate(v.apr),B0=c.settle,sp=+v.spend||0;
+    const flat=runDown(B0,r0,c.minPay,sp,2400);
+    const inFive=(()=>{let b=B0;for(let k=0;k<60&&b>5;k++){b=b*(1-(+v.minPct)/100);}return b*(r0+(+v.minPct)/100);})();
+    h+=`<div class="brk"><div class="bh">${c.usingMin?'What the minimum is doing':'If you only paid the minimum'}</div>
       <div class="kv"><span class="k">Minimum right now</span><span class="v">${money(c.minPay,true)}</span></div>
-      <div class="kv"><span class="k">It would take</span>
-        <span class="v crit">${n} months · ${(n/12).toFixed(0)} years</span></div>
+      <div class="kv"><span class="k">The same amount, held flat</span>
+        <span class="v pos">${isFinite(flat.months)?flat.months+' months':'never'}</span></div>
+      ${c.usingMin?`<div class="kv"><span class="k">Paying the minimum instead</span>
+        <span class="v crit">${isFinite(c.left)?c.left+' months · '+(c.left/12).toFixed(0)+' years':'never'}</span></div>
+      <div class="kv"><span class="k">What that costs you</span>
+        <span class="v crit">${isFinite(c.interestLeft)&&isFinite(flat.interest)
+          ?money(c.interestLeft-flat.interest)+' more interest':'—'}</span></div>`:''}
+      <div class="kv"><span class="k">Minimum in five years</span><span class="v">${money(inFive,true)}</span></div>
       <div class="note" style="font-size:10.5px;color:var(--mut);font-weight:600;line-height:1.5;margin-top:9px">
-        The minimum is the interest plus <b>${v.minPct}%</b> of the balance, so it only ever clears
-        ${v.minPct}% a month — and it shrinks as the balance does. It is designed not to finish.</div></div>`;
+        The minimum is a flat <b>${(monthlyRate(v.apr)*100+ +v.minPct).toFixed(2)}%</b> of the balance — the
+        interest plus ${v.minPct}% of capital — so it only ever clears ${v.minPct}% a month, and it shrinks
+        as the balance does. <b>Standing order the same money instead</b> and it stops moving away from you.</div></div>`;
+  }
+  const r=monthlyRate(v.apr), B=c.settle, sp=+v.spend||0;
+  const bill=D.ledger.find(x=>x.debtId===v.id&&x.active!==false);
+  if(bill&&Math.abs((+bill.amount||0)-pay)>1){
+    const diff=(+bill.amount||0)-pay;
+    h+=`<div class="brk"><div class="bh">Your bills say something different</div>
+      <div class="kv"><span class="k">Budgeted on Money</span><span class="v">${money(bill.amount)}</span></div>
+      <div class="kv"><span class="k">Actually leaving your account</span><span class="v">${money(pay,true)}</span></div>
+      <div class="note" style="font-size:10.5px;color:var(--mut);font-weight:600;line-height:1.5;margin-top:9px">
+        ${diff>0?`You budget <b>${money(diff,true)}</b> a month more than you pay. Paying the budgeted
+          <b>${money(bill.amount)}</b> as a standing order would clear this in
+          <b>${runDown(B,r,+bill.amount||0,sp,2400).months} months</b>.`
+         :`You pay <b>${money(-diff,true)}</b> a month more than the bill allows for, so your real
+          outgoings are higher than Money shows.`}</div></div>`;
   }
   h+=`<div class="brk"><div class="bh">What paying more would do</div>`;
-  const r=monthlyRate(v.apr), B=c.settle, sp=+v.spend||0;
-  [pay+50,pay+100,pay+150].forEach(p=>{
+  const base=c.payment||pay;
+  [base,base+50,base+100,base+150].forEach((p,idx)=>{
+    if(idx===0&&!c.usingMin)return;                 // already the headline above
     const net=p-sp-B*r;
     if(net<=0)return;
     const n=Math.ceil(-Math.log(1-r*B/(p-sp))/Math.log(1+r));
     const int=Math.max(0,n*p-B-n*sp);
     const saved=c.stalled?null:c.interestLeft-int;
     h+=`<div class="kv"><span class="k">${money(p)} a month</span>
-      <span class="v">${n} months${saved!=null&&saved>0?' · saves '+money(saved):''}</span></div>`;
+      <span class="v">${n} months${saved!=null&&saved>0&&isFinite(saved)?' · saves '+money(saved):''}</span></div>`;
   });
   return h+`</div>`;
 }
