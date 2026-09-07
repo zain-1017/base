@@ -631,15 +631,41 @@ function runDown(B,r,pay,spend,cap,minPct,floor){
   while(bal>0.005&&months<cap){
     /* A minimum payment is a percentage of the balance, so it shrinks as the
        balance does — which is why it never finishes. A fixed payment of the
-       same size does, and quickly. */
-    let p=minPct!=null?Math.max(floor||0,bal*(r+minPct)):pay;
+       same size does, and quickly. The statement adds the interest first and
+       then works the minimum out from the closing figure, so do that here too:
+       it is the difference between a forecast that is right and one that is
+       three pounds light every month. */
     const i=bal*r;
     const due=bal+i+(spend||0);
+    let p=minPct!=null?Math.max(floor||0,due*(r+minPct)):pay;
     p=Math.min(p,due);
     if(p<=i+(spend||0))return {months:Infinity,interest:Infinity,paid:Infinity,cleared:false};
     interest+=i;bal=due-p;paid+=p;months++;
   }
   return {months:months,interest:interest,paid:paid,cleared:bal<=0.005};
+}
+/* What every future payment will be. A minimum is a percentage of the
+   statement balance, so once you know the rate and the balance the whole
+   schedule is already determined — there is no reason to guess at it a month
+   at a time. Row 0 is the next payment due. */
+function minSchedule(d,n){
+  const r=monthlyRate(d.apr),p=(+d.minPct||0)/100,floor=+d.minFloor||5;
+  const spend=+d.spend||0,fixed=d.payMin?null:(+d.monthly||0);
+  let bal=Math.max(0,+d.balance||0);
+  const now=new Date(),rows=[];
+  for(let k=0;k<n&&bal>0.005;k++){
+    const interest=bal*r;
+    const closing=bal+interest+spend;
+    let due=fixed!=null?fixed:Math.max(floor,closing*(r+p));
+    due=Math.min(due,closing);
+    if(due<=interest+spend)break;                 // it stops going anywhere
+    const when=new Date(now.getFullYear(),now.getMonth()+k+1,1);
+    rows.push({y:when.getFullYear(),m:when.getMonth(),
+               label:monLabel(when.getFullYear(),when.getMonth()),
+               interest:interest,closing:closing,due:due,after:closing-due});
+    bal=closing-due;
+  }
+  return rows;
 }
 function revolvingCalc(d){
   const B=Math.max(0,+d.balance||0), r=monthlyRate(d.apr);
@@ -647,7 +673,7 @@ function revolvingCalc(d){
   const interestNow=B*r, pctMin=(+d.minPct||0)/100, floor=+d.minFloor||5;
   /* The statement's minimum is a flat percentage of the balance that already
      includes the interest — 1.80% interest plus 2% capital reads as 3.80%. */
-  const minPay=pctMin>0?Math.max(floor,B*(r+pctMin)):0;
+  const minPay=pctMin>0?Math.max(floor,Math.min(B*(1+r)+spend,(B*(1+r)+spend)*(r+pctMin))):0;
   const usingMin=!!d.payMin&&pctMin>0;
   const payNow=usingMin?minPay:pay;
   const stalled=B>0&&(payNow-spend-interestNow)<=0;
@@ -753,8 +779,24 @@ const monthlyLines=()=>activeLedger().filter(l=>l.cadence==='monthly')
   .sort((a,b)=>a.day-b.day||a.name.localeCompare(b.name));
 const annualLines=()=>activeLedger().filter(l=>l.cadence==='annual')
   .sort((a,b)=>(a.month-b.month)||(a.day-b.day));
-const monthlyTotal=()=>sum(monthlyLines(),l=>l.amount);
-const annualTotal=()=>sum(annualLines(),l=>l.amount);
+/* A bill that services a minimum-payment credit line has no fixed amount —
+   it is whatever the statement says next. Read it off the schedule rather than
+   making him round it up and hope. */
+function billAmount(l){
+  const d=l.debtId?D.debts.find(x=>x.id===l.debtId):null;
+  if(d&&d.kind==='revolving'&&d.payMin){
+    if(isPaid(l,ymOf(today()),new Date().getDate())&&d.lastPaid!=null)return +d.lastPaid;
+    const s=minSchedule(d,1);
+    if(s.length)return s[0].due;
+  }
+  return +l.amount||0;
+}
+const isForecast=l=>{
+  const d=l.debtId?D.debts.find(x=>x.id===l.debtId):null;
+  return !!(d&&d.kind==='revolving'&&d.payMin);
+};
+const monthlyTotal=()=>sum(monthlyLines(),billAmount);
+const annualTotal=()=>sum(annualLines(),l=>+l.amount||0);
 const annualPerMonth=()=>annualTotal()/12;
 function outgoings(){
   const s=D.settings;
@@ -947,7 +989,7 @@ function renderHome(){
 
   const net=netPosition(),lines=monthlyLines();
   const paidLines=lines.filter(l=>isPaid(l,ym,dayNow));
-  const paidSum=sum(paidLines,l=>l.amount);
+  const paidSum=sum(paidLines,billAmount);
 
   /* Next seven days of bills, wrapping into next month so the end of a month
      never looks deceptively quiet. */
@@ -1037,11 +1079,12 @@ function renderHome(){
   }
 
   if(soon.length){
-    h+=`<div class="lab">Next seven days<span class="r">${money(sum(soon,s=>s.l.amount))}</span></div>`;
+    h+=`<div class="lab">Next seven days<span class="r">${money(sum(soon,s=>billAmount(s.l)))}</span></div>`;
     soon.forEach(s=>{
       h+=`<div class="row"><span class="d">${s.annual?MONS[(s.l.month|0)-1].toUpperCase():s.l.day}</span>
-        <div class="nm">${esc(s.l.name)}<i>${s.in===0?'Today':s.in===1?'Tomorrow':'In '+s.in+' days'}${s.annual?' · annual':''}</i></div>
-        <span class="v">${money(s.l.amount)}</span></div>`;
+        <div class="nm">${esc(s.l.name)}<i>${s.in===0?'Today':s.in===1?'Tomorrow':'In '+s.in+' days'}${
+          s.annual?' · annual':isForecast(s.l)?' · this month\'s minimum':''}</i></div>
+        <span class="v">${money(billAmount(s.l))}</span></div>`;
     });
   }
 
@@ -1063,7 +1106,7 @@ function renderMoney(){
   const now=new Date(),ym=ymOf(today()),dayNow=now.getDate();
   const lines=monthlyLines(),ann=annualLines();
   const paid=lines.filter(l=>isPaid(l,ym,dayNow));
-  const paidSum=sum(paid,l=>l.amount);
+  const paidSum=sum(paid,billAmount);
   let dp=D.settings.payday|0||1,dd=dp-dayNow;
   if(dd<0)dd+=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
   const subs=activeLedger().filter(l=>(l.tags||[]).includes('sub'));
@@ -1096,8 +1139,9 @@ function renderMoney(){
           aria-label="Day for ${esc(l.name)}" onchange="quickSet('${l.id}','day',this.value)">
         <input class="inl nm2" value="${esc(l.name)}" aria-label="Name"
           onchange="quickSet('${l.id}','name',this.value)">
-        <input class="inl amt" type="number" inputmode="decimal" step="0.01" value="${l.amount}"
-          aria-label="Amount" onchange="quickSet('${l.id}','amount',this.value)">
+        ${isForecast(l)?`<span class="v" style="width:74px;text-align:right">${money(billAmount(l))}</span>`
+          :`<input class="inl amt" type="number" inputmode="decimal" step="0.01" value="${l.amount}"
+             aria-label="Amount" onchange="quickSet('${l.id}','amount',this.value)">`}
         <button class="rm" onclick="quickDel('${l.id}')" aria-label="Delete ${esc(l.name)}">✕</button></div>`;
     });
     h+=`<div class="row" style="gap:7px">
@@ -1116,8 +1160,10 @@ function renderMoney(){
           aria-label="Mark ${esc(l.name)} ${p?'unpaid':'paid'}" style="padding:0"></button>
         <span class="d">${l.day}</span>
         <button class="nm" onclick="editLedger('${l.id}')" style="text-align:left">${esc(l.name)}${
-          l.debtId?'<i>Debt payment</i>':(l.tags||[]).length?'<i>'+esc(l.tags.join(' · '))+'</i>':''}</button>
-        <span class="v${p?' mut':''}">${money(l.amount)}</span></div>`;
+          isForecast(l)?'<i>'+(p?'Minimum paid':'Next minimum · forecast')+'</i>'
+          :l.debtId?'<i>Debt payment</i>'
+          :(l.tags||[]).length?'<i>'+esc(l.tags.join(' · '))+'</i>':''}</button>
+        <span class="v${p?' mut':''}">${money(billAmount(l))}</span></div>`;
     });
     h+=`<div class="row tap"><button class="nm" onclick="editLedger(null,'monthly')"
       style="text-align:left;color:var(--mut)">+ Add a bill</button></div>`;
@@ -1187,6 +1233,14 @@ function renderDebts(){
     </button>`;
   });
 
+  const rev=D.debts.filter(d=>d.kind==='revolving'&&!debtCalc(d).done);
+  rev.forEach(d=>{
+    const n=minSchedule(d,1)[0];
+    if(!n)return;
+    h+=`<div class="row tap"><button class="nm" onclick="payDebt('${d.id}')" style="text-align:left">
+      Record a ${esc(d.name)} payment<i>Next due ${money(n.due,true)} · ${n.label}</i></button>
+      <button class="v mut" onclick="scheduleSheet('${d.id}')">SCHEDULE ›</button></div>`;
+  });
   h+=`<div class="gnote">`;
   if(rated<D.debts.length)
     h+=`<b>${D.debts.length-rated} of ${D.debts.length} have no rate set.</b> Until they do, "clear today" just
@@ -1687,7 +1741,7 @@ function renderCar(){
       h+=`<div class="row tap"><span class="d">${x.annual?MONS[(x.l.month|0)-1].toUpperCase():x.l.day}</span>
         <button class="nm" onclick="editLedger('${x.l.id}')" style="text-align:left">${esc(x.l.name)}
           <i>${x.in===0?'Today':x.in===1?'Tomorrow':'In '+x.in+' days'}${x.annual?' · annual':' · monthly'}</i></button>
-        <span class="v">${money(x.l.amount)}</span></div>`;
+        <span class="v">${money(billAmount(x.l))}</span></div>`;
     });
   }
 
@@ -2168,6 +2222,27 @@ function revolvingExtra(v,c){
          :`You pay <b>${money(-diff,true)}</b> a month more than the bill allows for, so your real
           outgoings are higher than Money shows.`}</div></div>`;
   }
+  const sched=minSchedule(v,12);
+  if(sched.length){
+    h+=`<div class="brk"><div class="bh">The next twelve payments</div>`;
+    sched.slice(0,4).forEach(x=>{
+      h+=`<div class="kv"><span class="k">${x.label}</span>
+        <span class="v">${money(x.due,true)}<span style="color:var(--mut);font-weight:600">
+        · leaves ${money(x.after)}</span></span></div>`;
+    });
+    h+=`<div class="kv"><span class="k">Twelve months of payments</span>
+        <span class="v">${money(sum(sched,x=>x.due))}</span></div>
+      <div class="srow"><button class="sbtn" onclick="scheduleSheet('${v.id}')">See every future payment</button></div>
+      <div class="srow"><button class="sbtn solid" onclick="payDebt('${v.id}')">Record a payment</button></div></div>`;
+  }
+  if((v.history||[]).length){
+    h+=`<div class="brk"><div class="bh">What you've actually paid</div>`;
+    v.history.slice().reverse().slice(0,6).forEach(x=>{
+      h+=`<div class="kv"><span class="k">${x.date}</span>
+        <span class="v">${money(x.amount,true)}${x.purchases?' · spent '+money(x.purchases,true):''}</span></div>`;
+    });
+    h+=`</div>`;
+  }
   h+=`<div class="brk"><div class="bh">What paying more would do</div>`;
   const base=c.payment||pay;
   [base,base+50,base+100,base+150].forEach((p,idx)=>{
@@ -2181,6 +2256,70 @@ function revolvingExtra(v,c){
       <span class="v">${n} months${saved!=null&&saved>0&&isFinite(saved)?' · saves '+money(saved):''}</span></div>`;
   });
   return h+`</div>`;
+}
+
+/* Every future payment, laid out. The point of this page is that a minimum
+   payment is only unpredictable if nobody works it out — the rate and the
+   balance already determine the whole schedule. */
+function scheduleSheet(id){
+  const d=D.debts.find(x=>x.id===id);if(!d)return;
+  const rows=minSchedule(d,60);
+  const yr=rows.slice(0,12),next=rows[0];
+  openSheet(`<h2>${esc(d.name)} — what's coming</h2>
+    <div class="sub">${d.payMin
+      ?`Each payment is <b>${((monthlyRate(d.apr)+(+d.minPct||0)/100)*100).toFixed(2)}%</b> of that month's
+        statement, so it falls as the balance does. Nothing here is a guess — it follows from the rate and
+        the balance you have now.`
+      :`At <b>${money(+d.monthly||0)}</b> a month.`}</div>
+    ${next?`<div class="kv"><span class="k">Next payment</span>
+      <span class="v">${money(next.due,true)} · ${next.label}</span></div>
+    <div class="kv"><span class="k">Next twelve months</span>
+      <span class="v">${money(sum(yr,r=>r.due))}</span></div>
+    <div class="kv"><span class="k">Interest inside that</span>
+      <span class="v crit">${money(sum(yr,r=>r.interest))}</span></div>
+    <div class="kv"><span class="k">Balance in a year</span>
+      <span class="v">${money(yr[yr.length-1].after)}</span></div>`:''}
+    <div class="gwrap" style="margin-top:14px;max-height:44vh;overflow-y:auto">
+      <table class="g"><thead><tr>
+        <th>Due</th><th style="text-align:right">Payment</th>
+        <th style="text-align:right">Interest</th><th style="text-align:right">Balance after</th>
+      </tr></thead><tbody>
+      ${rows.map(r=>`<tr>
+        <td style="padding:7px 8px;font-size:13px;font-weight:700">${r.label}</td>
+        <td style="padding:7px 8px;font-size:13px;font-weight:700;text-align:right">${money(r.due,true)}</td>
+        <td style="padding:7px 8px;font-size:12px;text-align:right;color:var(--crit)">${money(r.interest,true)}</td>
+        <td style="padding:7px 8px;font-size:13px;text-align:right">${money(r.after)}</td></tr>`).join('')}
+      </tbody></table></div>
+    ${rows.length>=60?`<div class="gnote">Showing five years. At this rate it runs a good deal longer.</div>`:''}
+    <div class="srow"><button class="sbtn solid" onclick="editDebt('${d.id}')">Back</button></div>`);
+}
+
+/* Record what actually left the account. Pay more than the minimum and every
+   number downstream — the balance, the term, the interest, next month's
+   minimum — moves on its own. */
+function payDebt(id){
+  const d=D.debts.find(x=>x.id===id);if(!d)return;
+  const next=minSchedule(d,1)[0];
+  form({
+    title:'Record a payment',
+    sub:next?`The minimum due next is <b>${money(next.due,true)}</b>. Anything above it comes straight off
+      the balance, and next month's minimum drops with it.`:'',
+    value:{id:d.id,amount:next?Math.round(next.due*100)/100:null,purchases:null,date:today()},
+    fields:[
+      {k:'amount',label:'You paid £',type:'number',step:'0.01',half:true},
+      {k:'date',label:'Date',type:'date',half:true},
+      {k:'purchases',label:'Anything new put on it £',type:'number',step:'0.01',
+       note:'Spending on a credit line is charged at the same rate, so it costs more than it looks.'}
+    ],
+    save:v=>{
+      const amt=+v.amount||0,buy=+v.purchases||0;
+      if(amt<=0&&buy<=0){toast('Nothing to record');return false;}
+      d.balance=Math.max(0,(+d.balance||0)-amt+buy);
+      if(amt>0)d.lastPaid=amt;
+      d.history=(d.history||[]).concat([{date:v.date||today(),amount:amt,purchases:buy,
+                                         balance:d.balance}]).slice(-36);
+    }
+  });
 }
 
 function solveField(which){

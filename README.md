@@ -34,11 +34,19 @@ different things:
   tells you it never finishes, if the payment doesn't cover the interest.
 
 For a credit line you can say you pay **the minimum** rather than a set amount,
-and it models that honestly: a minimum is a flat percentage of the balance, so
+and it models that honestly: a minimum is a flat percentage of the statement, so
 it shrinks as the balance does and the term runs to decades. The app puts the
-same amount held flat right beside it, shows how much of each payment is
-interest, and flags it when the bill you budgeted doesn't match what actually
-leaves your account.
+same amount held flat right beside it, and shows how much of each payment is
+interest.
+
+A minimum payment is only unpredictable if nobody works it out — the rate and
+the balance already determine the whole schedule. So there's a **forecast of
+every future payment**: what's due each month, how much of it is interest, and
+what the balance will be afterwards, for five years. A bill that services a
+minimum-payment credit line reads that forecast instead of a figure you had to
+round up and hope, so the month's total is right without maintenance. **Record
+a payment** when money actually leaves, and if it's more than the minimum the
+balance, the term, the interest and every future minimum all move with it.
 
 The gap between those is interest you have not paid yet, and it's the whole
 reason to model it: it tells you what overpaying is worth. Three solvers fill
