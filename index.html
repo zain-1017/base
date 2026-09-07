@@ -848,6 +848,16 @@ function billAmount(l){
   }
   return +l.amount||0;
 }
+/* How much of a bill is actually the debt. A phone bill is airtime plus a
+   device plan; only the device half stops when the plan ends. */
+function debtPart(l){
+  const d=D.debts.find(x=>x.id===l.debtId);
+  if(!d)return 'Debt payment';
+  const pay=debtCalc(d).payment||0,amt=+l.amount||0;
+  return (amt-pay>0.5)
+    ? 'Includes '+money(pay,true)+' of '+esc(d.name)+' — the rest is service'
+    : 'Debt payment';
+}
 const isForecast=l=>{
   const d=l.debtId?D.debts.find(x=>x.id===l.debtId):null;
   return !!(d&&d.kind==='revolving'&&d.payMin);
@@ -1224,7 +1234,7 @@ function renderMoney(){
         <span class="d">${l.day}</span>
         <button class="nm" onclick="editLedger('${l.id}')" style="text-align:left">${esc(l.name)}${
           isForecast(l)?'<i>'+(p?'Minimum paid':'Next minimum · forecast')+'</i>'
-          :l.debtId?'<i>Debt payment</i>'
+          :l.debtId?'<i>'+debtPart(l)+'</i>'
           :(l.tags||[]).length?'<i>'+esc(l.tags.join(' · '))+'</i>':''}</button>
         <span class="v${p?' mut':''}">${money(billAmount(l))}</span></div>`;
     });
