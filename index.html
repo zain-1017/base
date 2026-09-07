@@ -224,46 +224,14 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
      targets  a number with a direction and a finish line
    ═══════════════════════════════════════════════════════════════ */
 
-/* Seeded from Finance Tracker.xlsx. The two Specsavers lines and the
-   PayPal/Barclays overlap with the debt table are faithful to the sheet:
-   debt payments already sit inside the monthly bills, so cashflow counts
-   them once and the debt table is a view of balances, not extra outgoings. */
-const SEED_LEDGER=[
- {name:'Netflix',      amount:18,  day:1,  tags:['sub']},
- {name:'Specsavers',   amount:35,  day:1,  tags:['health']},
- {name:'Gym',          amount:27,  day:1,  tags:['health']},
- {name:'Specsavers',   amount:33,  day:1,  tags:['health']},
- {name:'PayPal',       amount:170, day:1,  tags:['debt'], debt:'PayPal'},
- {name:'Road Tax',     amount:15,  day:2,  tags:['car']},
- {name:'Car Finance',  amount:240, day:4,  tags:['car','debt'], debt:'Blue Motor'},
- {name:'Barclays',     amount:171, day:4,  tags:['debt'], debt:'Barclays'},
- {name:'Canva',        amount:13,  day:6,  tags:['sub']},
- {name:'Microsoft',    amount:11,  day:12, tags:['sub']},
- {name:'Prime',        amount:9,   day:13, tags:['sub']},
- {name:'ChatGPT',      amount:19,  day:13, tags:['sub']},
- {name:'o2',           amount:70,  day:15, tags:['debt'], debt:'o2'},
- {name:'HBOMax',       amount:15,  day:15, tags:['sub']},
- {name:'Claude',       amount:90,  day:17, tags:['sub']},
- {name:'Spotify',      amount:22,  day:22, tags:['sub']},
- {name:'Prime AdFree', amount:3,   day:24, tags:['sub']},
- {name:'Car Insurance',amount:95,  day:26, tags:['car']}
-];
-const SEED_ANNUAL=[
- {name:'MOT',     amount:40, day:1,  month:4, tags:['car']},
- {name:'AdGuard', amount:30, day:15, month:4, tags:['sub']}
-];
-const SEED_DEBTS=[
- {name:'Barclays',   original:6148,  monthly:170.78, start:'2024-07-15', months:36},
- {name:'PayPal',     original:4556,  monthly:166,    start:'2026-04-01', months:27},
- {name:'Blue Motor', original:16334, monthly:240,    start:'2024-12-30', months:66},
- {name:'o2',         original:865,   monthly:24,     start:'2025-09-29', months:36}
-];
+/* No figures ship with the app. The repo is public; the numbers are not.
+   A fresh install starts empty and you import a file you exported. */
 const TAGS=['sub','car','health','debt','home','other'];
 
 /* ═══ state ═══════════════════════════════════════════════════ */
 const KEY='daybook_v1', BKEY='daybook_v1_bak';
-const DEFAULTS={wage:1400,incomeTarget:3500,savings:100,savingsGoal:10000,
-                food:200,fuel:400,payday:1};
+const DEFAULTS={wage:0,incomeTarget:0,savings:0,savingsGoal:0,
+                food:0,fuel:0,payday:1};
 let D={schema:1,ledger:[],debts:[],entries:[],targets:[],
        settings:Object.assign({},DEFAULTS),meta:{paid:{}}};
 let TAB='home', DRAFT='';
@@ -293,22 +261,8 @@ function load(){
       if(!D.meta.paid||typeof D.meta.paid!=='object')D.meta.paid={};
     }catch(e){console.error('load',e);}
   }
-  if(!D.ledger.length&&!D.debts.length&&!D.entries.length)seed();
 }
-function seed(){
-  D.debts=SEED_DEBTS.map(s=>Object.assign({id:uid('d')},s));
-  const byName={};D.debts.forEach(d=>byName[d.name]=d.id);
-  D.ledger=SEED_LEDGER.map(s=>({id:uid('l'),name:s.name,amount:s.amount,cadence:'monthly',
-      day:s.day,tags:s.tags.slice(),debtId:s.debt?byName[s.debt]:null,active:true}))
-    .concat(SEED_ANNUAL.map(s=>({id:uid('l'),name:s.name,amount:s.amount,cadence:'annual',
-      day:s.day,month:s.month,tags:s.tags.slice(),debtId:null,active:true})));
-  D.targets=[
-    {id:uid('t'),name:'Clear all debt',    goal:0,     source:'debtTotal',dir:'down',pinned:true},
-    {id:uid('t'),name:'Save £10,000',      goal:10000, source:'savings',  dir:'up'},
-    {id:uid('t'),name:'£3,500 a month in', goal:3500,  source:'income',   dir:'up'}
-  ];
-  save();
-}
+const isEmpty=()=>!D.ledger.length&&!D.debts.length&&!D.entries.length;
 function save(){
   try{
     const j=JSON.stringify(D);
@@ -406,8 +360,9 @@ function projection(months){
   }
   return out;
 }
-/* A debt payment can only free up what actually leaves the account: o2's
-   £70 bill is airtime plus a £24 device plan, so clearing it returns £24. */
+/* A debt payment can only free up what actually leaves the account: a phone
+   bill may be airtime plus a device plan, so clearing it returns only the
+   device half. Cap the unlock at whichever is smaller. */
 function linkedBill(d){
   const l=D.ledger.find(x=>x.debtId===d.id&&x.active!==false);
   return l?Math.min(+l.amount||0,+d.monthly||0):(+d.monthly||0);
@@ -502,6 +457,15 @@ function renderHome(){
   if(!todays.length)alerts.push({t:'Nothing written down today',s:'Spends, notes, anything — the page above'});
 
   const pin=D.targets.find(t=>t.pinned)||D.targets[0];
+
+  if(isEmpty())return `<div class="top"><h1>Daybook</h1><div class="meta">EMPTY</div></div>
+    <div class="empty"><h3>Nothing in the book yet</h3>
+      <p>Bring in a file you exported from another device, or just start adding bills as you go.</p></div>
+    <div style="padding:0 16px 10px"><button class="sbtn solid" style="width:100%"
+      onclick="dataSheet()">Import a file</button></div>
+    <div style="padding:0 16px"><button class="sbtn" style="width:100%"
+      onclick="editLedger(null,'monthly')">Add your first bill</button></div>
+    <div class="spacer"></div>`;
 
   let h=`<div class="top"><h1>${DAYS[now.getDay()]}</h1>
     <div class="meta">${dayNow} ${MONS[now.getMonth()].toUpperCase()}</div></div>
@@ -654,6 +618,7 @@ function renderMoney(){
 /* Net position over five years. One scale, every riser labelled, and the
    zero crossing called out because that's the date the whole page is about. */
 function renderProjection(){
+  if(!D.debts.some(d=>!debtCalc(d).done))return '';   // no debts, no steps, no chart
   const p=projection(60);
   if(!p.length)return '';
   const W=340,H=118,PADL=6,PADR=6,top=10,bot=88;
@@ -737,6 +702,8 @@ function renderCar(){
 }
 function renderGoals(){
   const h=`<div class="top"><h1>Goals</h1><div class="meta">STAGE 4</div></div>`;
+  if(!D.targets.length)return h+`<div class="empty"><h3>No goals yet</h3>
+    <p>The editor lands in stage 4. Targets imported from a file show up here and track themselves.</p></div>`;
   let g=h+`<div class="lab">Reading live already</div>`;
   D.targets.forEach(t=>{
     const p=targetProgress(t);
@@ -747,7 +714,7 @@ function renderGoals(){
   return g+`<div class="empty"><h3>The editor comes in stage 4</h3>
     <p>These three read from real data and move on their own. What's missing is the ability to add your own.</p></div>
   <div class="stage"><span class="k">ANY</span><span class="w">Unlimited goals, each with its own steps. <b>Any one pinned</b> to Home.</span></div>
-  <div class="stage"><span class="k">BOUND</span><span class="w">A step can watch real data and <b>tick itself</b> — clear Barclays completes when the balance hits zero.</span></div>
+  <div class="stage"><span class="k">BOUND</span><span class="w">A step can watch real data and <b>tick itself</b> — a step that watches a debt completes when its balance hits zero.</span></div>
   <div class="stage"><span class="k">LOCKED</span><span class="w">Steps can stay locked until a prerequisite finishes. A tech tree, not a to-do list.</span></div>
   <div class="stage"><span class="k">TIERS</span><span class="w">Life, year, month, week. The week tier is what feeds <b>Needs you today</b>.</span></div>
   <div class="spacer"></div>`;
@@ -779,7 +746,7 @@ function paintLedger(){
   const e=EDIT,ann=e.cadence==='annual';
   openSheet(`<h2>${e.id?'Edit':'New'} ${ann?'annual bill':'bill'}</h2>
   <div class="sub">${ann?'Divided by twelve for the monthly charge.':'Ticks itself off as the date passes each month.'}</div>
-  <div class="ef"><label>Name</label><input id="e-name" value="${esc(e.name)}" placeholder="Netflix"></div>
+  <div class="ef"><label>Name</label><input id="e-name" value="${esc(e.name)}" placeholder="Broadband"></div>
   <div class="efr">
     <div class="ef"><label>Amount £</label><input id="e-amt" type="number" inputmode="decimal" value="${e.amount}"></div>
     <div class="ef"><label>Day</label><input id="e-day" type="number" inputmode="numeric" min="1" max="31" value="${e.day||1}"></div>
@@ -832,7 +799,7 @@ function editDebt(id){
   openSheet(`<h2>${d?'Edit':'New'} debt</h2>
   <div class="sub">${c?`${c.paid} of ${d.months} paid · ${money(c.remaining)} left · last payment ${c.endLabel}, yours again from ${c.freeLabel}.`
     :'Balance and months left are worked out from the start date, so they are never stale.'}</div>
-  <div class="ef"><label>Name</label><input id="d-name" value="${esc(EDIT.name)}" placeholder="Barclays"></div>
+  <div class="ef"><label>Name</label><input id="d-name" value="${esc(EDIT.name)}" placeholder="Car loan"></div>
   <div class="efr">
     <div class="ef"><label>Original £</label><input id="d-orig" type="number" inputmode="decimal" value="${EDIT.original}"></div>
     <div class="ef"><label>Monthly £</label><input id="d-mo" type="number" inputmode="decimal" value="${EDIT.monthly}"></div>
@@ -867,11 +834,11 @@ function delDebt(){
    moving to a real backend later costs a day rather than a rewrite. */
 function dataSheet(){
   openSheet(`<h2>Your data</h2>
-  <div class="sub">Everything is stored on this device only, so this file is your backup and your way onto another one. Keep a copy somewhere that isn't your phone.</div>
+  <div class="sub">Everything lives on this device only — nothing is uploaded and no figures ship with the app. This file is your backup and your way onto another device. Keep a copy somewhere that isn't your phone.</div>
   <div class="srow"><button class="sbtn solid" onclick="exportData()">Export a copy</button></div>
   <div class="srow"><button class="sbtn" onclick="document.getElementById('imp').click()">Import a file</button></div>
   <input type="file" id="imp" accept="application/json,.json" style="display:none" onchange="importData(this)">
-  <div class="srow"><button class="sbtn danger" onclick="resetAll()">Reset to the spreadsheets</button></div>`);
+  <div class="srow"><button class="sbtn danger" onclick="resetAll()">Erase everything</button></div>`);
 }
 function exportData(){
   const blob=new Blob([JSON.stringify(D,null,2)],{type:'application/json'});
@@ -897,10 +864,10 @@ function importData(input){
   r.readAsText(f);
 }
 function resetAll(){
-  if(!confirm('Wipe everything and start again from the spreadsheet figures?'))return;
+  if(!confirm('Erase every bill, debt and entry on this device? Export a copy first if you want one.'))return;
   D.ledger=[];D.debts=[];D.entries=[];D.targets=[];
   D.settings=Object.assign({},DEFAULTS);D.meta={paid:{}};
-  seed();closeSheet();render();toast('Reset');
+  save();closeSheet();render();toast('Erased');
 }
 
 /* ═══ boot ════════════════════════════════════════════════════ */
