@@ -124,10 +124,11 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 
 .range{display:flex;align-items:center;gap:7px;padding:9px 16px;border-bottom:1px solid var(--line)}
 .range label{font-size:8.5px;font-weight:800;letter-spacing:1px;color:var(--mut);text-transform:uppercase}
-.range input{width:66px;height:34px;border:1px solid var(--line2);border-radius:8px;
+.range input{width:58px;height:34px;border:1px solid var(--line2);border-radius:8px;
   padding:0 8px;font-size:16px;font-weight:800;text-align:center;background:var(--bg);flex-shrink:0}
 .range label{flex-shrink:0}
 .range button{font-size:8.5px;font-weight:800;letter-spacing:.8px;color:var(--mut);margin-left:auto;padding:0 2px}
+.range .rtot{margin-left:auto;font-size:17px;font-weight:800;letter-spacing:-.4px;flex-shrink:0}
 
 /* ── the bills table. The screen he actually lives in, so it gets the
       spreadsheet treatment: fixed columns, a running total, everything
@@ -1313,15 +1314,18 @@ function renderHome(){
 function renderMoney(){
   const now=new Date(),ym=ymOf(today()),dayNow=now.getDate();
   const dim=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
-  if(!RFROM)RFROM=1;
-  if(!RTO)RTO=dim;
-
-  const rows=rangeRows(RFROM,RTO),unpaid=rows.filter(r=>!r.paid);
+  const rows=rangeRows(1,dim),unpaid=rows.filter(r=>!r.paid);
   const left=sum(unpaid,r=>r.amount);
   const overdue=unpaid.filter(r=>r.due);
-  const month=rangeRows(1,dim);
-  const paidSum=sum(month.filter(r=>r.paid),r=>r.amount);
-  const dirty=!(RFROM===1&&RTO===dim);
+  const month=rows;
+  const paidSum=sum(rows.filter(r=>r.paid),r=>r.amount);
+
+  /* A separate question with its own answer: what do I need between any two
+     days. It reads off the same bills but does not touch the list — the list
+     is always the month. */
+  if(!RFROM)RFROM=dayNow;
+  if(!RTO)RTO=dim;
+  const span=sum(rangeRows(RFROM,RTO).filter(r=>!r.paid),r=>r.amount);
 
   let dp=D.settings.payday|0||1,dd=dp-dayNow;
   if(dd<0)dd+=dim;
@@ -1335,23 +1339,22 @@ function renderMoney(){
       &nbsp;·&nbsp;${dd===0?'PAYDAY':dd+' TO PAYDAY'}</div></div>
   <div class="hero">
     <div class="v">${money(left,left%1!==0)}</div>
-    <div class="u">${ordinal(RFROM).toUpperCase()} TO ${ordinal(RTO).toUpperCase()} ·
-      <b>${unpaid.length}</b> BILL${unpaid.length===1?'':'S'}${
-      unpaid.length?` · FIRST IS ${esc(unpaid[0].l.name).toUpperCase()} ON THE ${ordinal(unpaid[0].day).toUpperCase()}`:''}</div>
+    <div class="u">STILL TO PAY THIS MONTH · <b>${unpaid.length}</b> OF ${rows.length} BILLS${
+      unpaid.length?` · NEXT IS ${esc(unpaid[0].l.name).toUpperCase()} ON THE ${ordinal(unpaid[0].day).toUpperCase()}`:''}</div>
   </div>
   <div class="strip">
-    <button class="cell" onclick="go('home')"><div class="n ${net<0?'neg':'pos'}">${money(net)}</div>
-      <div class="l">NET A MONTH</div></button>
     <button class="cell" onclick="savingsSheet()"><div class="n">${money(+D.settings.savings||0)}</div>
-      <div class="l">SAVINGS ›</div></button>
+      <div class="l">BANK ›</div></button>
+    <div><div class="n ${net<0?'neg':'pos'}">${money(net)}</div><div class="l">NET</div></div>
   </div>
   <div class="range">
+    <label>Need</label>
     <input type="number" inputmode="numeric" min="1" max="31" value="${RFROM}"
       aria-label="From day of the month" onchange="setRange('from',this.value)">
     <label>to</label>
     <input type="number" inputmode="numeric" min="1" max="31" value="${RTO}"
       aria-label="To day of the month" onchange="setRange('to',this.value)">
-    ${dirty?'<button onclick="resetRange()">WHOLE MONTH</button>':''}
+    <span class="rtot">${money(span,span%1!==0)}</span>
   </div>
 
   <div class="lab">Monthly bills<span class="r">${
@@ -1407,15 +1410,16 @@ function renderMoney(){
   /* Food and fuel are the two lines nobody has receipts for, so they sit right
      under the bills where they can be corrected. */
   h+=`<div class="lab">Food and fuel<span class="r">${money(food+fuel)}/MO</span></div>`;
-  [['food','Food','Groceries and eating out'],
-   ['fuel','Fuel','Petrol, and any fill-up logged on Car']].forEach(([k,name,sub])=>{
+  [['food','Food'],['fuel','Fuel']].forEach(([k,name])=>{
     const budget=+D.settings[k]||0,spent=spentThisMonth(k),avg=spendAverage(k);
-    const over=spent>budget&&budget>0;
+    const over=budget>0&&spent>budget;
+    /* Only say something when there is something to say. */
+    const note=spent>0?money(spent)+' so far'+(avg!=null?' · '+money(avg)+' average':'')
+              :avg!=null?money(avg)+' average':'';
     h+=`<button class="vrow" onclick="variableSheet('${k}')">
-      <div class="vn">${name}<i>${sub}</i></div>
+      <div class="vn">${name}</div>
       <div class="vv"><span class="b">${money(budget)}</span>
-        <span class="s${over?' crit':''}">${spent>0?money(spent)+' so far':'nothing logged'}${
-          avg!=null?' · '+money(avg)+' average':''}</span></div>
+        ${note?`<span class="s${over?' crit':''}">${note}</span>`:''}</div>
       <span class="arrow">›</span></button>`;
   });
 
@@ -1486,7 +1490,7 @@ function setRange(which,v){
 }
 function resetRange(){
   const n=new Date();
-  RFROM=1;RTO=new Date(n.getFullYear(),n.getMonth()+1,0).getDate();
+  RFROM=n.getDate();RTO=new Date(n.getFullYear(),n.getMonth()+1,0).getDate();
   haptic(5);render();
 }
 

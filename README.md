@@ -14,18 +14,21 @@ has a `£` in it the app files it as a spend — everything else keeps as a note
 Below that: your net for the month, what needs you today, this week's training,
 and the next seven days of bills.
 
-**Money** is ordered by the questions, not by the data. Three figures sit at the
-top: what is left to pay this month, the net for the month, and the savings
-balance. Under them the period — two days of the month, the whole of it by
-default, but 17th to 5th works and wraps into next month, because pay cycles do.
+**Money** is ordered by the questions, not by the data. What is left to pay this
+month is the headline, and under it the two figures a turn-based game would
+show: **Bank**, what you have, and **Net**, what this month does to it.
 
-Then every bill in the period, in date order, paid ones greyed out and the rest
-carrying a running column: read across any row and you have what it costs to
-cover everything up to and including it. No notes under the names, nothing but
-the figures.
+Then a small calculator — *need from the 12th to the 17th: £206.54* — which
+answers any period without touching anything else. It wraps, so 17th to 5th
+reaches into next month, because pay cycles do.
+
+Then the month's bills, all of them, first to last. Paid ones greyed in place;
+the rest carry a running column, so reading across any row gives what it costs
+to cover everything up to and including it. No notes under the names, nothing
+but the figures.
 
 Then the two lines nobody has receipts for. **Food and fuel** sit right below
-the bills as budgets you can open and log against — fill-ups recorded on Car
+the bills as two figures you can open and log against — fill-ups recorded on Car
 count automatically — so an average builds up and they stop being guesses. Then
 annual bills, spread across twelve months.
 
