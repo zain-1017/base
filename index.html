@@ -42,6 +42,8 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
   padding:14px 16px 11px;display:flex;align-items:baseline;justify-content:space-between;gap:10px}
 .top h1{font-size:19px;font-weight:800;letter-spacing:-.5px}
 .top .meta{font-size:11px;font-weight:800;color:var(--mut);letter-spacing:.4px;flex-shrink:0}
+.top .meta button{font-size:11px;font-weight:800;letter-spacing:.4px;color:var(--ink)}
+.top .meta button.on{color:var(--crit)}
 
 /* Big thin numeral against tiny fat label — the whole personality. */
 .hero{padding:20px 16px 18px}
@@ -56,6 +58,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 .lab .r{margin-left:auto;font-weight:800;color:var(--dim);letter-spacing:.6px}
 .lab button{font-size:9px;font-weight:800;letter-spacing:.8px;color:var(--ink);
   border-bottom:1px solid var(--line2);padding-bottom:1px}
+.lab button.on{color:var(--crit);border-color:var(--crit)}
 
 /* ── rows. No cards anywhere: hairlines and air only. ──────── */
 .row{display:flex;align-items:center;gap:10px;padding:10px 16px;border-top:1px solid var(--line);
@@ -66,6 +69,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 .row .nm i{display:block;font-style:normal;font-size:10.5px;font-weight:600;color:var(--mut);
   margin-top:2px;line-height:1.4}
 .row .nm i.warn{color:var(--crit);font-weight:700}
+.row .nm i.good{color:var(--pos);font-weight:700}
 .row .d{font-size:10px;font-weight:800;color:var(--dim);width:26px;flex-shrink:0;letter-spacing:.3px}
 .row .v{font-size:14px;font-weight:700;letter-spacing:-.3px;flex-shrink:0}
 .row .v.mut{color:var(--dim);font-weight:600}
@@ -76,9 +80,17 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 .row .dot.due{background:var(--crit);border-color:var(--crit)}
 .row.paid .nm{color:var(--mut)}
 .row.today{background:var(--hl)}
+.row .rm{width:26px;font-size:15px;color:var(--dim);font-weight:700;flex-shrink:0;text-align:center}
+.row .rm:active{color:var(--crit)}
+.row input.inl{height:32px;border:1px solid var(--line2);border-radius:7px;text-align:right;
+  padding:0 8px;font-size:15px;font-weight:700;background:var(--bg)}
+.row input.inl.amt{width:74px;flex-shrink:0}
+.row input.inl.dy{width:46px;flex-shrink:0;text-align:center}
+.row input.inl.nm2{flex:1;min-width:0;text-align:left;font-weight:600}
 
 .bar{height:3px;background:var(--line2);flex:1;min-width:36px;overflow:hidden}
 .bar i{display:block;height:100%;background:var(--ink)}
+.bar.thin{height:2px}
 
 /* ── debt block ────────────────────────────────────────────── */
 .dbt{padding:11px 16px;border-top:1px solid var(--line);width:100%;text-align:left;display:block}
@@ -86,10 +98,17 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 .dbt .l1{display:flex;align-items:baseline;gap:8px;margin-bottom:7px}
 .dbt .l1 .nm{flex:1;font-size:14px;font-weight:600;letter-spacing:-.2px}
 .dbt .l1 .v{font-size:14px;font-weight:700;letter-spacing:-.3px}
+.dbt .l1 .tag{font-size:8.5px;font-weight:800;letter-spacing:.6px;color:var(--mut);
+  border:1px solid var(--line2);border-radius:4px;padding:2px 5px}
 .dbt .l2{display:flex;align-items:center;gap:9px}
 .dbt .l2 .mo{font-size:9.5px;font-weight:800;color:var(--mut);letter-spacing:.3px;
   width:104px;flex-shrink:0}
 .dbt .l2 .up{font-size:9.5px;font-weight:800;color:var(--pos);letter-spacing:.2px;flex-shrink:0}
+.dbt .l3{display:flex;gap:14px;margin-top:8px;padding-top:8px;border-top:1px solid var(--line)}
+.dbt .l3 div{flex:1}
+.dbt .l3 .n{font-size:14px;font-weight:700;letter-spacing:-.3px}
+.dbt .l3 .n.crit{color:var(--crit)}
+.dbt .l3 .k{font-size:8.5px;font-weight:800;color:var(--mut);letter-spacing:.6px;margin-top:3px}
 
 /* ── capture ───────────────────────────────────────────────── */
 .cap{padding:12px 16px 14px;border-bottom:1px solid var(--line)}
@@ -119,10 +138,11 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 
 /* ── stat strip ────────────────────────────────────────────── */
 .strip{display:flex;border-top:1px solid var(--line)}
-.strip div{flex:1;padding:14px 8px;text-align:center;border-left:1px solid var(--line)}
+.strip div{flex:1;padding:14px 8px;text-align:center;border-left:1px solid var(--line);min-width:0}
 .strip div:first-child{border-left:none}
 .strip .n{font-size:21px;font-weight:300;letter-spacing:-1.2px;line-height:1.1}
 .strip .n.neg{color:var(--crit)}
+.strip .n.pos{color:var(--pos)}
 .strip .l{font-size:8.5px;font-weight:800;color:var(--mut);letter-spacing:.7px;margin-top:4px}
 
 /* ── settings ──────────────────────────────────────────────── */
@@ -143,19 +163,25 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 .sheet-bg.on{opacity:1}
 .sheet{background:var(--bg);width:100%;border-radius:18px 18px 0 0;
   padding:20px 18px calc(20px + var(--safe-b));transform:translateY(100%);
-  transition:transform .26s cubic-bezier(.32,.72,0,1);max-height:88vh;overflow-y:auto}
+  transition:transform .26s cubic-bezier(.32,.72,0,1);max-height:90vh;overflow-y:auto}
 .sheet-bg.on .sheet{transform:translateY(0)}
 .sheet h2{font-size:17px;font-weight:800;letter-spacing:-.3px;margin-bottom:3px}
 .sheet .sub{font-size:12px;color:var(--mut);font-weight:600;margin-bottom:16px;line-height:1.45}
+.sheet .sub b{color:var(--ink);font-weight:800}
 .ef{margin-bottom:13px}
 .ef label{display:block;font-size:9px;font-weight:800;letter-spacing:.9px;color:var(--mut);
   margin-bottom:5px;text-transform:uppercase}
-.ef input,.ef select{width:100%;height:44px;border:1px solid var(--line2);border-radius:10px;
-  padding:0 11px;font-size:16px;font-weight:600}
-.efr{display:flex;gap:9px}.efr .ef{flex:1}
+.ef input,.ef select,.ef textarea{width:100%;height:44px;border:1px solid var(--line2);
+  border-radius:10px;padding:0 11px;font-size:16px;font-weight:600}
+.ef textarea{height:auto;min-height:76px;padding:11px;line-height:1.45;resize:vertical}
+.ef .note{font-size:10.5px;color:var(--mut);font-weight:600;margin-top:5px;line-height:1.45}
+.ef .note b{color:var(--ink);font-weight:800}
+.efr{display:flex;gap:9px}.efr .ef{flex:1;min-width:0}
 .eseg{display:flex;border:1px solid var(--line2);border-radius:10px;overflow:hidden}
-.eseg button{flex:1;height:42px;font-size:12px;font-weight:700;background:var(--bg)}
-.eseg button.on{background:var(--ink);color:var(--bg)}
+.eseg button{flex:1;height:42px;font-size:12px;font-weight:700;background:var(--bg);
+  border-left:1px solid var(--line2);min-width:0;padding:0 4px}
+.eseg button:first-child{border-left:none}
+.eseg button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .tagrow{display:flex;flex-wrap:wrap;gap:6px}
 .tagrow button{height:32px;padding:0 12px;border-radius:16px;border:1px solid var(--line2);
   font-size:11px;font-weight:800;letter-spacing:.4px;color:var(--mut)}
@@ -166,15 +192,173 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 .sbtn.solid{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .sbtn.danger{color:var(--crit);border-color:var(--line2)}
 .sbtn:active{opacity:.7}
+.brk{border-top:1px solid var(--line);margin:16px 0 14px;padding-top:14px}
+.brk .bh{font-size:9px;font-weight:800;letter-spacing:1.1px;color:var(--mut);margin-bottom:11px;text-transform:uppercase}
+.kv{display:flex;align-items:baseline;gap:10px;padding:7px 0;border-top:1px solid var(--line);font-size:13px}
+.kv:first-of-type{border-top:none}
+.kv .k{flex:1;font-weight:600;color:var(--mut)}
+.kv .v{font-weight:800;letter-spacing:-.2px}
+.kv .v.crit{color:var(--crit)}
+.kv .v.pos{color:var(--pos)}
 
-/* ── empty / placeholder ───────────────────────────────────── */
-.empty{padding:52px 28px;text-align:center;color:var(--mut)}
+/* ── the exercise sheet. Dense on purpose. ─────────────────── */
+.search{position:sticky;top:0;z-index:22;background:var(--bg);padding:8px 12px 7px;
+  display:flex;gap:8px;align-items:center;border-bottom:1px solid var(--line)}
+.search input{flex:1;height:36px;border:1px solid var(--line2);border-radius:9px;padding:0 12px;
+  background:var(--hl);font-size:16px;font-weight:500}
+.search .x{font-size:11px;font-weight:800;color:var(--mut);letter-spacing:.5px;padding:0 4px}
+.wk{position:sticky;top:0;z-index:21;background:var(--bg);border-bottom:1px solid var(--line);
+  padding:6px 12px;display:flex;align-items:center;gap:10px}
+.wk.on{background:var(--ink);color:var(--bg);border-bottom-color:var(--ink)}
+.wk-b{height:32px;padding:0 14px;border-radius:8px;font-size:11px;font-weight:800;letter-spacing:.8px;
+  background:var(--ink);color:var(--bg);flex-shrink:0}
+.wk.on .wk-b{background:rgba(127,127,127,.34);color:var(--bg)}
+.wk-t{font-size:21px;font-weight:800;letter-spacing:-.8px;flex-shrink:0}
+.wk-s{flex:1;min-width:0;font-size:10px;font-weight:800;letter-spacing:.4px;color:var(--mut);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wk.on .wk-s{color:var(--bg);opacity:.62}
+.jump{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--line);
+  display:flex;gap:6px;padding:7px 12px;overflow-x:auto;scrollbar-width:none}
+.jump::-webkit-scrollbar{display:none}
+.jump button{flex-shrink:0;height:28px;padding:0 12px;border-radius:14px;background:var(--hl);
+  border:1px solid var(--line);font-size:11px;font-weight:800;letter-spacing:.6px;color:var(--mut)}
+.jump button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+.grp{display:flex;align-items:center;gap:8px;padding:12px 14px 5px;cursor:pointer;width:100%;text-align:left}
+.grp .gname{font-size:14px;font-weight:800;letter-spacing:-.3px}
+.grp .gcount{margin-left:auto;font-size:10px;font-weight:800;color:var(--dim)}
+.grp .gchev{width:11px;height:11px;stroke:var(--dim);fill:none;stroke-width:3;stroke-linecap:round;
+  stroke-linejoin:round;flex-shrink:0;transition:transform .16s;transform:rotate(90deg)}
+.grp.shut .gchev{transform:rotate(0)}
+.bph{background:var(--hl);border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  display:grid;align-items:center;padding:3px 12px 3px 14px;
+  font-size:9px;font-weight:800;letter-spacing:1.1px;color:var(--mut)}
+.bph,.r-main{grid-template-columns:1fr 42px 42px 50px;column-gap:6px}
+.bph .num{text-align:right}
+.bph .stale{color:var(--crit);font-weight:800;letter-spacing:.4px}
+.r{border-bottom:1px solid var(--line);padding:0 12px 0 14px}
+.r.open{background:var(--hl)}
+.r-main{display:grid;align-items:baseline;padding:5px 0;line-height:1.2;cursor:pointer;width:100%;text-align:left}
+.r-nm{font-size:13px;font-weight:600;letter-spacing:-.2px;overflow:hidden;text-overflow:ellipsis;
+  white-space:nowrap;min-width:0}
+.r-nm .v{color:var(--mut);font-weight:500}
+.r-n{text-align:right;font-size:13px;font-weight:700;letter-spacing:-.3px}
+.r-n.kg{font-size:14px;font-weight:800}
+.r-n.nx{color:var(--pos)}
+.r-n.est{color:var(--mut);font-weight:600}
+.r-n.none{color:var(--dim);font-weight:500}
+
+/* ── inline logger ─────────────────────────────────────────── */
+.log{padding:4px 0 14px}
+.wbar{display:flex;align-items:center;gap:9px;margin:6px 0 12px}
+.wstep{display:flex;align-items:center;border:1px solid var(--line2);border-radius:11px;
+  overflow:hidden;background:var(--bg)}
+.wstep button{width:50px;height:46px;font-size:23px;font-weight:500;background:var(--hl)}
+.wstep button:active{background:var(--line2)}
+.wstep input{width:76px;height:46px;text-align:center;border-left:1px solid var(--line2);
+  border-right:1px solid var(--line2);font-size:19px;font-weight:800;background:var(--bg)}
+.wstep .u{font-size:11px;color:var(--mut);padding:0 9px;font-weight:800}
+.wbar .hint{font-size:10px;color:var(--mut);font-weight:700;line-height:1.35;flex:1}
+.wbar .hint b{color:var(--pos)}
+.sl{display:flex;align-items:center;gap:7px;margin-bottom:7px}
+.sl .n{font-size:11px;font-weight:800;color:var(--dim);width:12px;flex-shrink:0}
+.sl input{height:44px;border:1px solid var(--line2);border-radius:9px;text-align:center;
+  font-size:17px;font-weight:700;background:var(--bg);min-width:0}
+.sl input.rp{flex:1}
+.sl input.wt{width:72px;flex-shrink:0}
+.sl .x{font-size:12px;color:var(--dim);font-weight:800}
+.sl .ok{width:46px;height:44px;border:1px solid var(--line2);border-radius:9px;font-size:17px;
+  font-weight:800;color:var(--dim);background:var(--bg);flex-shrink:0}
+.sl.done input{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+.sl.done .ok{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.sl .rmv{width:24px;font-size:15px;color:var(--dim);flex-shrink:0}
+.addset{width:100%;height:38px;border:1px dashed var(--line2);border-radius:9px;
+  font-size:11px;font-weight:800;letter-spacing:.7px;color:var(--mut);margin-top:2px}
+.stats{display:flex;align-items:center;gap:12px;margin:14px 0 2px;padding-top:12px;
+  border-top:1px solid var(--line2)}
+.stats .sv{font-size:10px;font-weight:700;color:var(--mut);line-height:1.5;flex:1}
+.stats .sv b{color:var(--ink);font-weight:800;font-size:11px}
+.notebox{margin-top:11px}
+.notebox label{display:block;font-size:9px;font-weight:800;letter-spacing:1px;color:var(--mut);margin-bottom:4px}
+.notebox input{width:100%;height:38px;border:1px solid var(--line2);border-radius:9px;padding:0 11px;
+  font-size:16px;font-weight:600}
+.hist{margin-top:13px}
+.hist-h{font-size:9px;font-weight:800;letter-spacing:1px;color:var(--mut);margin-bottom:2px}
+.hd{display:flex;align-items:baseline;gap:9px;padding:6px 0;border-top:1px solid var(--line)}
+.hd .d{font-size:11px;font-weight:800;width:54px;flex-shrink:0;color:var(--mut)}
+.hd .s{flex:1;font-size:12px;font-weight:600}
+.hd .t{font-size:10px;font-weight:700;color:var(--dim)}
+.hd .del{font-size:11px;color:var(--dim);font-weight:700;padding:2px 4px}
+.hist-empty{font-size:11px;color:var(--dim);font-style:italic;padding:5px 0}
+.rowacts{display:flex;gap:8px;margin-top:12px}
+.rowacts button{flex:1;height:36px;border:1px solid var(--line2);border-radius:9px;font-size:11px;
+  font-weight:800;letter-spacing:.4px;color:var(--mut)}
+#rest{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(58px + var(--safe-b));z-index:40;
+  background:var(--ink);color:var(--bg);border-radius:20px;height:36px;padding:0 8px 0 15px;
+  display:none;align-items:center;gap:10px;font-size:14px;font-weight:800;
+  box-shadow:0 4px 16px rgba(0,0,0,.22)}
+#rest.on{display:flex}
+#rest .lbl{font-size:9px;font-weight:800;letter-spacing:1px;opacity:.55}
+#rest button{width:26px;height:26px;border-radius:13px;background:rgba(127,127,127,.32);font-size:13px;font-weight:800}
+
+/* ── calendar ──────────────────────────────────────────────── */
+.cal-nav{display:flex;align-items:center;justify-content:space-between;padding:13px 18px 9px}
+.cal-nav button{width:40px;height:40px;font-size:22px;font-weight:500;border-radius:10px}
+.cal-nav button:active{background:var(--hl)}
+.cal-nav .mo{font-size:15px;font-weight:800;letter-spacing:-.3px}
+.dow{display:grid;grid-template-columns:repeat(7,1fr);padding:0 12px}
+.dow div{text-align:center;font-size:9.5px;font-weight:800;color:var(--mut);padding:3px 0}
+.grid7{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;padding:0 12px}
+.cd{aspect-ratio:1;border-radius:9px;display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;position:relative;border:1px solid transparent}
+.cd.pad{visibility:hidden}
+.cd.went{background:var(--ink);color:var(--bg)}
+.cd.today{border-color:var(--ink)}
+.cd.went.today{border-color:var(--mut)}
+.cd.future{color:var(--dim)}
+
+/* ── goals ─────────────────────────────────────────────────── */
+.quest{padding:13px 16px;border-top:1px solid var(--line);width:100%;text-align:left;display:block}
+.quest:active{background:var(--hl)}
+.quest.pin{border-left:2px solid var(--ink)}
+.quest .qh{display:flex;align-items:baseline;gap:8px;margin-bottom:9px}
+.quest .qh .nm{flex:1;font-size:15px;font-weight:700;letter-spacing:-.3px}
+.quest .qh .pct{font-size:11px;font-weight:800;color:var(--mut)}
+.quest .qt{font-size:8.5px;font-weight:800;letter-spacing:.7px;color:var(--dim);
+  border:1px solid var(--line2);border-radius:4px;padding:2px 5px}
+.step{display:flex;align-items:center;gap:10px;padding:7px 0 7px 2px}
+.step .bx{width:16px;height:16px;border:1.5px solid var(--dim);border-radius:4px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;background:none}
+.step.done .bx{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.step.lock .bx{border-style:dashed}
+.step .sn{flex:1;font-size:12.5px;font-weight:600;letter-spacing:-.1px;min-width:0}
+.step.done .sn{color:var(--mut)}
+.step.lock .sn{color:var(--dim)}
+.step .sv{font-size:10px;font-weight:800;color:var(--mut);flex-shrink:0}
+.step .sv.pos{color:var(--pos)}
+.step .rm{font-size:12px;color:var(--dim);font-weight:700;padding:0 3px;flex-shrink:0}
+
+/* ── grid / bulk edit ──────────────────────────────────────── */
+.gwrap{overflow-x:auto;border-top:1px solid var(--line);-webkit-overflow-scrolling:touch}
+table.g{border-collapse:collapse;width:100%;min-width:100%}
+table.g th{font-size:8.5px;font-weight:800;letter-spacing:.9px;color:var(--mut);text-align:left;
+  padding:7px 8px;background:var(--hl);border-bottom:1px solid var(--line2);white-space:nowrap;text-transform:uppercase}
+table.g td{padding:0;border-bottom:1px solid var(--line);border-right:1px solid var(--line)}
+table.g td:last-child{border-right:none}
+table.g input,table.g select{width:100%;height:38px;padding:0 8px;font-size:14px;font-weight:600;
+  border-radius:0;background:transparent}
+table.g input.n{text-align:right;font-weight:700}
+table.g input:focus{background:var(--hl);outline:1px solid var(--ink);outline-offset:-1px}
+table.g td.act{width:34px;text-align:center}
+table.g td.act button{font-size:14px;color:var(--dim);font-weight:700;width:100%;height:38px}
+table.g td.act button:active{color:var(--crit)}
+.gnote{font-size:10.5px;color:var(--mut);font-weight:600;padding:11px 16px;line-height:1.5}
+.gnote b{color:var(--ink);font-weight:800}
+
+/* ── empty / stage ─────────────────────────────────────────── */
+.empty{padding:48px 28px;text-align:center;color:var(--mut)}
 .empty h3{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:6px;letter-spacing:-.2px}
 .empty p{font-size:13px;line-height:1.55;max-width:32ch;margin:0 auto}
-.stage{border-top:1px solid var(--line);padding:14px 16px;display:flex;gap:11px;align-items:baseline}
-.stage .k{font-size:9px;font-weight:800;letter-spacing:1px;color:var(--dim);width:52px;flex-shrink:0}
-.stage .w{flex:1;font-size:13px;line-height:1.5;color:var(--mut)}
-.stage .w b{color:var(--ink);font-weight:700}
 
 #nav{position:fixed;left:0;right:0;bottom:0;background:var(--bg);border-top:1px solid var(--line);
   display:flex;z-index:30;padding-bottom:var(--safe-b)}
@@ -197,6 +381,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 </head>
 <body>
 <div id="app"></div>
+<div id="rest"><span class="lbl">REST</span><span id="rest-t">0:00</span><button onclick="stopRest()">✕</button></div>
 <nav id="nav">
   <button class="ni on" id="ni-home" onclick="go('home')">
     <svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>HOME</button>
@@ -213,56 +398,122 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 
 <script>
 /* ═══════════════════════════════════════════════════════════════
-   DAYBOOK — stage 1
-   Working title. Money + the daily page; Health, Car and Goals
-   land in later stages.
+   DAYBOOK
+   Money, training, the car and goals in one book.
 
    Four primitives, and everything in the app is one of them:
      ledger   money moving on a schedule
      debts    a ledger line with a term, so it can end
      entries  something written down on a day (the daybook proper)
      targets  a number with a direction and a finish line
+
+   No figures ship with the app. The repo is public; the numbers are
+   not. A fresh install starts empty and you import a file you exported.
    ═══════════════════════════════════════════════════════════════ */
 
-/* No figures ship with the app. The repo is public; the numbers are not.
-   A fresh install starts empty and you import a file you exported. */
+/* The exercise catalogue is generic reference data — names, muscle group
+   and what you lift it with. Your 1RMs and working weights are not in
+   here; they arrive with your file and attach by id. */
+const CAT=[{"id":"bbell-bench","name":"Bbell Bench","cat":"PUSH","bp":"CHEST","type":"barbell"},{"id":"dbell-bench","name":"Dbell Bench","cat":"PUSH","bp":"CHEST","type":"dumbbell"},{"id":"dbell-bench-iso","name":"Dbell Bench (iso)","cat":"PUSH","bp":"CHEST","type":"dumbbell"},{"id":"bbell-incline","name":"Bbell Incline","cat":"PUSH","bp":"CHEST","type":"barbell"},{"id":"dbell-incline-high-6","name":"Dbell Incline (High)(6)","cat":"PUSH","bp":"CHEST","type":"dumbbell"},{"id":"dbell-incline-low-4","name":"Dbell Incline (Low)(4)","cat":"PUSH","bp":"CHEST","type":"dumbbell"},{"id":"bbell-decline","name":"Bbell Decline","cat":"PUSH","bp":"CHEST","type":"barbell"},{"id":"dbell-fly","name":"Dbell Fly","cat":"PUSH","bp":"CHEST","type":"dumbbell"},{"id":"dbell-fly-iso","name":"Dbell Fly (iso)","cat":"PUSH","bp":"CHEST","type":"dumbbell"},{"id":"machine-fly","name":"Machine Fly","cat":"PUSH","bp":"CHEST","type":"machine"},{"id":"cable-fly","name":"Cable Fly","cat":"PUSH","bp":"CHEST","type":"machine"},{"id":"dbell-flyover","name":"Dbell Flyover","cat":"PUSH","bp":"CHEST","type":"dumbbell"},{"id":"dips","name":"Dips","cat":"PUSH","bp":"CHEST","type":"bodyweight"},{"id":"press-ups","name":"Press-ups","cat":"PUSH","bp":"CHEST","type":"bodyweight"},{"id":"bbell-press","name":"Bbell Press","cat":"PUSH","bp":"SHOULDERS","type":"barbell"},{"id":"dbell-press","name":"Dbell Press","cat":"PUSH","bp":"SHOULDERS","type":"dumbbell"},{"id":"dbell-press-iso","name":"Dbell Press (iso)","cat":"PUSH","bp":"SHOULDERS","type":"dumbbell"},{"id":"dbell-lat-raise","name":"Dbell Lat Raise","cat":"PUSH","bp":"SHOULDERS","type":"dumbbell"},{"id":"dbell-lat-raise-iso","name":"Dbell Lat Raise (iso)","cat":"PUSH","bp":"SHOULDERS","type":"dumbbell"},{"id":"cable-lat-raise","name":"Cable Lat Raise","cat":"PUSH","bp":"SHOULDERS","type":"machine"},{"id":"front-dbell-raise","name":"Front Dbell Raise","cat":"PUSH","bp":"SHOULDERS","type":"dumbbell"},{"id":"dbell-rear-fly","name":"Dbell Rear Fly","cat":"PUSH","bp":"SHOULDERS","type":"dumbbell"},{"id":"machine-rear-fly","name":"Machine Rear Fly","cat":"PUSH","bp":"SHOULDERS","type":"machine"},{"id":"machine-rear-fly-iso","name":"Machine Rear Fly (iso)","cat":"PUSH","bp":"SHOULDERS","type":"machine"},{"id":"cable-face-pull","name":"Cable Face Pull","cat":"PUSH","bp":"SHOULDERS","type":"machine"},{"id":"dbell-rotator-cuff","name":"Dbell Rotator Cuff","cat":"PUSH","bp":"SHOULDERS","type":"dumbbell"},{"id":"cable-pulldown-straight-bar","name":"Cable Pulldown (Straight Bar)","cat":"PUSH","bp":"TRICEPS","type":"machine"},{"id":"cable-pulldown-v-bar","name":"Cable Pulldown (V-bar)","cat":"PUSH","bp":"TRICEPS","type":"machine"},{"id":"cable-pulldown-double-cable","name":"Cable Pulldown (Double Cable)","cat":"PUSH","bp":"TRICEPS","type":"machine"},{"id":"dbell-kickback","name":"Dbell Kickback","cat":"PUSH","bp":"TRICEPS","type":"dumbbell"},{"id":"dbell-tricep-flyover","name":"Dbell Tricep Flyover","cat":"PUSH","bp":"TRICEPS","type":"dumbbell"},{"id":"dbell-skullcrusher","name":"Dbell Skullcrusher","cat":"PUSH","bp":"TRICEPS","type":"dumbbell"},{"id":"diamond-press-up","name":"Diamond Press-up","cat":"PUSH","bp":"TRICEPS","type":"bodyweight"},{"id":"t-bar-row","name":"T-bar Row","cat":"PULL","bp":"UPPER BACK","type":"machine"},{"id":"cable-row","name":"Cable Row","cat":"PULL","bp":"UPPER BACK","type":"machine"},{"id":"reverse-bbell-row","name":"Reverse Bbell Row","cat":"PULL","bp":"UPPER BACK","type":"barbell"},{"id":"dbell-row","name":"Dbell Row","cat":"PULL","bp":"UPPER BACK","type":"dumbbell"},{"id":"bbell-shrugs","name":"Bbell Shrugs","cat":"PULL","bp":"UPPER BACK","type":"barbell"},{"id":"bbell-shrugs-behind","name":"Bbell Shrugs (Behind)","cat":"PULL","bp":"UPPER BACK","type":"barbell"},{"id":"dbell-shrugs","name":"Dbell Shrugs","cat":"PULL","bp":"UPPER BACK","type":"dumbbell"},{"id":"dbell-shrugs-iso","name":"Dbell Shrugs (iso)","cat":"PULL","bp":"UPPER BACK","type":"dumbbell"},{"id":"lat-pull-down-wide","name":"Lat Pull Down (Wide)","cat":"PULL","bp":"UPPER BACK","type":"machine"},{"id":"lat-pull-down-close","name":"Lat Pull Down (Close)","cat":"PULL","bp":"UPPER BACK","type":"machine"},{"id":"pull-ups","name":"Pull Ups","cat":"PULL","bp":"UPPER BACK","type":"bodyweight"},{"id":"scapular-pulll-ups","name":"Scapular Pulll Ups","cat":"PULL","bp":"UPPER BACK","type":"bodyweight"},{"id":"deadlift","name":"Deadlift","cat":"PULL","bp":"LOWER BACK","type":"other"},{"id":"deadlift-sumo","name":"Deadlift (Sumo)","cat":"PULL","bp":"LOWER BACK","type":"other"},{"id":"lower-back-raises","name":"Lower Back Raises","cat":"PULL","bp":"LOWER BACK","type":"bodyweight"},{"id":"bicep-curl-bbell","name":"Bicep Curl (Bbell)","cat":"PULL","bp":"BICEPS","type":"barbell"},{"id":"bicep-curl-dbell","name":"Bicep Curl (Dbell)","cat":"PULL","bp":"BICEPS","type":"dumbbell"},{"id":"bicep-curl-dbell-iso","name":"Bicep Curl (Dbell iso)","cat":"PULL","bp":"BICEPS","type":"dumbbell"},{"id":"bicep-cable-pull","name":"Bicep Cable Pull","cat":"PULL","bp":"BICEPS","type":"machine"},{"id":"preacher-curl","name":"Preacher Curl","cat":"PULL","bp":"BICEPS","type":"other"},{"id":"farmers-walk","name":"Farmers Walk","cat":"PULL","bp":"GRIP","type":"time"},{"id":"dbell-forearm-curl","name":"Dbell Forearm Curl","cat":"PULL","bp":"GRIP","type":"dumbbell"},{"id":"bbell-wrist-curl","name":"Bbell Wrist Curl","cat":"PULL","bp":"GRIP","type":"barbell"},{"id":"bbell-wrist-curl-reverse","name":"Bbell Wrist Curl (Reverse)","cat":"PULL","bp":"GRIP","type":"barbell"},{"id":"newspaper-roll","name":"Newspaper Roll","cat":"PULL","bp":"GRIP","type":"other"},{"id":"bbell-balance-hold","name":"Bbell Balance Hold","cat":"PULL","bp":"GRIP","type":"time"},{"id":"neck-curl","name":"Neck Curl","cat":"PULL","bp":"NECK","type":"other"},{"id":"neck-curl-side","name":"Neck Curl (Side)","cat":"PULL","bp":"NECK","type":"other"},{"id":"neck-bridge","name":"Neck Bridge","cat":"PULL","bp":"NECK","type":"time"},{"id":"squat","name":"Squat","cat":"LEGS","bp":"QUADS","type":"other"},{"id":"split-squat","name":"Split Squat","cat":"LEGS","bp":"QUADS","type":"other"},{"id":"leg-press-laying","name":"Leg Press (Laying)","cat":"LEGS","bp":"QUADS","type":"machine"},{"id":"leg-press-laying-iso","name":"Leg Press (Laying iso)","cat":"LEGS","bp":"QUADS","type":"machine"},{"id":"leg-press-machine","name":"Leg Press (Machine)","cat":"LEGS","bp":"QUADS","type":"machine"},{"id":"leg-press-machine-iso","name":"Leg Press (Machine iso)","cat":"LEGS","bp":"QUADS","type":"machine"},{"id":"leg-extension","name":"Leg Extension","cat":"LEGS","bp":"QUADS","type":"machine"},{"id":"leg-extension-iso","name":"Leg Extension (iso)","cat":"LEGS","bp":"QUADS","type":"machine"},{"id":"dbell-lunges","name":"Dbell Lunges","cat":"LEGS","bp":"QUADS","type":"dumbbell"},{"id":"hack-squat","name":"Hack Squat","cat":"LEGS","bp":"QUADS","type":"other"},{"id":"deadlift-rdl","name":"Deadlift (RDL)","cat":"LEGS","bp":"HAMSTRINGS","type":"other"},{"id":"goodmornings","name":"Goodmornings","cat":"LEGS","bp":"HAMSTRINGS","type":"bodyweight"},{"id":"leg-curl-machine","name":"Leg Curl (Machine)","cat":"LEGS","bp":"HAMSTRINGS","type":"machine"},{"id":"leg-curl-machine-iso","name":"Leg Curl (Machine iso)","cat":"LEGS","bp":"HAMSTRINGS","type":"machine"},{"id":"hamstring-sit-ups","name":"Hamstring Sit-ups","cat":"LEGS","bp":"HAMSTRINGS","type":"bodyweight"},{"id":"dbell-hamstring-raises-iso","name":"Dbell Hamstring Raises (iso)","cat":"LEGS","bp":"HAMSTRINGS","type":"dumbbell"},{"id":"bbell-hip-thrust","name":"Bbell Hip-thrust","cat":"LEGS","bp":"GLUTES","type":"barbell"},{"id":"calf-machine-standing","name":"Calf Machine (Standing)","cat":"LEGS","bp":"CALVES","type":"machine"},{"id":"calf-machine-seated","name":"Calf Machine (Seated)","cat":"LEGS","bp":"CALVES","type":"machine"},{"id":"calf-machine-seated-iso","name":"Calf Machine (Seated iso)","cat":"LEGS","bp":"CALVES","type":"machine"},{"id":"calf-raises-smith-machine","name":"Calf Raises (Smith Machine)","cat":"LEGS","bp":"CALVES","type":"machine"},{"id":"calf-raises-smith-machine-iso","name":"Calf Raises (Smith Machine iso)","cat":"LEGS","bp":"CALVES","type":"machine"},{"id":"hip-abductors","name":"Hip Abductors","cat":"LEGS","bp":"HIPS","type":"machine"},{"id":"hip-extendors","name":"Hip Extendors","cat":"LEGS","bp":"HIPS","type":"machine"},{"id":"pistol-squat","name":"Pistol Squat","cat":"LEGS","bp":"HIPS","type":"bodyweight"},{"id":"balance-board-squat","name":"Balance Board Squat","cat":"LEGS","bp":"HIPS","type":"bodyweight"},{"id":"kettlebell-leg-lift","name":"Kettlebell Leg Lift","cat":"LEGS","bp":"HIPS","type":"other"},{"id":"ski-sit","name":"Ski Sit","cat":"CORE","bp":"CORE","type":"time"},{"id":"plank","name":"Plank","cat":"CORE","bp":"CORE","type":"time"},{"id":"plank-side","name":"Plank (Side)","cat":"CORE","bp":"CORE","type":"time"},{"id":"glute-bridge","name":"Glute Bridge","cat":"CORE","bp":"CORE","type":"bodyweight"},{"id":"medicine-ball-slam","name":"Medicine Ball Slam","cat":"CORE","bp":"CORE","type":"other"},{"id":"medicine-ball-slam-side","name":"Medicine Ball Slam (Side)","cat":"CORE","bp":"CORE","type":"other"},{"id":"kettlebell-swing","name":"Kettlebell Swing","cat":"CORE","bp":"CORE","type":"other"},{"id":"kettlebell-swing-atw","name":"Kettlebell Swing (ATW)","cat":"CORE","bp":"CORE","type":"other"},{"id":"side-raises","name":"Side Raises","cat":"CORE","bp":"CORE","type":"other"},{"id":"side-raises-kettlebell","name":"Side Raises (Kettlebell)","cat":"CORE","bp":"CORE","type":"other"},{"id":"running","name":"Running","cat":"OTHER","bp":"CARDIO","type":"time"},{"id":"boxing","name":"Boxing","cat":"OTHER","bp":"CARDIO","type":"time"},{"id":"muay-thai","name":"Muay Thai","cat":"OTHER","bp":"CARDIO","type":"time"}];
+
+const CATS=['LEGS','PUSH','PULL','CORE','OTHER'];
+const BPS={LEGS:['QUADS','HAMSTRINGS','GLUTES','CALVES','HIPS'],
+           PUSH:['CHEST','SHOULDERS','TRICEPS'],
+           PULL:['UPPER BACK','LOWER BACK','BICEPS','GRIP','NECK'],
+           CORE:['CORE'],OTHER:['CARDIO']};
+const INC={barbell:2.5,dumbbell:2,machine:5,bodyweight:1,time:0,other:2.5};
 const TAGS=['sub','car','health','debt','home','other'];
+const TIERS=['life','year','month','week'];
+const LITRES_PER_GAL=4.54609;   // imperial, because MOT and MPG are imperial
 
 /* ═══ state ═══════════════════════════════════════════════════ */
 const KEY='daybook_v1', BKEY='daybook_v1_bak';
-const DEFAULTS={wage:0,incomeTarget:0,savings:0,savingsGoal:0,
-                food:0,fuel:0,payday:1};
-let D={schema:1,ledger:[],debts:[],entries:[],targets:[],
-       settings:Object.assign({},DEFAULTS),meta:{paid:{}}};
-let TAB='home', DRAFT='';
+const DEFAULTS={wage:0,incomeTarget:0,savings:0,savingsGoal:0,food:0,fuel:0,payday:1,
+                rest:90,repGoal:12,mult:0.65,collapsed:{}};
+const BLANK={schema:2,ledger:[],debts:[],entries:[],targets:[],
+             exercises:[],logs:[],sessions:[],workout:null,
+             fuel:[],service:[],fixes:[],car:{},
+             nutrition:{kcal:0,protein:0,carbs:0,fat:0},recipes:[],staples:[],
+             settings:Object.assign({},DEFAULTS),meta:{paid:{}}};
+let D=JSON.parse(JSON.stringify(BLANK));
+let TAB='home', DRAFT='', Q='', MANAGE=false, CALM=null, OPEN=null, JUMP='';
+const DRAFTS={};
 
 const uid=p=>(p||'x')+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
 const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 const today=()=>ymd(new Date());
 const ymOf=d=>d.slice(0,7);
 const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const sum=(a,f)=>a.reduce((t,x)=>t+(f?(+f(x)||0):(+x||0)),0);
+const daysBetween=(a,b)=>Math.round((new Date(b+'T00:00')-new Date(a+'T00:00'))/86400000);
 
 /* ═══ persistence ═════════════════════════════════════════════
-   Every read and write goes through load/save. That is the only
-   reason a sync backend is a day's work later instead of a rewrite:
-   nothing else in the app knows where the data lives. */
+   Every read and write goes through load/save. That is the only reason
+   a sync backend is a day's work later instead of a rewrite: nothing
+   else in the app knows where the data lives. */
 function load(){
   let raw=null;
   try{raw=localStorage.getItem(KEY)||localStorage.getItem(BKEY);}catch(e){}
   if(raw){
-    try{
-      const d=JSON.parse(raw);
-      D.ledger=Array.isArray(d.ledger)?d.ledger:[];
-      D.debts=Array.isArray(d.debts)?d.debts:[];
-      D.entries=Array.isArray(d.entries)?d.entries:[];
-      D.targets=Array.isArray(d.targets)?d.targets:[];
-      D.settings=Object.assign({},DEFAULTS,d.settings||{});
-      D.meta=Object.assign({paid:{}},d.meta||{});
-      if(!D.meta.paid||typeof D.meta.paid!=='object')D.meta.paid={};
-    }catch(e){console.error('load',e);}
+    try{ adopt(JSON.parse(raw)); }catch(e){ console.error('load',e); }
   }
+  attachCatalogue();
 }
-const isEmpty=()=>!D.ledger.length&&!D.debts.length&&!D.entries.length;
+function adopt(d){
+  Object.keys(BLANK).forEach(k=>{
+    if(k==='settings'||k==='meta'||k==='car'||k==='nutrition')return;
+    if(Array.isArray(BLANK[k]))D[k]=Array.isArray(d[k])?d[k]:[];
+  });
+  D.workout=d.workout&&d.workout.start?d.workout:null;
+  D.settings=Object.assign({},DEFAULTS,d.settings||{});
+  D.meta=Object.assign({paid:{}},d.meta||{});
+  D.car=Object.assign({},d.car||{});
+  D.nutrition=Object.assign({kcal:0,protein:0,carbs:0,fat:0},d.nutrition||{});
+  if(!D.meta.paid||typeof D.meta.paid!=='object')D.meta.paid={};
+  D.settings.collapsed=Object.assign({},D.settings.collapsed||{});
+  migrate();
+  closeStaleWorkout();
+}
+/* Debts imported from the spreadsheet carry a single "original" figure that
+   is really the total of every payment — interest already baked in. Label
+   them honestly as schedules so the app never pretends to know a rate it
+   was never given. */
+function migrate(){
+  D.debts.forEach(d=>{
+    if(!d.kind){
+      d.kind='schedule';
+      if(d.total==null)d.total=+d.original||0;
+    }
+    delete d.original;
+  });
+  D.targets.forEach(t=>{
+    if(!Array.isArray(t.steps))t.steps=[];
+    if(!t.tier)t.tier=t.source?'life':'month';
+  });
+}
+/* Layer the catalogue over stored exercises without touching anything you
+   have set by hand: names and grouping come from the app, numbers are yours. */
+function attachCatalogue(){
+  const by={};D.exercises.forEach(e=>by[e.id]=e);
+  CAT.forEach(c=>{
+    const e=by[c.id];
+    if(!e){D.exercises.push(Object.assign({},c));return;}
+    ['name','cat','bp','type'].forEach(k=>{if(e[k]==null)e[k]=c[k];});
+  });
+}
+/* Forgot to hit stop and the clock ran overnight. End it at the last set
+   actually logged that day rather than inventing a duration; if nothing was
+   logged, the workout never really happened, so drop it. */
+function closeStaleWorkout(){
+  const w=D.workout;if(!w)return;
+  const d=ymd(new Date(w.start));
+  if(d===today())return;
+  const ends=D.logs.filter(l=>l.date===d).map(l=>l.ts||0);
+  const end=ends.length?Math.max.apply(null,ends):0;
+  if(end>w.start)D.sessions.push({id:uid('s'),date:d,start:w.start,end:end});
+  D.workout=null;
+}
 function save(){
   try{
     const j=JSON.stringify(D);
@@ -270,6 +521,8 @@ function save(){
     localStorage.setItem(BKEY,j);
   }catch(e){toast('Save failed — storage full?');}
 }
+const isEmpty=()=>!D.ledger.length&&!D.debts.length&&!D.entries.length&&!D.logs.length;
+
 function haptic(p){try{if(navigator.vibrate)navigator.vibrate(p||8);}catch(e){}}
 let toastT=null,undoFn=null;
 function toast(msg,undo){
@@ -284,23 +537,169 @@ function doUndo(){if(undoFn){const f=undoFn;undoFn=null;
 
 /* ═══ formatting ══════════════════════════════════════════════ */
 function money(n,dp){
-  const neg=n<0; n=Math.abs(n);
-  const s=dp?n.toFixed(2):Math.round(n).toLocaleString('en-GB');
-  return (neg?'−£':'£')+(dp?(+s).toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2}):s);
+  n=+n||0;const neg=n<0;n=Math.abs(n);
+  const s=dp?n.toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2})
+            :Math.round(n).toLocaleString('en-GB');
+  return (neg?'−£':'£')+s;
 }
+const pct=n=>Math.round(clamp(n,0,1)*100)+'%';
 const MONS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-function monLabel(y,m){return MONS[m]+" '"+String(y).slice(2);}  // m is 0-based; the apostrophe stops "Jul 30" reading as a date
+const DOW=['M','T','W','T','F','S','S'];
+function monLabel(y,m){return MONS[m]+" '"+String(y).slice(2);}  // the apostrophe stops "Jul 30" reading as a date
 function ordinal(n){const s=['th','st','nd','rd'],v=n%100;return n+(s[(v-20)%10]||s[v]||s[0]);}
+function fmtKg(n){if(n==null)return'0';const r=Math.round(n*100)/100;
+  return r%1===0?String(r):(Math.round(r*10)/10===r?r.toFixed(1):r.toFixed(2));}
+function fmtDur(s){s=Math.round(s||0);return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
+function fmtClock(ms){
+  const s=Math.max(0,Math.floor(ms/1000)),h=Math.floor(s/3600),m=Math.floor(s%3600/60),ss=s%60;
+  return h?h+':'+String(m).padStart(2,'0')+':'+String(ss).padStart(2,'0')
+          :m+':'+String(ss).padStart(2,'0');
+}
+const fmtMins=ms=>{const m=Math.round(ms/60000);return m>=60?Math.floor(m/60)+'h '+(m%60)+'m':m+' min';};
+function relDate(ds){
+  const n=daysBetween(ds,today());
+  return n===0?'Today':n===1?'Yesterday':n<7?n+'d ago':n<14?'1w ago'
+        :n<70?Math.round(n/7)+'w ago':Math.round(n/30)+'mo ago';
+}
 
-/* ═══ money maths ═════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════
+   THE DEBT ENGINE
+
+   Consumer debt comes in two shapes, and conflating them is what makes
+   a balance wrong.
+
+   'schedule'  You know the total you will hand over and the monthly
+               payment; the rate is already inside those figures. This is
+               what a spreadsheet holds. Its balance is "payments left",
+               which is what it costs to see the agreement out — NOT what
+               it costs to clear it today.
+
+   'apr'       You know what you actually borrowed and the rate. The app
+               amortises month by month: interest is added, the payment
+               comes off, and what is left is the real outstanding
+               principal — the figure a settlement quote is built from.
+
+   The gap between those two numbers is the interest you have not paid
+   yet, and it is the whole reason to model this properly: it tells you
+   what overpaying is worth.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* UK lenders quote APR as an effective annual rate, so the monthly rate
+   compounds to it rather than being a twelfth of it. */
+const monthlyRate=apr=>apr?Math.pow(1+(+apr||0)/100,1/12)-1:0;
+/* A promotional period is just a different rate for the first n months. */
+function rateAt(d,m){
+  const promo=+d.promoMonths||0;
+  return monthlyRate(m<promo?(+d.promoApr||0):(+d.apr||0));
+}
+
+/* Months of payments made, reproducing the spreadsheet's own convention
+   exactly — payment n lands n months after the start date — so figures
+   carried over from the sheet don't jump on the day you switch. */
+function monthsPaid(d){
+  const s=new Date(d.start+'T00:00'),t=new Date();
+  let n=(t.getFullYear()-s.getFullYear())*12+(t.getMonth()-s.getMonth());
+  if(t.getDate()<s.getDate())n--;
+  return clamp(n,0,d.months|0);
+}
+
+/* Walk the schedule. Returns the balance after `upto` payments, plus the
+   interest charged along the way. */
+function amortise(d,upto){
+  const n=d.months|0,pay=+d.monthly||0,balloon=+d.balloon||0;
+  let bal=+d.principal||0,interest=0;
+  for(let m=0;m<Math.min(upto,n);m++){
+    const i=bal*rateAt(d,m);
+    interest+=i;
+    bal=bal+i-pay-(m===n-1?balloon:0);
+    if(bal<0)bal=0;
+  }
+  return {balance:bal,interest:interest};
+}
+
+function debtCalc(d){
+  const n=d.months|0,paid=monthsPaid(d),left=n-paid,pay=+d.monthly||0,balloon=+d.balloon||0;
+  const s=new Date(d.start+'T00:00');
+  const end=new Date(s.getFullYear(),s.getMonth()+n,1);   // month of the final payment
+  const free=new Date(end.getFullYear(),end.getMonth()+1,1);
+  const paymentsLeft=left<=0?0
+    :(d.kind==='schedule'&&d.total!=null)
+      ? Math.max(0,(+d.total||0)-paid*pay)        // keeps any fee or final payment in the balance
+      : Math.max(0,left*pay+balloon);
+
+  let settle=paymentsLeft,interestLeft=0,interestTotal=null,principal=null,known=false;
+  if(d.kind==='apr'&&+d.principal>0){
+    settle=amortise(d,paid).balance;
+    interestLeft=Math.max(0,paymentsLeft-settle);
+    interestTotal=amortise(d,n).interest;
+    principal=+d.principal;
+    known=true;
+  }
+  return {paid:paid,left:left,months:n,
+          paymentsLeft:paymentsLeft,        // what it costs to see it out
+          settle:settle,                    // what it costs to clear today
+          interestLeft:interestLeft,        // the difference, and the prize
+          interestTotal:interestTotal,      // over the whole agreement
+          principal:principal,ratedKnown:known,
+          progress:n?paid/n:0,
+          endLabel:monLabel(end.getFullYear(),end.getMonth()),
+          freeLabel:monLabel(free.getFullYear(),free.getMonth()),
+          freeY:free.getFullYear(),freeM:free.getMonth(),
+          done:left<=0};
+}
+
+/* ── solvers ──────────────────────────────────────────────────
+   You rarely have all four of principal, payment, term and rate. Give
+   any three and these work out the fourth, which is usually the only
+   way to find a rate nobody ever told you. */
+
+/* Present value of the payment stream at a given monthly rate. */
+function pvOf(pay,months,i,balloon){
+  balloon=balloon||0;
+  if(i<=0)return pay*months+balloon;
+  return pay*(1-Math.pow(1+i,-months))/i + balloon*Math.pow(1+i,-months);
+}
+/* The rate that makes those payments settle exactly that principal.
+   Bisection: slower than Newton, but it cannot diverge, and the range
+   covers everything from 0% to a 300% APR payday loan. */
+function solveApr(principal,pay,months,balloon){
+  principal=+principal;pay=+pay;months=months|0;
+  if(!(principal>0)||!(pay>0)||!(months>0))return null;
+  const at0=pvOf(pay,months,0,balloon);               // total handed over, undiscounted
+  if(at0<principal-0.005)return null;                // never repays it — no rate fits
+  if(at0<=principal+0.005)return 0;                  // repays exactly what was borrowed
+  let lo=0,hi=0.15;                                  // 0 to ~435% a year, monthly
+  while(pvOf(pay,months,hi,balloon)>principal&&hi<1)hi*=2;
+  for(let k=0;k<200;k++){
+    const mid=(lo+hi)/2;
+    if(pvOf(pay,months,mid,balloon)>principal)lo=mid;else hi=mid;
+  }
+  const i=(lo+hi)/2;
+  return (Math.pow(1+i,12)-1)*100;
+}
+function solvePayment(principal,apr,months,balloon){
+  const i=monthlyRate(apr),n=months|0,b=+balloon||0;
+  if(!(n>0))return null;
+  if(i<=0)return (principal-b)/n;
+  return (principal-b*Math.pow(1+i,-n))*i/(1-Math.pow(1+i,-n));
+}
+const solvePrincipal=(pay,apr,months,balloon)=>pvOf(+pay||0,months|0,monthlyRate(apr),+balloon||0);
+
+const debtSettle=()=>sum(D.debts,d=>debtCalc(d).settle);
+const debtPaymentsLeft=()=>sum(D.debts,d=>debtCalc(d).paymentsLeft);
+const debtService=()=>sum(D.debts.filter(d=>!debtCalc(d).done),d=>+d.monthly||0);
+const debtInterestLeft=()=>sum(D.debts,d=>debtCalc(d).interestLeft);
+const debtsRated=()=>D.debts.filter(d=>debtCalc(d).ratedKnown).length;
+
+/* ═══ money ═══════════════════════════════════════════════════ */
 const activeLedger=()=>D.ledger.filter(l=>l.active!==false);
-const monthlyLines=()=>activeLedger().filter(l=>l.cadence==='monthly').sort((a,b)=>a.day-b.day||a.name.localeCompare(b.name));
-const annualLines=()=>activeLedger().filter(l=>l.cadence==='annual').sort((a,b)=>(a.month-b.month)||(a.day-b.day));
-const sum=(a,f)=>a.reduce((t,x)=>t+(f?f(x):x),0);
-
-const monthlyTotal=()=>sum(monthlyLines(),l=>+l.amount||0);
-const annualTotal =()=>sum(annualLines(), l=>+l.amount||0);
+const monthlyLines=()=>activeLedger().filter(l=>l.cadence==='monthly')
+  .sort((a,b)=>a.day-b.day||a.name.localeCompare(b.name));
+const annualLines=()=>activeLedger().filter(l=>l.cadence==='annual')
+  .sort((a,b)=>(a.month-b.month)||(a.day-b.day));
+const monthlyTotal=()=>sum(monthlyLines(),l=>l.amount);
+const annualTotal=()=>sum(annualLines(),l=>l.amount);
 const annualPerMonth=()=>annualTotal()/12;
 function outgoings(){
   const s=D.settings;
@@ -308,30 +707,9 @@ function outgoings(){
 }
 const netPosition=()=>(+D.settings.wage||0)-outgoings();
 
-/* Months paid reproduces the spreadsheet's own convention exactly —
-   payment n lands n months after the start date — so the figures carry
-   across from the sheet without a jump on the day you switch over. */
-function debtCalc(d){
-  const s=new Date(d.start+'T00:00'),t=new Date();
-  let n=(t.getFullYear()-s.getFullYear())*12+(t.getMonth()-s.getMonth());
-  if(t.getDate()<s.getDate())n--;
-  n=Math.max(0,Math.min(d.months|0,n));
-  const left=(d.months|0)-n;
-  const remaining=Math.max(0,(+d.original||0)-n*(+d.monthly||0));
-  const end=new Date(s.getFullYear(),s.getMonth()+(d.months|0),1);   // final payment month
-  const free=new Date(end.getFullYear(),end.getMonth()+1,1);          // first month it's yours
-  return {paid:n,left:left,remaining:remaining,
-          progress:d.months?n/(d.months|0):0,
-          endLabel:monLabel(end.getFullYear(),end.getMonth()),
-          freeLabel:monLabel(free.getFullYear(),free.getMonth()),
-          freeY:free.getFullYear(),freeM:free.getMonth(),done:left<=0};
-}
-const debtTotal=()=>sum(D.debts,d=>debtCalc(d).remaining);
-const debtService=()=>sum(D.debts.filter(d=>!debtCalc(d).done),d=>+d.monthly||0);
-
 /* Is a bill paid this month? Auto-ticks as the date passes, exactly like
    the sheet, but a manual override wins — some things fail, some go early. */
-function paidKey(l,ym){return ym+':'+l.id;}
+const paidKey=(l,ym)=>ym+':'+l.id;
 function isPaid(l,ym,dayNow){
   const k=paidKey(l,ym);
   if(k in D.meta.paid)return !!D.meta.paid[k];
@@ -339,13 +717,20 @@ function isPaid(l,ym,dayNow){
 }
 function togglePaid(id){
   const l=D.ledger.find(x=>x.id===id);if(!l)return;
-  const now=new Date(),ym=ymOf(today()),k=paidKey(l,ym);
-  D.meta.paid[k]=!isPaid(l,ym,now.getDate());
+  const now=new Date(),ym=ymOf(today());
+  D.meta.paid[paidKey(l,ym)]=!isPaid(l,ym,now.getDate());
   save();haptic(6);render();
 }
 
-/* Net position projected forward, stepping up each time a debt ends and
-   its payment stops leaving the account. Zero behaviour change assumed. */
+/* A debt payment can only free up what actually leaves the account: a phone
+   bill may be airtime plus a device plan, so clearing it returns only the
+   device half. Cap the unlock at whichever is smaller. */
+function linkedBill(d){
+  const l=D.ledger.find(x=>x.debtId===d.id&&x.active!==false);
+  return l?Math.min(+l.amount||0,+d.monthly||0):(+d.monthly||0);
+}
+/* Net position projected forward, stepping up each time a debt ends and its
+   payment stops leaving the account. Zero behaviour change assumed. */
 function projection(months){
   const base=outgoings(),wage=+D.settings.wage||0,out=[];
   const now=new Date(),y0=now.getFullYear(),m0=now.getMonth();
@@ -354,39 +739,29 @@ function projection(months){
     let freed=0;
     D.debts.forEach(d=>{
       const c=debtCalc(d);
-      if(y>c.freeY||(y===c.freeY&&m>=c.freeM))freed+=Math.min(+d.monthly||0,linkedBill(d));
+      if(y>c.freeY||(y===c.freeY&&m>=c.freeM))freed+=linkedBill(d);
     });
     out.push({y:y,m:m,net:wage-(base-freed),freed:freed});
   }
   return out;
 }
-/* A debt payment can only free up what actually leaves the account: a phone
-   bill may be airtime plus a device plan, so clearing it returns only the
-   device half. Cap the unlock at whichever is smaller. */
-function linkedBill(d){
-  const l=D.ledger.find(x=>x.debtId===d.id&&x.active!==false);
-  return l?Math.min(+l.amount||0,+d.monthly||0):(+d.monthly||0);
-}
 
 /* ═══ entries — the daybook proper ════════════════════════════
-   One capture surface. A line with an amount in it is a spend; a line
-   without one is a note. Nothing else to learn, and nothing is lost:
-   both keep their full text. */
+   One capture surface. A line with a £ amount is a spend; a line without
+   one is a note. Nothing else to learn, and nothing is lost: both keep
+   their full text. */
 function parseEntry(text){
-  const m=text.match(/(?:^|\s)£?(\d+(?:\.\d{1,2})?)(?=\s|$)|£(\d+(?:\.\d{1,2})?)/);
   let amount=null;
-  if(/£/.test(text)){
-    const g=text.match(/£\s?(\d+(?:\.\d{1,2})?)/);
-    if(g)amount=parseFloat(g[1]);
-  }
+  const g=text.match(/£\s?(\d+(?:\.\d{1,2})?)/);
+  if(g)amount=parseFloat(g[1]);
   return {amount:amount,text:text.trim()};
 }
 function addEntry(){
   const t=DRAFT.trim();if(!t)return;
   const p=parseEntry(t);
-  const e={id:uid('e'),date:today(),ts:Date.now(),text:p.text,amount:p.amount};
-  D.entries.push(e);DRAFT='';save();haptic([8,26,8]);
-  toast(p.amount!=null?('Logged '+money(p.amount,p.amount%1!==0)):'Noted');
+  D.entries.push({id:uid('e'),date:today(),ts:Date.now(),text:p.text,amount:p.amount});
+  DRAFT='';save();haptic([8,26,8]);
+  toast(p.amount!=null?'Logged '+money(p.amount,p.amount%1!==0):'Noted');
   render();
 }
 function delEntry(id){
@@ -397,75 +772,163 @@ function delEntry(id){
 const entriesOn=ds=>D.entries.filter(e=>e.date===ds).sort((a,b)=>b.ts-a.ts);
 const spendThisMonth=()=>sum(D.entries.filter(e=>e.amount!=null&&ymOf(e.date)===ymOf(today())),e=>e.amount);
 
+/* ═══ training maths ══════════════════════════════════════════ */
+const exById=id=>D.exercises.find(e=>e.id===id);
+const isTime=e=>e.type==='time';
+const isBw=e=>e.type==='bodyweight';
+const incOf=e=>e.inc||INC[e.type]||2.5;
+const plate=(v,e)=>{const i=incOf(e);return i?Math.round(v/i)*i:Math.round(v);};
+function stepUp(v,e){const i=incOf(e);if(!i)return Math.round(v)+1;
+  return Math.round((v+i)/i)*i;}
+/* Epley. Above about 15 reps the formula stops meaning anything, so don't
+   pretend it does. */
+const epley=(w,r)=>(!w||!r||r>15)?0:w*(1+r/30);
+function logsFor(id){return D.logs.filter(l=>l.exId===id).sort((a,b)=>b.date.localeCompare(a.date)||b.ts-a.ts);}
+const todayLog=id=>D.logs.find(l=>l.exId===id&&l.date===today())||null;
+function estMax(e){
+  let best=0;
+  logsFor(e.id).slice(0,12).forEach(l=>(l.sets||[]).forEach(s=>{
+    const v=epley(s.w!=null?s.w:l.w,s.reps);if(v>best)best=v;}));
+  return best;
+}
+function bestEffort(e){
+  let best=null;
+  logsFor(e.id).forEach(l=>(l.sets||[]).forEach(s=>{
+    const w=s.w!=null?s.w:l.w,v=epley(w,s.reps);
+    if(v&&(!best||v>best.v))best={v:v,w:w,reps:s.reps,date:l.date};}));
+  return best;
+}
+function lastSession(e,incToday){
+  const ls=logsFor(e.id).filter(l=>incToday||l.date!==today());
+  return ls.length?ls[0]:null;
+}
+/* What to put on the bar next. Hit the rep goal on every set last time and
+   it steps the weight up; otherwise it holds and tells you what's left. */
+function nextWeight(e){
+  const goal=+D.settings.repGoal||12;
+  const last=lastSession(e,false);
+  if(!last||!(last.sets||[]).length)return null;
+  const w=last.sets[0].w!=null?last.sets[0].w:last.w;
+  if(w==null)return null;
+  const allHit=last.sets.every(s=>(s.reps||0)>=goal);
+  return allHit?{w:stepUp(w,e),up:true}:{w:w,up:false};
+}
+const sessionsOn=ds=>D.sessions.filter(s=>s.date===ds);
+const trainedOn=ds=>D.logs.some(l=>l.date===ds)||sessionsOn(ds).length>0;
+function trainedThisWeek(){
+  const n=new Date(),dow=(n.getDay()+6)%7,out=[];
+  for(let i=0;i<7;i++){
+    const d=new Date(n.getFullYear(),n.getMonth(),n.getDate()-dow+i);
+    out.push({ds:ymd(d),done:trainedOn(ymd(d)),future:d>n});
+  }
+  return out;
+}
+
+/* ═══ car maths ═══════════════════════════════════════════════
+   MPG needs two fill-ups: the litres you just put in replaced exactly what
+   you burned since the last one, so the pair gives miles per gallon. */
+function fuelStats(){
+  const f=D.fuel.slice().sort((a,b)=>(a.odo||0)-(b.odo||0));
+  const legs=[];
+  for(let i=1;i<f.length;i++){
+    const miles=(+f[i].odo||0)-(+f[i-1].odo||0);
+    const litres=+f[i].litres||0,cost=+f[i].cost||0;
+    if(miles>0&&litres>0)
+      legs.push({miles:miles,litres:litres,cost:cost,date:f[i].date,
+                 mpg:miles/(litres/LITRES_PER_GAL),cpm:cost/miles});
+  }
+  const m=sum(legs,l=>l.miles),lt=sum(legs,l=>l.litres),c=sum(legs,l=>l.cost);
+  return {legs:legs,miles:m,litres:lt,cost:c,
+          mpg:lt?m/(lt/LITRES_PER_GAL):0,
+          cpm:m?c/m:0,
+          last:legs.length?legs[legs.length-1]:null,
+          odo:f.length?Math.max.apply(null,f.map(x=>+x.odo||0)):(+D.car.odo||0)};
+}
+/* What fuel actually cost over the last 30 days, which is the number that
+   should replace the budget line on Money. */
+function fuelLast30(){
+  const cut=ymd(new Date(Date.now()-30*86400000));
+  return sum(D.fuel.filter(f=>f.date>=cut),f=>f.cost);
+}
+
 /* ═══ router ══════════════════════════════════════════════════ */
+const PAGES={home:renderHome,money:renderMoney,health:renderHealth,car:renderCar,goals:renderGoals};
 function go(t){
   if(TAB===t){document.getElementById('app').scrollTo({top:0,behavior:'smooth'});return;}
-  TAB=t;render();haptic(5);
+  TAB=t;MANAGE=false;Q='';render();haptic(5);
   document.getElementById('app').scrollTop=0;
 }
 function render(){
   const app=document.getElementById('app'),y=app.scrollTop;
-  app.innerHTML={home:renderHome,money:renderMoney,health:renderHealth,
-                 car:renderCar,goals:renderGoals}[TAB]();
+  app.innerHTML=PAGES[TAB]();
   ['home','money','health','car','goals'].forEach(t=>
     document.getElementById('ni-'+t).classList.toggle('on',t===TAB));
   if(TAB!=='home')app.scrollTop=y;
   const ta=document.getElementById('capin');
   if(ta){ta.value=DRAFT;autoGrow(ta);}
+  if(TAB==='health')syncWorkoutTick();
 }
 function autoGrow(ta){ta.style.height='auto';ta.style.height=Math.min(150,ta.scrollHeight)+'px';}
 function onDraft(v,el){
   const was=!!DRAFT.trim();DRAFT=v;autoGrow(el);
-  if(was!==!!DRAFT.trim())document.getElementById('capadd').disabled=!DRAFT.trim();
+  const b=document.getElementById('capadd');
+  if(b&&was!==!!DRAFT.trim())b.disabled=!DRAFT.trim();
 }
+const toggleManage=()=>{MANAGE=!MANAGE;haptic(6);render();};
 
 /* ═══ HOME — the day's page ═══════════════════════════════════ */
 function renderHome(){
   const now=new Date(),ds=today(),ym=ymOf(ds),dayNow=now.getDate();
-  const net=netPosition(),lines=monthlyLines();
-  const paidLines=lines.filter(l=>isPaid(l,ym,dayNow));
-  const paidSum=sum(paidLines,l=>+l.amount||0);
-  const left=monthlyTotal()-paidSum;
-
-  /* Next seven days of bills, wrapping into next month so the end of a
-     month never looks deceptively quiet. */
-  const soon=[];
-  lines.forEach(l=>{
-    let dd=l.day-dayNow;
-    if(dd<0)dd+=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
-    if(dd>=0&&dd<=7)soon.push({l:l,in:dd});
-  });
-  annualLines().forEach(l=>{
-    const due=new Date(now.getFullYear(),(l.month|0)-1,l.day||1);
-    if(due<now)due.setFullYear(due.getFullYear()+1);
-    const dd=Math.round((due-new Date(now.getFullYear(),now.getMonth(),dayNow))/86400000);
-    if(dd>=0&&dd<=7)soon.push({l:l,in:dd,annual:true});
-  });
-  soon.sort((a,b)=>a.in-b.in);
-
-  const todays=entriesOn(ds);
-  const spend=spendThisMonth();
-
-  /* Needs-you-today is generated, never typed. If nothing qualifies the
-     section isn't rendered at all — empty states are clutter. */
-  const alerts=[];
-  const overdue=lines.filter(l=>!isPaid(l,ym,dayNow)&&l.day<dayNow);
-  if(overdue.length)alerts.push({t:overdue.length+' bill'+(overdue.length>1?'s':'')+' marked unpaid past its date',
-    s:overdue.map(l=>l.name).join(', '),warn:true});
-  if(net<0)alerts.push({t:'You are '+money(-net)+' short this month',
-    s:'Outgoings '+money(outgoings())+' against '+money(+D.settings.wage||0)+' in'});
-  if(!todays.length)alerts.push({t:'Nothing written down today',s:'Spends, notes, anything — the page above'});
-
-  const pin=D.targets.find(t=>t.pinned)||D.targets[0];
 
   if(isEmpty())return `<div class="top"><h1>Daybook</h1><div class="meta">EMPTY</div></div>
     <div class="empty"><h3>Nothing in the book yet</h3>
-      <p>Bring in a file you exported from another device, or just start adding bills as you go.</p></div>
+      <p>Bring in a file you exported from another device, or just start adding things as you go.</p></div>
     <div style="padding:0 16px 10px"><button class="sbtn solid" style="width:100%"
       onclick="dataSheet()">Import a file</button></div>
     <div style="padding:0 16px"><button class="sbtn" style="width:100%"
       onclick="editLedger(null,'monthly')">Add your first bill</button></div>
     <div class="spacer"></div>`;
+
+  const net=netPosition(),lines=monthlyLines();
+  const paidLines=lines.filter(l=>isPaid(l,ym,dayNow));
+  const paidSum=sum(paidLines,l=>l.amount);
+
+  /* Next seven days of bills, wrapping into next month so the end of a month
+     never looks deceptively quiet. */
+  const soon=[];
+  lines.forEach(l=>{
+    let dd=l.day-dayNow;
+    if(dd<0)dd+=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
+    if(dd<=7)soon.push({l:l,in:dd});
+  });
+  annualLines().forEach(l=>{
+    const due=new Date(now.getFullYear(),(l.month|0)-1,l.day||1);
+    if(due<new Date(now.getFullYear(),now.getMonth(),dayNow))due.setFullYear(due.getFullYear()+1);
+    const dd=Math.round((due-new Date(now.getFullYear(),now.getMonth(),dayNow))/86400000);
+    if(dd<=7)soon.push({l:l,in:dd,annual:true});
+  });
+  soon.sort((a,b)=>a.in-b.in);
+
+  const todays=entriesOn(ds),spend=spendThisMonth(),week=trainedThisWeek();
+  const doneDays=week.filter(w=>w.done).length;
+
+  /* Needs-you-today is generated, never typed. If nothing qualifies the
+     section isn't rendered at all — empty states are clutter. */
+  const alerts=[];
+  const overdue=lines.filter(l=>!isPaid(l,ym,dayNow)&&l.day<dayNow);
+  if(overdue.length)alerts.push({t:overdue.length+' bill'+(overdue.length>1?'s':'')+' past its date and not ticked',
+    s:overdue.map(l=>l.name).join(', '),warn:true});
+  if(net<0)alerts.push({t:'You are '+money(-net)+' short this month',
+    s:'Outgoings '+money(outgoings())+' against '+money(+D.settings.wage||0)+' in'});
+  D.fixes.filter(f=>!f.done&&f.due).forEach(f=>{
+    if(daysBetween(today(),f.due)<=14)alerts.push({t:f.name,s:'Car · due '+f.due+(f.cost?' · '+money(f.cost):''),warn:true});
+  });
+  if(D.debts.length&&debtsRated()<D.debts.length)
+    alerts.push({t:(D.debts.length-debtsRated())+' debts have no interest rate',
+      s:'Balances show payments left, not what it costs to clear them'});
+  if(!todays.length)alerts.push({t:'Nothing written down today',s:'Spends, notes, anything — the page above'});
+
+  const pin=D.targets.find(t=>t.pinned)||D.targets[0];
 
   let h=`<div class="top"><h1>${DAYS[now.getDay()]}</h1>
     <div class="meta">${dayNow} ${MONS[now.getMonth()].toUpperCase()}</div></div>
@@ -484,8 +947,8 @@ function renderHome(){
   </div>
   <div class="strip">
     <div><div class="n">${money(paidSum)}</div><div class="l">PAID · ${paidLines.length}/${lines.length}</div></div>
-    <div><div class="n">${money(left)}</div><div class="l">STILL TO GO</div></div>
-    <div><div class="n">${money(debtTotal())}</div><div class="l">DEBT LEFT</div></div>
+    <div><div class="n">${money(monthlyTotal()-paidSum)}</div><div class="l">STILL TO GO</div></div>
+    <div><div class="n">${money(debtSettle())}</div><div class="l">DEBT LEFT</div></div>
   </div>`;
 
   if(alerts.length){
@@ -507,8 +970,18 @@ function renderHome(){
       <span class="v">${money(spend,spend%1!==0)}</span></div>`;
   }
 
+  if(D.exercises.length&&D.logs.length){
+    h+=`<div class="lab">This week<span class="r">${doneDays} OF 6</span></div>
+      <div class="row tap" onclick="go('health')"><div class="nm" style="display:flex;gap:5px">${
+      week.map(w=>`<span style="flex:1;height:22px;border-radius:5px;display:flex;align-items:center;
+        justify-content:center;font-size:9px;font-weight:800;
+        background:${w.done?'var(--ink)':'var(--hl)'};color:${w.done?'var(--bg)':'var(--dim)'};
+        border:1px solid ${w.done?'var(--ink)':'var(--line)'}">${DOW[week.indexOf(w)]}</span>`).join('')
+      }</div></div>`;
+  }
+
   if(soon.length){
-    h+=`<div class="lab">Next seven days<span class="r">${money(sum(soon,s=>+s.l.amount||0))}</span></div>`;
+    h+=`<div class="lab">Next seven days<span class="r">${money(sum(soon,s=>s.l.amount))}</span></div>`;
     soon.forEach(s=>{
       h+=`<div class="row"><span class="d">${s.annual?MONS[(s.l.month|0)-1].toUpperCase():s.l.day}</span>
         <div class="nm">${esc(s.l.name)}<i>${s.in===0?'Today':s.in===1?'Tomorrow':'In '+s.in+' days'}${s.annual?' · annual':''}</i></div>
@@ -517,50 +990,36 @@ function renderHome(){
   }
 
   if(pin){
-    const p=targetProgress(pin);
+    const p=goalProgress(pin);
     h+=`<div class="lab">Pinned</div>
-      <button class="dbt" onclick="go('goals')">
-        <div class="l1"><span class="nm">${esc(pin.name)}</span><span class="v">${p.label}</span></div>
-        <div class="l2"><span class="mo">${p.sub}</span><span class="bar"><i style="width:${Math.round(p.pct*100)}%"></i></span></div>
+      <button class="quest pin" onclick="go('goals')">
+        <div class="qh"><span class="nm">${esc(pin.name)}</span><span class="pct">${p.label}</span></div>
+        <div class="l2" style="display:flex;align-items:center;gap:9px">
+          <span style="font-size:9.5px;font-weight:800;color:var(--mut);letter-spacing:.3px;width:104px;flex-shrink:0">${p.sub}</span>
+          <span class="bar"><i style="width:${pct(p.pct)}"></i></span></div>
       </button>`;
   }
   return h+`<div class="spacer"></div>`;
 }
 
-function targetProgress(t){
-  const s=D.settings;
-  if(t.source==='debtTotal'){
-    const total=debtTotal(),start=sum(D.debts,d=>+d.original||0);
-    return {pct:start?1-total/start:0,label:money(total),
-            sub:money(debtService())+'/MO · '+D.debts.filter(d=>!debtCalc(d).done).length+' LEFT'};
-  }
-  if(t.source==='savings'){
-    const v=+s.savings||0;return {pct:t.goal?v/t.goal:0,label:money(v),sub:'OF '+money(t.goal)};
-  }
-  if(t.source==='income'){
-    const v=+s.wage||0;return {pct:t.goal?v/t.goal:0,label:money(v),sub:'OF '+money(t.goal)+' A MONTH'};
-  }
-  const v=+t.current||0;return {pct:t.goal?v/t.goal:0,label:String(v),sub:'OF '+t.goal};
-}
-
 /* ═══ MONEY ═══════════════════════════════════════════════════ */
 function renderMoney(){
-  const now=new Date(),ds=today(),ym=ymOf(ds),dayNow=now.getDate();
+  const now=new Date(),ym=ymOf(today()),dayNow=now.getDate();
   const lines=monthlyLines(),ann=annualLines();
-  const paidSum=sum(lines.filter(l=>isPaid(l,ym,dayNow)),l=>+l.amount||0);
-  const nPaid=lines.filter(l=>isPaid(l,ym,dayNow)).length;
-
+  const paid=lines.filter(l=>isPaid(l,ym,dayNow));
+  const paidSum=sum(paid,l=>l.amount);
   let dp=D.settings.payday|0||1,dd=dp-dayNow;
   if(dd<0)dd+=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
-
   const subs=activeLedger().filter(l=>(l.tags||[]).includes('sub'));
-  const subMo=sum(subs,l=>l.cadence==='annual'?(+l.amount||0)/12:(+l.amount||0));
+  const subMo=sum(subs,l=>l.cadence==='annual'?l.amount/12:l.amount);
+  const f30=fuelLast30();
 
   let h=`<div class="top"><h1>${MONS[now.getMonth()]}</h1>
-    <div class="meta">${dd===0?'PAYDAY':dd+' TO PAYDAY'}</div></div>
+    <div class="meta"><button class="${MANAGE?'on':''}" onclick="toggleManage()">${MANAGE?'DONE':'EDIT'}</button>
+      &nbsp;·&nbsp;${dd===0?'PAYDAY':dd+' TO PAYDAY'}</div></div>
   <div class="hero">
     <div class="v">${money(paidSum)}<small> / ${money(monthlyTotal())}</small></div>
-    <div class="u">BILLS PAID · <b>${nPaid}</b> OF ${lines.length} · <b>${money(monthlyTotal()-paidSum)}</b> STILL TO GO</div>
+    <div class="u">BILLS PAID · <b>${paid.length}</b> OF ${lines.length} · <b>${money(monthlyTotal()-paidSum)}</b> STILL TO GO</div>
   </div>
   <div class="strip">
     <div><div class="n">${money(monthlyTotal())}</div><div class="l">FIXED BILLS</div></div>
@@ -568,61 +1027,121 @@ function renderMoney(){
     <div><div class="n${netPosition()<0?' neg':''}">${money(netPosition())}</div><div class="l">NET</div></div>
   </div>
 
-  <div class="lab">Monthly bills<button onclick="editLedger(null,'monthly')">+ ADD</button></div>`;
+  <div class="lab">Monthly bills<span class="r">${lines.length}</span>
+    <button onclick="gridSheet('ledger')">GRID</button></div>`;
 
-  lines.forEach(l=>{
-    const p=isPaid(l,ym,dayNow),over=!p&&l.day<dayNow;
-    h+=`<div class="row tap${p?' paid':''}${l.day===dayNow?' today':''}">
-      <button class="dot${p?'':over?' o due':' o'}" onclick="togglePaid('${l.id}')"
-        aria-label="Mark ${esc(l.name)} ${p?'unpaid':'paid'}" style="padding:0"></button>
-      <span class="d">${l.day}</span>
-      <button class="nm" onclick="editLedger('${l.id}')" style="text-align:left">${esc(l.name)}${
-        l.debtId?'<i>Debt payment</i>':(l.tags||[]).length?'<i>'+esc(l.tags.join(' · '))+'</i>':''}</button>
-      <span class="v${p?' mut':''}">${money(l.amount)}</span></div>`;
-  });
+  /* Edit mode turns the list into fields. Name, amount and day are the three
+     things that ever change, so they change in place rather than through a
+     form — and the total at the top moves as you type. */
+  if(MANAGE){
+    lines.forEach(l=>{
+      h+=`<div class="row">
+        <input class="inl dy" type="number" inputmode="numeric" min="1" max="31" value="${l.day}"
+          aria-label="Day for ${esc(l.name)}" onchange="quickSet('${l.id}','day',this.value)">
+        <input class="inl nm2" value="${esc(l.name)}" aria-label="Name"
+          onchange="quickSet('${l.id}','name',this.value)">
+        <input class="inl amt" type="number" inputmode="decimal" step="0.01" value="${l.amount}"
+          aria-label="Amount" onchange="quickSet('${l.id}','amount',this.value)">
+        <button class="rm" onclick="quickDel('${l.id}')" aria-label="Delete ${esc(l.name)}">✕</button></div>`;
+    });
+    h+=`<div class="row" style="gap:7px">
+      <input class="inl dy" type="number" inputmode="numeric" min="1" max="31" id="q-day" placeholder="1" aria-label="New bill day">
+      <input class="inl nm2" id="q-name" placeholder="New bill" aria-label="New bill name"
+        onkeydown="if(event.key==='Enter')quickAdd()">
+      <input class="inl amt" type="number" inputmode="decimal" step="0.01" id="q-amt" placeholder="0" aria-label="New bill amount"
+        onkeydown="if(event.key==='Enter')quickAdd()">
+      <button class="rm" onclick="quickAdd()" aria-label="Add bill" style="color:var(--ink)">+</button></div>
+    <div class="gnote">Tap any field to change it. <b>Grid</b> opens all of them at once and takes a paste straight from a spreadsheet.</div>`;
+  }else{
+    lines.forEach(l=>{
+      const p=isPaid(l,ym,dayNow),over=!p&&l.day<dayNow;
+      h+=`<div class="row tap${p?' paid':''}${l.day===dayNow?' today':''}">
+        <button class="dot${p?'':over?' o due':' o'}" onclick="togglePaid('${l.id}')"
+          aria-label="Mark ${esc(l.name)} ${p?'unpaid':'paid'}" style="padding:0"></button>
+        <span class="d">${l.day}</span>
+        <button class="nm" onclick="editLedger('${l.id}')" style="text-align:left">${esc(l.name)}${
+          l.debtId?'<i>Debt payment</i>':(l.tags||[]).length?'<i>'+esc(l.tags.join(' · '))+'</i>':''}</button>
+        <span class="v${p?' mut':''}">${money(l.amount)}</span></div>`;
+    });
+    h+=`<div class="row tap"><button class="nm" onclick="editLedger(null,'monthly')"
+      style="text-align:left;color:var(--mut)">+ Add a bill</button></div>`;
+  }
 
-  h+=`<div class="lab">Debt<span class="r">${money(debtTotal())} · ${money(debtService())}/MO</span></div>`;
-  D.debts.slice().sort((a,b)=>debtCalc(a).left-debtCalc(b).left).forEach(d=>{
-    const c=debtCalc(d);
-    h+=`<button class="dbt" onclick="editDebt('${d.id}')">
-      <div class="l1"><span class="nm">${esc(d.name)}</span>
-        <span class="v">${c.done?'Cleared':money(c.remaining)}</span></div>
-      <div class="l2"><span class="mo">${c.done?'DONE':c.left+' MO · '+c.freeLabel.toUpperCase()}</span>
-        <span class="bar"><i style="width:${Math.round(c.progress*100)}%"></i></span>
-        <span class="up">${c.done?'':'+'+money(linkedBill(d))}</span></div></button>`;
-  });
-  h+=`<div class="row tap"><button class="nm" onclick="editDebt(null)" style="color:var(--mut);text-align:left">+ Add a debt</button></div>`;
-
+  h+=renderDebts();
   h+=renderProjection();
 
-  h+=`<div class="lab">Subscriptions<span class="r">${money(subMo)}/MO · ${money(subMo*12)}/YR</span></div>`;
-  subs.slice().sort((a,b)=>(b.amount||0)-(a.amount||0)).forEach(l=>{
-    const mo=l.cadence==='annual'?(+l.amount||0)/12:(+l.amount||0);
-    h+=`<div class="row tap"><button class="nm" onclick="editLedger('${l.id}')" style="text-align:left">${esc(l.name)}<i>${money(mo*12)} a year</i></button>
-      <span class="v">${money(l.amount)}${l.cadence==='annual'?'<span style="font-size:10px;color:var(--mut)">/yr</span>':''}</span></div>`;
-  });
+  if(subs.length){
+    h+=`<div class="lab">Subscriptions<span class="r">${money(subMo)}/MO · ${money(subMo*12)}/YR</span></div>`;
+    subs.slice().sort((a,b)=>b.amount-a.amount).forEach(l=>{
+      const mo=l.cadence==='annual'?l.amount/12:l.amount;
+      h+=`<div class="row tap"><button class="nm" onclick="editLedger('${l.id}')" style="text-align:left">${esc(l.name)}<i>${money(mo*12)} a year</i></button>
+        <span class="v">${money(l.amount)}${l.cadence==='annual'?'<span style="font-size:10px;color:var(--mut)">/yr</span>':''}</span></div>`;
+    });
+  }
 
   h+=`<div class="lab">Annual bills<span class="r">${money(annualTotal())}/YR · ${money(annualPerMonth(),true)}/MO</span>
     <button onclick="editLedger(null,'annual')">+ ADD</button></div>`;
   if(!ann.length)h+=`<div class="row"><div class="nm" style="color:var(--mut)">Nothing annual yet</div></div>`;
   ann.forEach(l=>{
     h+=`<div class="row tap"><span class="d">${MONS[(l.month|0)-1]||'—'}</span>
-      <button class="nm" onclick="editLedger('${l.id}')" style="text-align:left">${esc(l.name)}<i>${ordinal(l.day||1)} · ${money((+l.amount||0)/12,true)} a month</i></button>
+      <button class="nm" onclick="editLedger('${l.id}')" style="text-align:left">${esc(l.name)}<i>${ordinal(l.day||1)} · ${money(l.amount/12,true)} a month</i></button>
       <span class="v">${money(l.amount)}</span></div>`;
   });
 
-  h+=`<div class="lab">Your numbers</div>${settingsRows()}`;
+  h+=`<div class="lab">Your numbers</div>${settingsRows(f30)}`;
   return h+`<div class="spacer"></div>`;
 }
 
-/* Net position over five years. One scale, every riser labelled, and the
-   zero crossing called out because that's the date the whole page is about. */
+/* Each debt gets three numbers, because they answer different questions:
+   what it costs to see it out, what it costs to clear it today, and the
+   difference — which is the interest you still have the chance not to pay. */
+function renderDebts(){
+  if(!D.debts.length)
+    return `<div class="lab">Debt</div>
+      <div class="row tap"><button class="nm" onclick="editDebt(null)"
+        style="text-align:left;color:var(--mut)">+ Add a debt</button></div>`;
+
+  const rated=debtsRated(),il=debtInterestLeft();
+  let h=`<div class="lab">Debt<span class="r">${money(debtSettle())} · ${money(debtService())}/MO</span>
+    <button onclick="editDebt(null)">+ ADD</button></div>`;
+
+  D.debts.slice().sort((a,b)=>debtCalc(a).left-debtCalc(b).left).forEach(d=>{
+    const c=debtCalc(d);
+    h+=`<button class="dbt" onclick="editDebt('${d.id}')">
+      <div class="l1"><span class="nm">${esc(d.name)}</span>
+        ${c.ratedKnown?`<span class="tag">${(+d.apr).toFixed(1)}% APR</span>`:`<span class="tag">NO RATE</span>`}
+        <span class="v">${c.done?'Cleared':money(c.settle)}</span></div>
+      <div class="l2"><span class="mo">${c.done?'DONE':c.left+' MO · '+c.freeLabel.toUpperCase()}</span>
+        <span class="bar"><i style="width:${pct(c.progress)}"></i></span>
+        <span class="up">${c.done?'':'+'+money(linkedBill(d))}</span></div>
+      ${c.done?'':`<div class="l3">
+        <div><div class="n">${money(c.settle)}</div><div class="k">CLEAR TODAY</div></div>
+        <div><div class="n">${money(c.paymentsLeft)}</div><div class="k">PAY IT OUT</div></div>
+        <div><div class="n${c.interestLeft>0?' crit':''}">${c.ratedKnown?money(c.interestLeft):'—'}</div>
+          <div class="k">INTEREST LEFT</div></div></div>`}
+    </button>`;
+  });
+
+  h+=`<div class="gnote">`;
+  if(rated<D.debts.length)
+    h+=`<b>${D.debts.length-rated} of ${D.debts.length} have no rate set.</b> Until they do, "clear today" just
+        repeats the payments left — the app won't guess a rate it wasn't given. Open one and enter what you
+        actually borrowed; it works the APR out from that.`;
+  else
+    h+=`Clearing everything today would cost <b>${money(debtSettle())}</b> against <b>${money(debtPaymentsLeft())}</b>
+        of remaining payments. <b>${money(il)}</b> of that is interest you have not paid yet — which is what any
+        overpayment is really buying back.`;
+  return h+`</div>`;
+}
+
+/* Net position over five years. One scale, every riser is a debt ending,
+   and the zero crossing is called out because it's the date the page is about. */
 function renderProjection(){
-  if(!D.debts.some(d=>!debtCalc(d).done))return '';   // no debts, no steps, no chart
+  if(!D.debts.some(d=>!debtCalc(d).done))return '';
   const p=projection(60);
   if(!p.length)return '';
   const W=340,H=118,PADL=6,PADR=6,top=10,bot=88;
-  const vals=p.map(x=>x.net),lo=Math.min(...vals,0),hi=Math.max(...vals,0);
+  const vals=p.map(x=>x.net),lo=Math.min.apply(null,vals.concat([0])),hi=Math.max.apply(null,vals.concat([0]));
   const span=(hi-lo)||1;
   const X=i=>PADL+(i/(p.length-1))*(W-PADL-PADR);
   const Y=v=>bot-((v-lo)/span)*(bot-top);
@@ -631,211 +1150,1253 @@ function renderProjection(){
     if(p[i].net!==p[i-1].net)d+=' L'+X(i)+','+Y(p[i-1].net);
     d+=' L'+X(i)+','+Y(p[i].net);
   }
-  const zero=Y(0);
-  const cross=p.findIndex(x=>x.net>=0);
+  const zero=Y(0),cross=p.findIndex(x=>x.net>=0);
   const risers=[];
   D.debts.forEach(dd=>{
     const c=debtCalc(dd);if(c.done)return;
     const i=p.findIndex(x=>x.y>c.freeY||(x.y===c.freeY&&x.m>=c.freeM));
     if(i>0)risers.push({i:i,name:dd.name,label:c.freeLabel});
   });
-  const yrs=[];
-  p.forEach((x,i)=>{if(x.m===0)yrs.push({i:i,y:x.y});});
+  const yrs=[];p.forEach((x,i)=>{if(x.m===0)yrs.push({i:i,y:x.y});});
 
   return `<div class="lab">If nothing changes<span class="r">5 YEARS</span></div>
   <div class="chart">
     <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Monthly net position projected over five years, rising each time a debt clears">
       ${lo<0&&hi>0?`<line x1="${PADL}" y1="${zero}" x2="${W-PADR}" y2="${zero}" stroke="var(--line2)" stroke-width="1" stroke-dasharray="2 3"/>
-      <text x="${PADL}" y="${zero-4}" fill="var(--dim)" font-size="7" font-weight="700" letter-spacing=".5">£0</text>`:''}
+      <text x="${PADL}" y="${zero-4}" fill="var(--dim)" font-size="7" font-weight="700">£0</text>`:''}
       <path d="${d}" fill="none" stroke="var(--ink)" stroke-width="1.6" stroke-linejoin="miter"/>
       ${risers.map(r=>`<circle cx="${X(r.i)}" cy="${Y(p[r.i].net)}" r="2" fill="var(--ink)"/>`).join('')}
       <circle cx="${X(0)}" cy="${Y(p[0].net)}" r="2.4" fill="${p[0].net<0?'var(--crit)':'var(--pos)'}"/>
-      ${yrs.map(v=>`<text x="${X(v.i)}" y="${H-2}" fill="var(--dim)" font-size="7" font-weight="700"
-        text-anchor="middle" letter-spacing=".4">${v.y}</text>`).join('')}
-      ${yrs.map(v=>`<line x1="${X(v.i)}" y1="${bot+2}" x2="${X(v.i)}" y2="${bot+5}" stroke="var(--line2)" stroke-width="1"/>`).join('')}
+      ${yrs.map(v=>`<line x1="${X(v.i)}" y1="${bot+2}" x2="${X(v.i)}" y2="${bot+5}" stroke="var(--line2)" stroke-width="1"/>
+        <text x="${X(v.i)}" y="${H-2}" fill="var(--dim)" font-size="7" font-weight="700" text-anchor="middle">${v.y}</text>`).join('')}
     </svg>
     <div class="cx">Today <b>${money(p[0].net)}</b> a month${
-      cross>0?` · turns positive <b>${monLabel(p[cross].y,p[cross].m)}</b>`:
-      cross===0?' · already positive':''} · <b>${money(p[p.length-1].net)}</b> by ${monLabel(p[p.length-1].y,p[p.length-1].m)}.
+      cross>0?` · turns positive <b>${monLabel(p[cross].y,p[cross].m)}</b>`:cross===0?' · already positive':''
+      } · <b>${money(p[p.length-1].net)}</b> by ${monLabel(p[p.length-1].y,p[p.length-1].m)}.
       ${risers.length?'Each step is a debt ending: '+risers.map(r=>esc(r.name)+' '+r.label).join(', ')+'.':''}</div>
   </div>`;
 }
 
-function settingsRows(){
+function settingsRows(f30){
   const s=D.settings;
-  const f=(k,t,d,pre)=>`<div class="sr"><div class="l"><div class="t">${t}</div><div class="d">${d}</div></div>
+  const f=(k,t,d)=>`<div class="sr"><div class="l"><div class="t">${t}</div><div class="d">${d}</div></div>
     <input class="numin" type="number" inputmode="decimal" value="${s[k]}" aria-label="${t}"
       onchange="setNum('${k}',this.value)"></div>`;
   return f('wage','Monthly wage','What actually lands, after tax')
     +f('food','Food budget','Groceries and eating out')
-    +f('fuel','Fuel budget','Becomes a real number once the Car page lands')
+    +f('fuel','Fuel budget',f30>0?'You actually spent '+money(f30)+' in the last 30 days':'Log fill-ups on Car to measure this')
     +f('savings','Savings balance','Update whenever you move money')
     +f('payday','Payday','Day of the month the wage arrives')
     +`<div class="sr"><div class="l"><div class="t">Back up your data</div>
-      <div class="d">${D.entries.length} entries · ${D.ledger.length} bills · ${D.debts.length} debts. Everything lives on this device only.</div></div>
+      <div class="d">${D.entries.length} entries · ${D.ledger.length} bills · ${D.debts.length} debts · ${D.logs.length} training logs. This device only.</div></div>
       <button class="arrow" onclick="dataSheet()" aria-label="Data options">›</button></div>`;
 }
 function setNum(k,v){D.settings[k]=parseFloat(v)||0;save();render();}
 
-/* ═══ stages still to come ════════════════════════════════════ */
-function stagePage(title,meta,lead,items){
-  return `<div class="top"><h1>${title}</h1><div class="meta">${meta}</div></div>
-  <div class="empty"><h3>Not built yet</h3><p>${lead}</p></div>
-  ${items.map(i=>`<div class="stage"><span class="k">${i[0]}</span><span class="w">${i[1]}</span></div>`).join('')}
-  <div class="spacer"></div>`;
+/* ── fast bill edits ─────────────────────────────────────────── */
+function quickSet(id,field,v){
+  const l=D.ledger.find(x=>x.id===id);if(!l)return;
+  if(field==='amount')l.amount=parseFloat(v)||0;
+  else if(field==='day')l.day=clamp(parseInt(v)||1,1,31);
+  else l[field]=v;
+  save();render();
 }
-function renderHealth(){
-  return stagePage('Health','STAGE 3',
-    'The exercise sheet moves across whole — all 102 lifts, the 1RM column, the working weight, history, PRs, the clock and the rest timer.',
-    [['SHEET','All <b>102 exercises</b> grouped by body part, hairline separated, no category tints.'],
-     ['LOG','Sets, reps and weight per session, with <b>estimated 1RM</b> and next-weight suggestions.'],
-     ['SESSION','Today\'s prescription from your own rules — <b>major 3×12 and 5×12</b>, secondary 2×12 and 3×12, six days a week.'],
-     ['FOOD','Target macros, saved recipes and a staples list that becomes the shopping list — which is what turns the <b>£200 food budget</b> into a measured number.']]);
+function quickDel(id){
+  const i=D.ledger.findIndex(x=>x.id===id);if(i<0)return;
+  const snap=D.ledger[i];D.ledger.splice(i,1);save();haptic(10);render();
+  toast('Deleted '+snap.name,()=>{D.ledger.splice(Math.min(i,D.ledger.length),0,snap);save();render();});
 }
-function renderCar(){
-  return stagePage('Car','STAGE 4',
-    'Fill-ups, service history and the fix list — and the page that turns your £400 fuel estimate into a cost per mile.',
-    [['FUEL','Litres, price and odometer per fill-up. Gives <b>MPG and cost per mile</b>, and replaces the fuel estimate on Money.'],
-     ['DATES','MOT, tax and insurance read the <b>same ledger records</b> Money already holds. One entry, two pages, nothing to keep in sync.'],
-     ['FIXES','What needs doing and what it will cost, so planned work lands in the forecast <b>before</b> it lands on your card.'],
-     ['HISTORY','Every service logged against mileage.']]);
-}
-function renderGoals(){
-  const h=`<div class="top"><h1>Goals</h1><div class="meta">STAGE 4</div></div>`;
-  if(!D.targets.length)return h+`<div class="empty"><h3>No goals yet</h3>
-    <p>The editor lands in stage 4. Targets imported from a file show up here and track themselves.</p></div>`;
-  let g=h+`<div class="lab">Reading live already</div>`;
-  D.targets.forEach(t=>{
-    const p=targetProgress(t);
-    g+=`<div class="dbt"><div class="l1"><span class="nm">${esc(t.name)}</span><span class="v">${p.label}</span></div>
-      <div class="l2"><span class="mo">${p.sub}</span><span class="bar"><i style="width:${Math.round(Math.max(0,Math.min(1,p.pct))*100)}%"></i></span>
-      <span class="up">${Math.round(Math.max(0,Math.min(1,p.pct))*100)}%</span></div></div>`;
-  });
-  return g+`<div class="empty"><h3>The editor comes in stage 4</h3>
-    <p>These three read from real data and move on their own. What's missing is the ability to add your own.</p></div>
-  <div class="stage"><span class="k">ANY</span><span class="w">Unlimited goals, each with its own steps. <b>Any one pinned</b> to Home.</span></div>
-  <div class="stage"><span class="k">BOUND</span><span class="w">A step can watch real data and <b>tick itself</b> — a step that watches a debt completes when its balance hits zero.</span></div>
-  <div class="stage"><span class="k">LOCKED</span><span class="w">Steps can stay locked until a prerequisite finishes. A tech tree, not a to-do list.</span></div>
-  <div class="stage"><span class="k">TIERS</span><span class="w">Life, year, month, week. The week tier is what feeds <b>Needs you today</b>.</span></div>
-  <div class="spacer"></div>`;
+function quickAdd(){
+  const g=id=>document.getElementById(id);
+  const name=(g('q-name').value||'').trim();
+  if(!name){toast('Give it a name');g('q-name').focus();return;}
+  D.ledger.push({id:uid('l'),name:name,amount:parseFloat(g('q-amt').value)||0,
+    cadence:'monthly',day:clamp(parseInt(g('q-day').value)||1,1,31),
+    tags:[],debtId:null,active:true});
+  save();haptic(10);render();
+  const n=document.getElementById('q-name');if(n)n.focus();
+  toast('Added '+name);
 }
 
-/* ═══ editors ═════════════════════════════════════════════════ */
-let SHEET=null;
+/* ═══════════════════════════════════════════════════════════════
+   HEALTH
+   The sheet stays dense on purpose: the more lifts on screen, the faster
+   the eye finds the one it wants mid-set. Groups separate by hairline and
+   a heavier label — no category tints, because the app is monochrome.
+   ═══════════════════════════════════════════════════════════════ */
+let HSUB='sheet', RESTT=null, RESTEND=0, TICK=null;
+
+function renderHealth(){
+  if(HSUB==='food')return renderFood();
+  if(HSUB==='history')return renderHistory();
+
+  const q=Q.trim().toLowerCase();
+  let list=D.exercises.filter(e=>!e.hidden);
+  if(q)list=list.filter(e=>e.name.toLowerCase().includes(q)||(e.bp||'').toLowerCase().includes(q));
+  else if(JUMP)list=list.filter(e=>e.cat===JUMP);
+
+  let h=renderClock()+`
+  <div class="search"><input value="${esc(Q)}" placeholder="Search 102 lifts…" aria-label="Search exercises"
+      oninput="onSearch(this.value)">${Q?'<button class="x" onclick="onSearch(\'\')">CLEAR</button>':''}</div>
+  <div class="jump">
+    <button class="${!JUMP&&!q?'on':''}" onclick="setJump('')">ALL</button>
+    ${CATS.map(c=>`<button class="${JUMP===c?'on':''}" onclick="setJump('${c}')">${c}</button>`).join('')}
+    <button onclick="setSub('history')">HISTORY</button>
+    <button onclick="setSub('food')">FOOD</button>
+  </div>`;
+
+  if(!list.length)return h+`<div class="empty"><h3>Nothing matches</h3>
+    <p>${q?'No lift called “'+esc(Q)+'”.':'Nothing in this group yet.'}</p></div>`;
+
+  /* Group by category, then body part — the order the sheet was written in. */
+  const cats=q?[null]:CATS.filter(c=>list.some(e=>e.cat===c));
+  cats.forEach(cat=>{
+    const inCat=cat?list.filter(e=>e.cat===cat):list;
+    if(!inCat.length)return;
+    if(cat){
+      const shut=!!D.settings.collapsed[cat];
+      h+=`<button class="grp${shut?' shut':''}" onclick="toggleCat('${cat}')" aria-expanded="${!shut}">
+        <svg class="gchev" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        <span class="gname">${cat}</span><span class="gcount">${inCat.length}</span></button>`;
+      if(shut)return;
+    }
+    const bps=(BPS[cat]||[]).filter(b=>inCat.some(e=>e.bp===b));
+    const groups=cat?bps.map(b=>[b,inCat.filter(e=>e.bp===b)]):[['RESULTS',inCat]];
+    groups.forEach(([bp,exs])=>{
+      const stale=staleDays(exs);
+      h+=`<div class="bph"><b>${bp}</b><span class="num">1RM</span><span class="num">KG</span>
+        <span class="num ${stale>21?'stale':''}">${stale!=null?(stale>21?stale+'D':'REPS'):'REPS'}</span></div>`;
+      exs.forEach(e=>{h+=renderRow(e);});
+    });
+  });
+  return h+`<div class="spacer"></div>`;
+}
+function staleDays(exs){
+  let best=null;
+  exs.forEach(e=>{const l=lastSession(e,true);
+    if(l){const d=daysBetween(l.date,today());if(best==null||d<best)best=d;}});
+  return best;
+}
+function setJump(c){JUMP=c;Q='';render();haptic(4);}
+function setSub(s){HSUB=s;OPEN=null;render();haptic(5);document.getElementById('app').scrollTop=0;}
+function onSearch(v){Q=v;if(v)JUMP='';render();}
+function toggleCat(c){
+  D.settings.collapsed[c]=!D.settings.collapsed[c];save();haptic(5);render();
+}
+
+function renderRow(e){
+  const open=OPEN===e.id;
+  const last=lastSession(e,true),est=estMax(e),nx=nextWeight(e);
+  const rec=e.rec!=null?fmtKg(e.rec):(est?fmtKg(est):null);
+  const kg=e.w!=null?fmtKg(e.w):null;
+  const reps=last&&(last.sets||[]).length?last.sets.map(s=>s.reps).join(','):(e.reps?e.reps.join(','):null);
+  return `<div class="r${open?' open':''}">
+    <button class="r-main" onclick="toggleEx('${e.id}')" aria-expanded="${open}">
+      <span class="r-nm">${esc(e.name)}</span>
+      <span class="r-n ${rec?(e.rec!=null?'':'est'):'none'}">${rec||'—'}</span>
+      <span class="r-n kg ${kg?(nx&&nx.up?'nx':''):'none'}">${kg||'—'}</span>
+      <span class="r-n ${reps?'':'none'}">${reps||'—'}</span>
+    </button>${open?renderLogger(e):''}</div>`;
+}
+function toggleEx(id){
+  OPEN=OPEN===id?null:id;haptic(5);render();
+  if(OPEN){const el=document.querySelector('.r.open');
+    if(el)el.scrollIntoView({block:'nearest',behavior:'smooth'});}
+}
+
+/* A draft is the set list you're part-way through. It lives in memory until
+   a set is ticked, then it becomes a log — so a half-typed row never
+   pollutes your history. */
+function draftFor(e){
+  if(DRAFTS[e.id])return DRAFTS[e.id];
+  const t=todayLog(e.id);
+  if(t)return DRAFTS[e.id]={w:t.w,sets:(t.sets||[]).map(s=>({reps:s.reps,w:s.w,done:true}))};
+  const nx=nextWeight(e),last=lastSession(e,false);
+  const w=nx?nx.w:(e.w!=null?e.w:(last?last.w:0));
+  const n=last&&(last.sets||[]).length?last.sets.length:3;
+  return DRAFTS[e.id]={w:w,sets:Array.from({length:n},()=>({reps:'',w:null,done:false}))};
+}
+function renderLogger(e){
+  const dr=draftFor(e),goal=+D.settings.repGoal||12;
+  const nx=nextWeight(e),best=bestEffort(e),est=estMax(e);
+  const hist=logsFor(e.id).slice(0,6);
+  const time=isTime(e),bw=isBw(e);
+
+  let h=`<div class="log">
+    <div class="wbar">
+      <div class="wstep">
+        <button onclick="stepW('${e.id}',-1)" aria-label="Less weight">−</button>
+        <input type="number" inputmode="decimal" value="${dr.w||0}" aria-label="Working weight"
+          onchange="setW('${e.id}',this.value)">
+        <button onclick="stepW('${e.id}',1)" aria-label="More weight">+</button>
+        <span class="u">${time?'SEC':bw?'+KG':'KG'}</span>
+      </div>
+      <div class="hint">${nx?(nx.up?`<b>Up ${fmtKg(nx.w)}${time?'s':'kg'}</b> — you hit ${goal} on every set`
+        :`Hold ${fmtKg(nx.w)}${time?'s':'kg'} until all sets reach ${goal}`)
+        :'First time on this one — pick something you can hold form on'}</div>
+    </div>`;
+
+  dr.sets.forEach((s,i)=>{
+    h+=`<div class="sl${s.done?' done':''}">
+      <span class="n">${i+1}</span>
+      <input class="rp" type="number" inputmode="numeric" value="${s.reps}" placeholder="${time?'secs':'reps'}"
+        aria-label="Set ${i+1} ${time?'seconds':'reps'}" onchange="setRep('${e.id}',${i},this.value)">
+      <span class="x">×</span>
+      <input class="wt" type="number" inputmode="decimal" value="${s.w!=null?s.w:dr.w}"
+        aria-label="Set ${i+1} weight" onchange="setSetW('${e.id}',${i},this.value)">
+      <button class="ok" onclick="commitSet('${e.id}',${i})" aria-label="${s.done?'Undo set':'Log set'}">${s.done?'✓':'○'}</button>
+      <button class="rmv" onclick="rmSet('${e.id}',${i})" aria-label="Remove set">✕</button></div>`;
+  });
+  h+=`<button class="addset" onclick="addSet('${e.id}')">+ ANOTHER SET</button>`;
+
+  h+=`<div class="stats">${spark(e)}<div class="sv">
+    ${est?`Estimated 1RM <b>${fmtKg(est)}kg</b>`:'No estimate yet'}${
+      e.rec!=null?` · sheet says <b>${fmtKg(e.rec)}kg</b>`:''}<br>
+    ${best?`Best <b>${fmtKg(best.w)}kg × ${best.reps}</b> · ${relDate(best.date)}`:'No logged sets yet'}
+  </div></div>`;
+
+  h+=`<div class="notebox"><label>Notes</label>
+    <input value="${esc(e.note||'')}" placeholder="Cues, settings, what to watch"
+      onchange="setNote('${e.id}',this.value)"></div>`;
+
+  h+=`<div class="hist"><div class="hist-h">HISTORY</div>`;
+  if(!hist.length)h+=`<div class="hist-empty">Nothing logged yet.</div>`;
+  hist.forEach(l=>{
+    h+=`<div class="hd"><span class="d">${relDate(l.date)}</span>
+      <span class="s">${(l.sets||[]).map(s=>`${s.reps}${time?'s':''}${s.w!=null&&s.w!==l.w?'@'+fmtKg(s.w):''}`).join(', ')}
+        ${l.w!=null?`<span class="t">@ ${fmtKg(l.w)}kg</span>`:''}</span>
+      <button class="del" onclick="delLog('${l.id}')" aria-label="Delete this session">✕</button></div>`;
+  });
+  h+=`</div><div class="rowacts">
+    <button onclick="startRest()">REST ${D.settings.rest|0}s</button>
+    <button onclick="editExercise('${e.id}')">EDIT LIFT</button></div></div>`;
+  return h;
+}
+/* Twelve sessions of estimated 1RM. Endpoint emphasised, because the
+   question is always "is it going up". */
+function spark(e){
+  const pts=logsFor(e.id).slice(0,12).reverse()
+    .map(l=>Math.max.apply(null,[0].concat((l.sets||[]).map(s=>epley(s.w!=null?s.w:l.w,s.reps)))))
+    .filter(v=>v>0);
+  if(pts.length<2)return '';
+  const w=62,hh=24,lo=Math.min.apply(null,pts),hi=Math.max.apply(null,pts),sp=(hi-lo)||1;
+  const X=i=>(i/(pts.length-1))*w,Y=v=>hh-2-((v-lo)/sp)*(hh-5);
+  return `<svg width="${w}" height="${hh}" viewBox="0 0 ${w} ${hh}" aria-hidden="true">
+    <polyline points="${pts.map((v,i)=>X(i)+','+Y(v)).join(' ')}" fill="none"
+      stroke="var(--mut)" stroke-width="1.2" stroke-linejoin="round"/>
+    <circle cx="${X(pts.length-1)}" cy="${Y(pts[pts.length-1])}" r="2.2" fill="var(--ink)"/></svg>`;
+}
+
+function stepW(id,dir){
+  const e=exById(id),dr=draftFor(e),i=incOf(e)||1;
+  dr.w=Math.max(0,Math.round(((+dr.w||0)+dir*i)/i)*i);
+  dr.sets.forEach(s=>{if(!s.done)s.w=null;});
+  haptic(4);syncAndSave(e,dr);
+}
+function setW(id,v){const e=exById(id),dr=draftFor(e);
+  dr.w=Math.max(0,parseFloat(v)||0);syncAndSave(e,dr);}
+function setRep(id,i,v){const e=exById(id),dr=draftFor(e);
+  dr.sets[i].reps=v===''?'':Math.max(0,parseInt(v)||0);
+  if(dr.sets[i].done)syncAndSave(e,dr);else render();}
+function setSetW(id,i,v){const e=exById(id),dr=draftFor(e);
+  dr.sets[i].w=v===''?null:Math.max(0,parseFloat(v)||0);
+  if(dr.sets[i].done)syncAndSave(e,dr);else render();}
+function addSet(id){const e=exById(id),dr=draftFor(e);
+  const l=dr.sets[dr.sets.length-1];
+  dr.sets.push({reps:'',w:l?l.w:null,done:false});haptic(4);render();}
+function rmSet(id,i){const e=exById(id),dr=draftFor(e);
+  dr.sets.splice(i,1);syncAndSave(e,dr);}
+function commitSet(id,i){
+  const e=exById(id),dr=draftFor(e),s=dr.sets[i];
+  if(s.done){s.done=false;haptic(4);syncAndSave(e,dr);return;}
+  if(s.reps===''||s.reps==null){toast('How many '+(isTime(e)?'seconds':'reps')+'?');return;}
+  s.done=true;haptic([10,30,10]);
+  if(!D.workout)startWorkout(true);
+  startRest();
+  syncAndSave(e,dr);
+}
+/* One place where a draft turns into stored history, so a set can never be
+   half-saved and the working weight always follows what you actually lifted. */
+function syncAndSave(e,dr){
+  const done=dr.sets.filter(s=>s.done&&s.reps!==''&&s.reps!=null);
+  const existing=todayLog(e.id);
+  if(!done.length){
+    if(existing)D.logs.splice(D.logs.indexOf(existing),1);
+  }else{
+    const sets=done.map(s=>({reps:+s.reps,w:s.w!=null?s.w:dr.w}));
+    if(existing){existing.sets=sets;existing.w=dr.w;existing.ts=Date.now();}
+    else D.logs.push({id:uid('g'),exId:e.id,date:today(),ts:Date.now(),w:dr.w,sets:sets});
+    e.w=dr.w;
+    const m=estMax(e);if(m&&(e.rec==null||m>e.rec))e.rec=Math.round(m*10)/10;
+  }
+  save();render();
+}
+function setNote(id,v){const e=exById(id);
+  if(v.trim())e.note=v.trim();else delete e.note;save();}
+function delLog(lid){
+  const i=D.logs.findIndex(l=>l.id===lid);if(i<0)return;
+  const snap=D.logs[i];D.logs.splice(i,1);delete DRAFTS[snap.exId];save();render();
+  toast('Deleted',()=>{D.logs.splice(Math.min(i,D.logs.length),0,snap);delete DRAFTS[snap.exId];save();render();});
+}
+
+/* ── the clock ───────────────────────────────────────────────── */
+function renderClock(){
+  const w=D.workout;
+  const t=w?fmtClock(Date.now()-w.start):'0:00';
+  const n=w?D.logs.filter(l=>l.date===today()).length:0;
+  const wk=trainedThisWeek().filter(x=>x.done).length;
+  return `<div class="wk${w?' on':''}">
+    <button class="wk-b" onclick="${w?'stopWorkout()':'startWorkout()'}">${w?'STOP':'START'}</button>
+    <span class="wk-t" id="wk-t">${t}</span>
+    <span class="wk-s">${w?n+' LIFTS LOGGED':wk+' OF 6 THIS WEEK'}</span></div>`;
+}
+function startWorkout(quiet){
+  D.workout={start:Date.now()};save();
+  if(!quiet){render();haptic([12,30,12]);toast('Workout started');}
+}
+function stopWorkout(){
+  const w=D.workout;if(!w)return;
+  const mins=Date.now()-w.start;
+  D.sessions.push({id:uid('s'),date:today(),start:w.start,end:Date.now()});
+  D.workout=null;save();render();haptic([14,40,14]);
+  toast('Done — '+fmtMins(mins));
+}
+function syncWorkoutTick(){
+  clearInterval(TICK);
+  if(!D.workout)return;
+  TICK=setInterval(()=>{
+    const el=document.getElementById('wk-t');
+    if(!el||!D.workout){clearInterval(TICK);return;}
+    el.textContent=fmtClock(Date.now()-D.workout.start);
+  },1000);
+}
+function startRest(){
+  RESTEND=Date.now()+(D.settings.rest|0||90)*1000;
+  const el=document.getElementById('rest');el.classList.add('on');
+  clearInterval(RESTT);
+  RESTT=setInterval(()=>{
+    const left=Math.max(0,RESTEND-Date.now());
+    document.getElementById('rest-t').textContent=fmtDur(left/1000);
+    if(left<=0){stopRest();haptic([20,60,20,60,20]);}
+  },250);
+}
+function stopRest(){clearInterval(RESTT);document.getElementById('rest').classList.remove('on');}
+
+/* ── history ─────────────────────────────────────────────────── */
+function renderHistory(){
+  const m=CALM||new Date();
+  const y=m.getFullYear(),mo=m.getMonth();
+  const first=new Date(y,mo,1),pad=(first.getDay()+6)%7;
+  const days=new Date(y,mo+1,0).getDate();
+  const trained=D.logs.filter(l=>ymOf(l.date)===ymOf(ymd(first))).length;
+
+  let cells='';
+  for(let i=0;i<pad;i++)cells+=`<div class="cd pad"></div>`;
+  for(let d=1;d<=days;d++){
+    const ds=ymd(new Date(y,mo,d)),went=trainedOn(ds),isT=ds===today();
+    const fut=new Date(y,mo,d)>new Date();
+    cells+=`<div class="cd${went?' went':''}${isT?' today':''}${fut?' future':''}">${d}</div>`;
+  }
+  const all=D.logs.length,sess=D.sessions.length;
+  const totalMs=sum(D.sessions,s=>(s.end||0)-(s.start||0));
+  const prs=D.exercises.map(e=>({e:e,b:bestEffort(e)})).filter(x=>x.b)
+    .sort((a,b)=>b.b.date.localeCompare(a.b.date)).slice(0,8);
+
+  return `<div class="top"><h1>History</h1>
+    <div class="meta"><button onclick="setSub('sheet')">SHEET</button></div></div>
+  <div class="cal-nav">
+    <button onclick="calMove(-1)" aria-label="Previous month">‹</button>
+    <span class="mo">${MONS[mo]} ${y}</span>
+    <button onclick="calMove(1)" aria-label="Next month">›</button></div>
+  <div class="dow">${['M','T','W','T','F','S','S'].map(d=>`<div>${d}</div>`).join('')}</div>
+  <div class="grid7">${cells}</div>
+  <div class="strip" style="margin-top:16px">
+    <div><div class="n">${trained}</div><div class="l">LOGS THIS MONTH</div></div>
+    <div><div class="n">${sess}</div><div class="l">SESSIONS</div></div>
+    <div><div class="n">${sess?fmtMins(totalMs/sess):'—'}</div><div class="l">AVERAGE</div></div>
+  </div>
+  <div class="lab">Recent bests<span class="r">${all} LOGS</span></div>
+  ${prs.length?prs.map(x=>`<div class="row"><div class="nm">${esc(x.e.name)}<i>${relDate(x.b.date)}</i></div>
+    <span class="v pos">${fmtKg(x.b.w)}kg × ${x.b.reps}</span></div>`).join('')
+    :`<div class="row"><div class="nm" style="color:var(--mut)">Nothing logged yet</div></div>`}
+  <div class="spacer"></div>`;
+}
+function calMove(d){
+  const m=CALM||new Date();
+  CALM=new Date(m.getFullYear(),m.getMonth()+d,1);render();haptic(4);
+}
+
+/* ── nutrition ───────────────────────────────────────────────── */
+function renderFood(){
+  const n=D.nutrition;
+  const need=D.staples.filter(s=>!s.have);
+  const cost=sum(need,s=>s.cost);
+  return `<div class="top"><h1>Food</h1>
+    <div class="meta"><button onclick="setSub('sheet')">SHEET</button></div></div>
+  <div class="hero"><div class="v">${(+n.kcal||0).toLocaleString('en-GB')}<small> kcal</small></div>
+    <div class="u">DAILY TARGET · <b>${+n.protein||0}P</b> · <b>${+n.carbs||0}C</b> · <b>${+n.fat||0}F</b></div></div>
+  <div class="lab">Targets<button onclick="macroSheet()">EDIT</button></div>
+  <div class="strip">
+    <div><div class="n">${+n.protein||0}</div><div class="l">PROTEIN G</div></div>
+    <div><div class="n">${+n.carbs||0}</div><div class="l">CARBS G</div></div>
+    <div><div class="n">${+n.fat||0}</div><div class="l">FAT G</div></div>
+  </div>
+
+  <div class="lab">Shopping list<span class="r">${need.length} TO BUY${cost?' · '+money(cost):''}</span>
+    <button onclick="editStaple(null)">+ ADD</button></div>
+  ${D.staples.length?D.staples.map(s=>`<div class="row${s.have?' paid':''}">
+      <button class="dot${s.have?'':' o'}" onclick="toggleStaple('${s.id}')"
+        aria-label="${s.have?'Mark as needed':'Mark as bought'}" style="padding:0"></button>
+      <button class="nm" onclick="editStaple('${s.id}')" style="text-align:left">${esc(s.name)}${
+        s.qty?'<i>'+esc(s.qty)+'</i>':''}</button>
+      ${s.cost?`<span class="v${s.have?' mut':''}">${money(s.cost)}</span>`:''}
+      </div>`).join('')
+    :`<div class="row"><div class="nm" style="color:var(--mut)">Nothing on the list</div></div>`}
+  ${cost?`<div class="gnote">This week's list comes to <b>${money(cost)}</b> against a food budget of
+    <b>${money(+D.settings.food||0)}</b> a month.</div>`:''}
+
+  <div class="lab">Recipes<span class="r">${D.recipes.length}</span>
+    <button onclick="editRecipe(null)">+ ADD</button></div>
+  ${D.recipes.length?D.recipes.map(r=>`<div class="row tap">
+      <button class="nm" onclick="editRecipe('${r.id}')" style="text-align:left">${esc(r.name)}
+        <i>${r.serves?r.serves+' serves · ':''}${r.kcal?r.kcal+' kcal · ':''}${r.p||0}P ${r.c||0}C ${r.f||0}F</i></button>
+      </div>`).join('')
+    :`<div class="row"><div class="nm" style="color:var(--mut)">No recipes saved</div></div>`}
+  <div class="spacer"></div>`;
+}
+function toggleStaple(id){
+  const s=D.staples.find(x=>x.id===id);if(!s)return;
+  s.have=!s.have;save();haptic(6);render();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CAR
+   Cost per mile is the headline, not the odometer — it's the number that
+   tells you whether a journey was worth it. Insurance, tax and the MOT
+   are the same ledger records Money holds; one entry, two pages.
+   ═══════════════════════════════════════════════════════════════ */
+function renderCar(){
+  const f=fuelStats(),f30=fuelLast30();
+  const carBills=activeLedger().filter(l=>(l.tags||[]).includes('car'));
+  const now=new Date(),dayNow=now.getDate();
+  const dates=carBills.map(l=>{
+    if(l.cadence==='annual'){
+      const due=new Date(now.getFullYear(),(l.month|0)-1,l.day||1);
+      if(due<new Date(now.getFullYear(),now.getMonth(),dayNow))due.setFullYear(due.getFullYear()+1);
+      return {l:l,in:Math.round((due-new Date(now.getFullYear(),now.getMonth(),dayNow))/86400000),annual:true};
+    }
+    let dd=l.day-dayNow;
+    if(dd<0)dd+=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
+    return {l:l,in:dd};
+  }).sort((a,b)=>a.in-b.in);
+
+  const open=D.fixes.filter(x=>!x.done),doneFix=D.fixes.filter(x=>x.done);
+  const openCost=sum(open,x=>x.cost);
+
+  let h=`<div class="top"><h1>Car</h1><div class="meta">${
+    f.odo?f.odo.toLocaleString('en-GB')+' MI':'NO MILEAGE YET'}</div></div>`;
+
+  if(f.legs.length){
+    h+=`<div class="hero"><div class="v">${(f.cpm*100).toFixed(1)}<small>p</small></div>
+      <div class="u">PER MILE · <b>${f.mpg.toFixed(1)}</b> MPG · <b>${money(f30)}</b> FUEL LAST 30 DAYS</div></div>
+    <div class="strip">
+      <div><div class="n">${f.miles.toLocaleString('en-GB')}</div><div class="l">MILES TRACKED</div></div>
+      <div><div class="n">${money(f.cost)}</div><div class="l">FUEL TRACKED</div></div>
+      <div><div class="n">${f.last?f.last.mpg.toFixed(1):'—'}</div><div class="l">LAST TANK MPG</div></div>
+    </div>`;
+    const budget=+D.settings.fuel||0;
+    if(budget&&f30)h+=`<div class="gnote">Your fuel budget is <b>${money(budget)}</b> a month; the last 30 days
+      actually cost <b>${money(f30)}</b>. ${f30>budget?'That is <b>'+money(f30-budget)+'</b> over.'
+      :'That is <b>'+money(budget-f30)+'</b> under.'}</div>`;
+  }else{
+    h+=`<div class="hero"><div class="v">—<small>p</small></div>
+      <div class="u">PER MILE · LOG TWO FILL-UPS AND THIS STARTS WORKING</div></div>`;
+  }
+
+  if(dates.length){
+    h+=`<div class="lab">Dates ahead<span class="r">FROM MONEY</span></div>`;
+    dates.forEach(x=>{
+      h+=`<div class="row tap"><span class="d">${x.annual?MONS[(x.l.month|0)-1].toUpperCase():x.l.day}</span>
+        <button class="nm" onclick="editLedger('${x.l.id}')" style="text-align:left">${esc(x.l.name)}
+          <i>${x.in===0?'Today':x.in===1?'Tomorrow':'In '+x.in+' days'}${x.annual?' · annual':' · monthly'}</i></button>
+        <span class="v">${money(x.l.amount)}</span></div>`;
+    });
+  }
+
+  h+=`<div class="lab">Needs doing<span class="r">${open.length}${openCost?' · '+money(openCost):''}</span>
+    <button onclick="editFix(null)">+ ADD</button></div>`;
+  if(!open.length&&!doneFix.length)
+    h+=`<div class="row"><div class="nm" style="color:var(--mut)">Nothing outstanding</div></div>`;
+  open.forEach(x=>{
+    h+=`<div class="row"><button class="dot o" onclick="toggleFix('${x.id}')" aria-label="Mark done" style="padding:0"></button>
+      <button class="nm" onclick="editFix('${x.id}')" style="text-align:left">${esc(x.name)}
+        ${x.due?`<i class="warn">Due ${x.due}</i>`:x.note?'<i>'+esc(x.note)+'</i>':''}</button>
+      ${x.cost?`<span class="v">${money(x.cost)}</span>`:''}</div>`;
+  });
+  if(openCost&&netPosition()<0)
+    h+=`<div class="gnote"><b>${money(openCost)}</b> of work is queued up against a month that is already
+      <b>${money(netPosition())}</b> short. Worth deciding what waits.</div>`;
+  doneFix.slice(0,3).forEach(x=>{
+    h+=`<div class="row paid"><span class="dot"></span>
+      <button class="nm" onclick="editFix('${x.id}')" style="text-align:left">${esc(x.name)}<i>Done</i></button>
+      ${x.cost?`<span class="v mut">${money(x.cost)}</span>`:''}</div>`;
+  });
+
+  h+=`<div class="lab">Fuel log<span class="r">${D.fuel.length} FILL-UPS</span>
+    <button onclick="editFuel(null)">+ ADD</button></div>`;
+  if(!D.fuel.length)
+    h+=`<div class="row"><div class="nm" style="color:var(--mut)">No fill-ups yet — two gives you MPG</div></div>`;
+  D.fuel.slice().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,8).forEach(x=>{
+    const leg=f.legs.find(l=>l.date===x.date);
+    h+=`<div class="row tap"><span class="d">${x.date.slice(8)}</span>
+      <button class="nm" onclick="editFuel('${x.id}')" style="text-align:left">${(+x.litres||0).toFixed(1)}L${
+        x.litres&&x.cost?' @ £'+(x.cost/x.litres).toFixed(2):''}
+        <i>${(+x.odo||0).toLocaleString('en-GB')} mi${leg?' · '+leg.miles+' mi · '+leg.mpg.toFixed(1)+' mpg':''}</i></button>
+      <span class="v">${money(x.cost)}</span></div>`;
+  });
+
+  h+=`<div class="lab">Service history<span class="r">${D.service.length}</span>
+    <button onclick="editService(null)">+ ADD</button></div>`;
+  if(!D.service.length)
+    h+=`<div class="row"><div class="nm" style="color:var(--mut)">Nothing logged</div></div>`;
+  D.service.slice().sort((a,b)=>b.date.localeCompare(a.date)).forEach(x=>{
+    h+=`<div class="row tap"><span class="d">${MONS[+x.date.slice(5,7)-1]}</span>
+      <button class="nm" onclick="editService('${x.id}')" style="text-align:left">${esc(x.name)}
+        <i>${x.odo?(+x.odo).toLocaleString('en-GB')+' mi':''}${x.note?(x.odo?' · ':'')+esc(x.note):''}</i></button>
+      ${x.cost?`<span class="v">${money(x.cost)}</span>`:''}</div>`;
+  });
+  return h+`<div class="spacer"></div>`;
+}
+function toggleFix(id){
+  const x=D.fixes.find(f=>f.id===id);if(!x)return;
+  x.done=!x.done;save();haptic(8);render();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GOALS
+   A goal is a name, an optional headline number, and steps. Steps can
+   watch real data and tick themselves, and can stay locked until an
+   earlier step finishes — which is what makes it a tech tree rather
+   than a to-do list you keep in sync by hand.
+   ═══════════════════════════════════════════════════════════════ */
+const BINDS=[
+  {k:'',          label:'I tick it myself'},
+  {k:'debtTotal', label:'Total debt',        unit:'£', dir:'lte'},
+  {k:'debtOne',   label:'A debt is cleared', ref:'debt'},
+  {k:'savings',   label:'Savings balance',   unit:'£', dir:'gte'},
+  {k:'wage',      label:'Monthly income',    unit:'£', dir:'gte'},
+  {k:'net',       label:'Monthly net',       unit:'£', dir:'gte'},
+  {k:'oneRm',     label:'Estimated 1RM',     unit:'kg',dir:'gte', ref:'exercise'},
+  {k:'weekDays',  label:'Days trained this week',      dir:'gte'}
+];
+function bindValue(b,ref){
+  switch(b){
+    case 'debtTotal': return debtSettle();
+    case 'debtOne':   {const d=D.debts.find(x=>x.id===ref);return d?debtCalc(d).settle:null;}
+    case 'savings':   return +D.settings.savings||0;
+    case 'wage':      return +D.settings.wage||0;
+    case 'net':       return netPosition();
+    case 'oneRm':     {const e=exById(ref);return e?estMax(e):null;}
+    case 'weekDays':  return trainedThisWeek().filter(w=>w.done).length;
+  }
+  return null;
+}
+function bindLabel(b,ref,v){
+  if(b==='debtOne'){const d=D.debts.find(x=>x.id===ref);
+    return v!=null?(v<=0?'CLEARED':money(v)+(d?' LEFT':'')):'—';}
+  const def=BINDS.find(x=>x.k===b);
+  if(v==null)return '—';
+  return def&&def.unit==='£'?money(v):def&&def.unit==='kg'?fmtKg(v)+'kg':String(v);
+}
+/* A step is done when its number has crossed the line, or when you ticked
+   it. Locked steps wait on an earlier one and can't be ticked early. */
+function stepState(t,s,seen){
+  seen=seen||{};
+  let locked=false;
+  if(s.after&&!seen[s.id]){                       // guard: two steps can be edited into a loop
+    seen[s.id]=1;
+    const prev=(t.steps||[]).find(x=>x.id===s.after);
+    locked=!!(prev&&!stepState(t,prev,seen).done);
+  }
+  if(!s.bind)return {done:!!s.done,locked:locked,value:null,label:''};
+  const v=bindValue(s.bind,s.ref);
+  const target=+s.value||0;
+  const dir=s.cmp||(BINDS.find(x=>x.k===s.bind)||{}).dir||'gte';
+  const done=v==null?false:(s.bind==='debtOne'?v<=0:(dir==='lte'?v<=target:v>=target));
+  return {done:done,locked:locked,value:v,label:bindLabel(s.bind,s.ref,v)};
+}
+function goalProgress(t){
+  if(t.source){
+    const s=D.settings;
+    if(t.source==='debtTotal'){
+      const now=debtSettle(),start=sum(D.debts,d=>+d.total||+d.principal||0);
+      return {pct:start?1-now/start:0,label:money(now),
+              sub:money(debtService())+'/MO · '+D.debts.filter(d=>!debtCalc(d).done).length+' LEFT'};
+    }
+    if(t.source==='savings'){const v=+s.savings||0;
+      return {pct:t.goal?v/t.goal:0,label:money(v),sub:'OF '+money(t.goal)};}
+    if(t.source==='income'){const v=+s.wage||0;
+      return {pct:t.goal?v/t.goal:0,label:money(v),sub:'OF '+money(t.goal)+'/MO'};}
+  }
+  const st=(t.steps||[]).map(s=>stepState(t,s));
+  const done=st.filter(x=>x.done).length;
+  return {pct:st.length?done/st.length:0,label:done+'/'+st.length,
+          sub:st.length?(st.length-done)+' STEPS LEFT':'NO STEPS YET'};
+}
+function renderGoals(){
+  let h=`<div class="top"><h1>Goals</h1>
+    <div class="meta"><button onclick="editGoal(null)">+ NEW</button></div></div>`;
+  if(!D.targets.length)
+    return h+`<div class="empty"><h3>No goals yet</h3>
+      <p>One main objective, with steps under it. Steps can watch your real numbers and tick themselves.</p></div>
+      <div style="padding:0 16px"><button class="sbtn solid" style="width:100%"
+        onclick="editGoal(null)">Add your first goal</button></div><div class="spacer"></div>`;
+
+  TIERS.forEach(tier=>{
+    const gs=D.targets.filter(t=>(t.tier||'month')===tier);
+    if(!gs.length)return;
+    h+=`<div class="lab">${tier==='life'?'Main quest':tier==='year'?'This year':
+        tier==='month'?'This month':'This week'}<span class="r">${gs.length}</span></div>`;
+    gs.forEach(t=>{
+      const p=goalProgress(t);
+      h+=`<div class="quest${t.pinned?' pin':''}">
+        <div class="qh">
+          <button class="nm" onclick="editGoal('${t.id}')" style="text-align:left;flex:1">${esc(t.name)}</button>
+          ${t.pinned?'<span class="qt">PINNED</span>':''}
+          <span class="pct">${p.label}</span></div>
+        <div style="display:flex;align-items:center;gap:9px;margin-bottom:4px">
+          <span style="font-size:9.5px;font-weight:800;color:var(--mut);letter-spacing:.3px;width:104px;flex-shrink:0">${p.sub}</span>
+          <span class="bar"><i style="width:${pct(p.pct)}"></i></span>
+          <span style="font-size:9.5px;font-weight:800;color:var(--mut)">${pct(p.pct)}</span></div>`;
+      (t.steps||[]).forEach(s=>{
+        const st=stepState(t,s);
+        h+=`<div class="step${st.done?' done':''}${st.locked?' lock':''}">
+          <button class="bx" onclick="tickStep('${t.id}','${s.id}')"
+            aria-label="${st.done?'Untick':'Tick'} ${esc(s.name)}">${st.done?'✓':''}</button>
+          <span class="sn">${esc(s.name)}</span>
+          <span class="sv${st.done?' pos':''}">${st.locked?'LOCKED':(s.bind?st.label:'')}</span>
+          <button class="rm" onclick="delStep('${t.id}','${s.id}')" aria-label="Remove step">✕</button></div>`;
+      });
+      h+=`<button class="addset" onclick="editStep('${t.id}',null)">+ ADD A STEP</button></div>`;
+    });
+  });
+  return h+`<div class="spacer"></div>`;
+}
+/* A bound step can't be ticked by hand — its number decides. Saying so is
+   better than letting a tap do nothing. */
+function tickStep(gid,sid){
+  const t=D.targets.find(x=>x.id===gid);if(!t)return;
+  const s=(t.steps||[]).find(x=>x.id===sid);if(!s)return;
+  const st=stepState(t,s);
+  if(st.locked){toast('Finish the step before it first');return;}
+  if(s.bind){toast('This one ticks itself — '+st.label);return;}
+  s.done=!s.done;save();haptic(8);render();
+}
+function delStep(gid,sid){
+  const t=D.targets.find(x=>x.id===gid);if(!t)return;
+  const i=(t.steps||[]).findIndex(x=>x.id===sid);if(i<0)return;
+  const snap=t.steps[i];t.steps.splice(i,1);save();render();
+  toast('Removed',()=>{t.steps.splice(Math.min(i,t.steps.length),0,snap);save();render();});
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SHEETS
+   One declarative form drives every editor in the app. Adding a field to
+   anything is a line in a list rather than another hand-built form, which
+   is what keeps "add your own data points" achievable.
+   ═══════════════════════════════════════════════════════════════ */
+let SHEET=null, FORM=null;
+
 function openSheet(html){
-  closeSheet(true);
+  /* Repainting a form replaces the sheet; it does not close it. Tearing down
+     through closeSheet here would clear FORM mid-edit, so every segmented
+     control, tag or solver button would break on its second tap. */
+  if(SHEET){SHEET.remove();SHEET=null;}
   const bg=document.createElement('div');
-  bg.className='sheet-bg';bg.innerHTML='<div class="sheet">'+html+'</div>';
+  bg.className='sheet-bg';
+  bg.innerHTML='<div class="sheet">'+html+'</div>';
   bg.addEventListener('click',e=>{if(e.target===bg)closeSheet();});
   document.body.appendChild(bg);SHEET=bg;
   requestAnimationFrame(()=>bg.classList.add('on'));
 }
 function closeSheet(now){
-  if(!SHEET)return;const s=SHEET;SHEET=null;
+  if(!SHEET){FORM=null;return;}
+  const s=SHEET;SHEET=null;FORM=null;
   s.classList.remove('on');
   if(now)s.remove();else setTimeout(()=>s.remove(),260);
 }
-let EDIT=null;
-function editLedger(id,cadence){
-  const l=id?D.ledger.find(x=>x.id===id):null;
-  EDIT=l?JSON.parse(JSON.stringify(l))
-        :{id:null,name:'',amount:'',cadence:cadence||'monthly',day:1,month:1,tags:[],debtId:null,active:true};
-  paintLedger();
-}
-function paintLedger(){
-  const e=EDIT,ann=e.cadence==='annual';
-  openSheet(`<h2>${e.id?'Edit':'New'} ${ann?'annual bill':'bill'}</h2>
-  <div class="sub">${ann?'Divided by twelve for the monthly charge.':'Ticks itself off as the date passes each month.'}</div>
-  <div class="ef"><label>Name</label><input id="e-name" value="${esc(e.name)}" placeholder="Broadband"></div>
-  <div class="efr">
-    <div class="ef"><label>Amount £</label><input id="e-amt" type="number" inputmode="decimal" value="${e.amount}"></div>
-    <div class="ef"><label>Day</label><input id="e-day" type="number" inputmode="numeric" min="1" max="31" value="${e.day||1}"></div>
-    ${ann?`<div class="ef"><label>Month</label><select id="e-mon">${MONS.map((m,i)=>
-      `<option value="${i+1}"${(e.month|0)===i+1?' selected':''}>${m}</option>`).join('')}</select></div>`:''}
-  </div>
-  <div class="ef"><label>Repeats</label><div class="eseg">
-    <button class="${ann?'':'on'}" onclick="flipCadence('monthly')">Monthly</button>
-    <button class="${ann?'on':''}" onclick="flipCadence('annual')">Annual</button></div></div>
-  <div class="ef"><label>Tags</label><div class="tagrow">${TAGS.map(t=>
-    `<button class="${(e.tags||[]).includes(t)?'on':''}" onclick="flipTag('${t}')">${t}</button>`).join('')}</div></div>
-  ${D.debts.length?`<div class="ef"><label>Services a debt</label><select id="e-debt">
-    <option value="">No</option>${D.debts.map(d=>
-    `<option value="${d.id}"${e.debtId===d.id?' selected':''}>${esc(d.name)}</option>`).join('')}</select></div>`:''}
-  <div class="srow"><button class="sbtn solid" onclick="saveLedger()">Save</button>
-    ${e.id?`<button class="sbtn danger" onclick="delLedger()">Delete</button>`:
-           `<button class="sbtn" onclick="closeSheet()">Cancel</button>`}</div>`);
-}
-function grabLedger(){
-  const g=id=>document.getElementById(id);
-  EDIT.name=g('e-name').value;EDIT.amount=parseFloat(g('e-amt').value)||0;
-  EDIT.day=Math.max(1,Math.min(31,parseInt(g('e-day').value)||1));
-  if(g('e-mon'))EDIT.month=parseInt(g('e-mon').value)||1;
-  if(g('e-debt'))EDIT.debtId=g('e-debt').value||null;
-}
-function flipCadence(c){grabLedger();EDIT.cadence=c;paintLedger();}
-function flipTag(t){
-  grabLedger();EDIT.tags=EDIT.tags||[];
-  const i=EDIT.tags.indexOf(t);if(i<0)EDIT.tags.push(t);else EDIT.tags.splice(i,1);
-  paintLedger();
-}
-function saveLedger(){
-  grabLedger();
-  if(!EDIT.name.trim()){toast('Give it a name');return;}
-  if(EDIT.id){const i=D.ledger.findIndex(x=>x.id===EDIT.id);D.ledger[i]=EDIT;}
-  else{EDIT.id=uid('l');D.ledger.push(EDIT);}
-  save();closeSheet();render();haptic(8);toast('Saved');
-}
-function delLedger(){
-  const i=D.ledger.findIndex(x=>x.id===EDIT.id);if(i<0)return;
-  const snap=D.ledger[i];D.ledger.splice(i,1);save();closeSheet();render();
-  toast('Deleted',()=>{D.ledger.splice(Math.min(i,D.ledger.length),0,snap);save();render();});
-}
 
-function editDebt(id){
-  const d=id?D.debts.find(x=>x.id===id):null;
-  EDIT=d?JSON.parse(JSON.stringify(d))
-       :{id:null,name:'',original:'',monthly:'',start:today(),months:12};
-  const c=d?debtCalc(d):null;
-  openSheet(`<h2>${d?'Edit':'New'} debt</h2>
-  <div class="sub">${c?`${c.paid} of ${d.months} paid · ${money(c.remaining)} left · last payment ${c.endLabel}, yours again from ${c.freeLabel}.`
-    :'Balance and months left are worked out from the start date, so they are never stale.'}</div>
-  <div class="ef"><label>Name</label><input id="d-name" value="${esc(EDIT.name)}" placeholder="Car loan"></div>
-  <div class="efr">
-    <div class="ef"><label>Original £</label><input id="d-orig" type="number" inputmode="decimal" value="${EDIT.original}"></div>
-    <div class="ef"><label>Monthly £</label><input id="d-mo" type="number" inputmode="decimal" value="${EDIT.monthly}"></div>
-  </div>
-  <div class="efr">
-    <div class="ef"><label>Start date</label><input id="d-start" type="date" value="${EDIT.start}"></div>
-    <div class="ef"><label>Term months</label><input id="d-months" type="number" inputmode="numeric" value="${EDIT.months}"></div>
-  </div>
-  <div class="srow"><button class="sbtn solid" onclick="saveDebt()">Save</button>
-    ${EDIT.id?`<button class="sbtn danger" onclick="delDebt()">Delete</button>`:
-              `<button class="sbtn" onclick="closeSheet()">Cancel</button>`}</div>`);
+function fieldHtml(f,v){
+  const id='f-'+f.k;
+  const lab=`<label for="${id}">${f.label}</label>`;
+  if(f.type==='seg')
+    return `<div class="ef"><label>${f.label}</label><div class="eseg">${f.opts.map(o=>
+      `<button class="${String(v)===String(o.k)?'on':''}" onclick="setField('${f.k}','${o.k}')">${o.label}</button>`
+      ).join('')}</div></div>`;
+  if(f.type==='tags')
+    return `<div class="ef"><label>${f.label}</label><div class="tagrow">${TAGS.map(t=>
+      `<button class="${(v||[]).includes(t)?'on':''}" onclick="toggleField('${f.k}','${t}')">${t}</button>`
+      ).join('')}</div></div>`;
+  if(f.type==='select')
+    return `<div class="ef">${lab}<select id="${id}">${f.opts.map(o=>
+      `<option value="${esc(o.k)}"${String(v)===String(o.k)?' selected':''}>${esc(o.label)}</option>`
+      ).join('')}</select></div>`;
+  if(f.type==='textarea')
+    return `<div class="ef">${lab}<textarea id="${id}" placeholder="${esc(f.ph||'')}">${esc(v||'')}</textarea></div>`;
+  const t=f.type==='number'?'number':f.type==='date'?'date':'text';
+  const im=f.type==='number'?(f.int?'numeric':'decimal'):'';
+  return `<div class="ef">${lab}<input id="${id}" type="${t}"${im?' inputmode="'+im+'"':''}
+    value="${esc(v==null?'':v)}" placeholder="${esc(f.ph||'')}"${f.step?' step="'+f.step+'"':''}>
+    ${f.note?`<div class="note">${f.note}</div>`:''}</div>`;
 }
-function saveDebt(){
-  const g=id=>document.getElementById(id).value;
-  EDIT.name=g('d-name');EDIT.original=parseFloat(g('d-orig'))||0;
-  EDIT.monthly=parseFloat(g('d-mo'))||0;EDIT.start=g('d-start')||today();
-  EDIT.months=parseInt(g('d-months'))||0;
-  if(!EDIT.name.trim()){toast('Give it a name');return;}
-  if(EDIT.id){const i=D.debts.findIndex(x=>x.id===EDIT.id);D.debts[i]=EDIT;}
-  else{EDIT.id=uid('d');D.debts.push(EDIT);}
+function paintForm(){
+  const f=FORM;
+  const rows=[];
+  let i=0;
+  while(i<f.fields.length){
+    const cur=f.fields[i];
+    if(cur.hide&&cur.hide(f.value)){i++;continue;}
+    if(cur.half){
+      const grp=[];
+      while(i<f.fields.length&&f.fields[i].half&&!(f.fields[i].hide&&f.fields[i].hide(f.value))){
+        grp.push(f.fields[i]);i++;
+        if(grp.length===(cur.of||2))break;
+      }
+      rows.push(`<div class="efr">${grp.map(x=>fieldHtml(x,f.value[x.k])).join('')}</div>`);
+    }else{rows.push(fieldHtml(cur,f.value[cur.k]));i++;}
+  }
+  openSheet(`<h2>${esc(f.title)}</h2>${f.sub?`<div class="sub">${f.sub}</div>`:''}
+    ${rows.join('')}
+    ${f.extra?f.extra(f.value):''}
+    <div class="srow"><button class="sbtn solid" onclick="submitForm()">Save</button>
+      ${f.del?`<button class="sbtn danger" onclick="deleteForm()">Delete</button>`
+             :`<button class="sbtn" onclick="closeSheet()">Cancel</button>`}</div>`);
+}
+function grabForm(){
+  if(!FORM)return;
+  FORM.fields.forEach(f=>{
+    if(f.type==='seg'||f.type==='tags')return;
+    const el=document.getElementById('f-'+f.k);
+    if(!el)return;
+    FORM.value[f.k]=f.type==='number'?(el.value===''?null:parseFloat(el.value)):el.value;
+  });
+}
+function setField(k,v){grabForm();FORM.value[k]=v;paintForm();}
+function toggleField(k,v){
+  grabForm();
+  const a=FORM.value[k]=FORM.value[k]||[];
+  const i=a.indexOf(v);if(i<0)a.push(v);else a.splice(i,1);
+  paintForm();
+}
+function submitForm(){
+  grabForm();
+  const r=FORM.save(FORM.value);
+  if(r===false)return;
   save();closeSheet();render();haptic(8);toast('Saved');
 }
-function delDebt(){
-  const i=D.debts.findIndex(x=>x.id===EDIT.id);if(i<0)return;
-  const snap=D.debts[i];D.debts.splice(i,1);
-  D.ledger.forEach(l=>{if(l.debtId===snap.id)l.debtId=null;});
+function deleteForm(){
+  const f=FORM;grabForm();
+  const undo=f.del(f.value);
   save();closeSheet();render();
-  toast('Deleted',()=>{D.debts.splice(Math.min(i,D.debts.length),0,snap);save();render();});
+  toast('Deleted',undo||undefined);
+}
+function form(o){FORM=o;paintForm();}
+/* Remove one item from a list and hand back an undo that puts it where it was. */
+function pull(list,id){
+  const i=list.findIndex(x=>x.id===id);
+  if(i<0)return null;
+  const snap=list[i];list.splice(i,1);
+  return ()=>{list.splice(Math.min(i,list.length),0,snap);save();render();};
 }
 
-/* Export and import are the whole sync story for now — and the reason
+/* ── bills ───────────────────────────────────────────────────── */
+function editLedger(id,cadence){
+  const ex=id?D.ledger.find(x=>x.id===id):null;
+  form({
+    title:(ex?'Edit':'New')+' bill',
+    sub:'Ticks itself off as the date passes. Annual bills are divided by twelve for the monthly charge.',
+    value:ex?JSON.parse(JSON.stringify(ex))
+             :{id:null,name:'',amount:null,cadence:cadence||'monthly',day:1,month:1,
+               tags:[],debtId:'',active:true},
+    fields:[
+      {k:'name',label:'Name',ph:'Broadband'},
+      {k:'amount',label:'Amount £',type:'number',step:'0.01',half:true},
+      {k:'day',label:'Day',type:'number',int:true,half:true},
+      {k:'month',label:'Month',type:'select',half:true,
+       opts:MONS.map((m,i)=>({k:i+1,label:m})),hide:v=>v.cadence!=='annual'},
+      {k:'cadence',label:'Repeats',type:'seg',
+       opts:[{k:'monthly',label:'Monthly'},{k:'annual',label:'Annual'}]},
+      {k:'tags',label:'Tags',type:'tags'},
+      {k:'debtId',label:'Services a debt',type:'select',hide:()=>!D.debts.length,
+       opts:[{k:'',label:'No'}].concat(D.debts.map(d=>({k:d.id,label:d.name})))}
+    ],
+    save:v=>{
+      if(!String(v.name||'').trim()){toast('Give it a name');return false;}
+      v.amount=+v.amount||0;
+      v.day=clamp(parseInt(v.day)||1,1,31);
+      v.debtId=v.debtId||null;
+      if(v.id){const i=D.ledger.findIndex(x=>x.id===v.id);D.ledger[i]=v;}
+      else{v.id=uid('l');D.ledger.push(v);}
+    },
+    del:ex?(v=>pull(D.ledger,v.id)):null
+  });
+}
+
+/* ── debts ───────────────────────────────────────────────────── */
+function editDebt(id){
+  const ex=id?D.debts.find(x=>x.id===id):null;
+  form({
+    title:(ex?'Edit':'New')+' debt',
+    sub:'A schedule knows only what you will hand over. Give it what you actually borrowed and the rate, and it can tell you what clearing it today would cost instead.',
+    value:ex?JSON.parse(JSON.stringify(ex))
+             :{id:null,name:'',kind:'schedule',total:null,principal:null,apr:null,
+               monthly:null,start:today(),months:12,balloon:null,promoMonths:null,promoApr:null},
+    fields:[
+      {k:'name',label:'Name',ph:'Car loan'},
+      {k:'kind',label:'What do you know?',type:'seg',
+       opts:[{k:'schedule',label:'Total repayable'},{k:'apr',label:'Amount + rate'}]},
+      {k:'total',label:'Total repayable £',type:'number',step:'0.01',
+       hide:v=>v.kind!=='schedule',
+       note:'Every payment added up. The rate is already inside this number, so the app will not guess at one.'},
+      {k:'principal',label:'You borrowed £',type:'number',step:'0.01',half:true,hide:v=>v.kind!=='apr'},
+      {k:'apr',label:'APR %',type:'number',step:'0.01',half:true,hide:v=>v.kind!=='apr'},
+      {k:'monthly',label:'Monthly £',type:'number',step:'0.01',half:true},
+      {k:'months',label:'Term months',type:'number',int:true,half:true},
+      {k:'start',label:'Start date',type:'date',half:true},
+      {k:'balloon',label:'Final payment £',type:'number',step:'0.01',half:true,hide:v=>v.kind!=='apr'},
+      {k:'promoMonths',label:'0% months',type:'number',int:true,half:true,hide:v=>v.kind!=='apr'},
+      {k:'promoApr',label:'Rate during those %',type:'number',step:'0.01',half:true,hide:v=>v.kind!=='apr'}
+    ],
+    extra:debtExtra,
+    save:v=>{
+      if(!String(v.name||'').trim()){toast('Give it a name');return false;}
+      v.months=parseInt(v.months)||0;
+      ['total','principal','apr','monthly','balloon','promoMonths','promoApr']
+        .forEach(k=>{v[k]=v[k]==null||v[k]===''?null:+v[k];});
+      if(v.id){const i=D.debts.findIndex(x=>x.id===v.id);D.debts[i]=v;}
+      else{v.id=uid('d');D.debts.push(v);}
+    },
+    del:ex?(v=>{
+      D.ledger.forEach(l=>{if(l.debtId===v.id)l.debtId=null;});
+      return pull(D.debts,v.id);
+    }):null
+  });
+}
+/* The part that answers "what do I actually owe". Three solvers, because
+   you rarely have all four of borrowed / payment / term / rate — and the
+   one nobody ever tells you is the rate. */
+function debtExtra(v){
+  const c=debtCalc(v);
+  let h=`<div class="brk"><div class="bh">Where it stands</div>
+    <div class="kv"><span class="k">Payments made</span><span class="v">${c.paid} of ${c.months}</span></div>
+    <div class="kv"><span class="k">Pay it out as agreed</span><span class="v">${money(c.paymentsLeft)}</span></div>`;
+  if(c.ratedKnown){
+    h+=`<div class="kv"><span class="k">Clear it today</span><span class="v pos">${money(c.settle)}</span></div>
+      <div class="kv"><span class="k">Interest you'd skip</span><span class="v crit">${money(c.interestLeft)}</span></div>
+      <div class="kv"><span class="k">Interest over the whole thing</span><span class="v">${money(c.interestTotal)}</span></div>`;
+  }else{
+    h+=`<div class="kv"><span class="k">Clear it today</span><span class="v">Needs a rate</span></div>`;
+  }
+  h+=`<div class="kv"><span class="k">Last payment</span><span class="v">${c.endLabel}</span></div>
+    <div class="kv"><span class="k">Frees up</span><span class="v pos">${money(+v.monthly||0)}/mo from ${c.freeLabel}</span></div>`;
+
+  if(v.kind==='apr'){
+    const implied=solveApr(v.principal,v.monthly,v.months,v.balloon);
+    h+=`<div class="brk"><div class="bh">Work out the missing one</div>
+      <div class="note" style="font-size:10.5px;color:var(--mut);font-weight:600;line-height:1.5;margin-bottom:11px">
+        Fill in any three and solve for the fourth. If you know what you borrowed and what you pay,
+        <b>Find the rate</b> gives you the APR nobody put in writing${
+          implied!=null?` — currently <b>${implied.toFixed(1)}%</b>`:''}.</div>
+      <div class="srow"><button class="sbtn" onclick="solveField('apr')">Find the rate</button>
+        <button class="sbtn" onclick="solveField('monthly')">Find the payment</button></div>
+      <div class="srow"><button class="sbtn" onclick="solveField('principal')">Find what you borrowed</button></div></div>`;
+  }else{
+    const t=+v.total||0,pay=+v.monthly||0,n=v.months|0;
+    h+=`<div class="brk"><div class="bh">Turn this into a real balance</div>
+      <div class="note" style="font-size:10.5px;color:var(--mut);font-weight:600;line-height:1.5;margin-bottom:11px">
+        ${n&&pay?`${n} × ${money(pay)} is <b>${money(n*pay)}</b>${
+          t&&Math.abs(t-n*pay)>1?` — your total says ${money(t)}, so about <b>${money(Math.abs(t-n*pay))}</b>
+          of that is a fee or a final payment`:''}. `:''}
+        Switch to <b>Amount + rate</b> and put in what actually landed in your account. The app works the
+        rest out, and "clear it today" starts telling you the truth.</div>
+      <div class="srow"><button class="sbtn" onclick="convertToApr()">Switch to amount + rate</button></div></div>`;
+  }
+  return h+`</div>`;
+}
+function solveField(which){
+  grabForm();
+  const v=FORM.value;
+  if(which==='apr'){
+    const r=solveApr(v.principal,v.monthly,v.months,v.balloon);
+    if(r==null){toast('Needs the amount, the payment and the term');return;}
+    v.apr=Math.round(r*100)/100;
+    toast('Rate ≈ '+v.apr.toFixed(2)+'% APR');
+  }else if(which==='monthly'){
+    const p=solvePayment(+v.principal||0,+v.apr||0,v.months,v.balloon);
+    if(p==null||!isFinite(p)){toast('Needs the amount, the rate and the term');return;}
+    v.monthly=Math.round(p*100)/100;
+    toast('Payment ≈ '+money(v.monthly,true));
+  }else{
+    const p=solvePrincipal(v.monthly,+v.apr||0,v.months,v.balloon);
+    if(!isFinite(p)){toast('Needs the payment, the rate and the term');return;}
+    v.principal=Math.round(p*100)/100;
+    toast('Borrowed ≈ '+money(v.principal,true));
+  }
+  haptic(10);paintForm();
+}
+/* Carry the schedule over as a starting point: the total is not the
+   principal, but the payment and the term are right, so only one number
+   is left to find. */
+function convertToApr(){
+  grabForm();
+  const v=FORM.value;
+  v.kind='apr';
+  if(v.principal==null&&v.total)v.principal=+v.total;
+  paintForm();
+  toast('Now enter what actually landed in your account');
+}
+
+/* ── training ────────────────────────────────────────────────── */
+function editExercise(id){
+  const ex=id?exById(id):null;
+  form({
+    title:ex?ex.name:'New lift',
+    sub:'Category and body part decide where it sits in the sheet. Equipment sets the step size when you nudge the weight.',
+    value:ex?JSON.parse(JSON.stringify(ex))
+             :{id:null,name:'',cat:'PUSH',bp:'CHEST',type:'barbell',rec:null,w:null,note:'',hidden:false},
+    fields:[
+      {k:'name',label:'Name'},
+      {k:'cat',label:'Group',type:'select',opts:CATS.map(c=>({k:c,label:c}))},
+      {k:'bp',label:'Body part',type:'select',
+       opts:[].concat.apply([],CATS.map(c=>BPS[c])).map(b=>({k:b,label:b}))},
+      {k:'type',label:'Equipment',type:'select',
+       opts:Object.keys(INC).map(t=>({k:t,label:t}))},
+      {k:'rec',label:'1RM kg',type:'number',step:'0.5',half:true},
+      {k:'w',label:'Working kg',type:'number',step:'0.5',half:true},
+      {k:'note',label:'Notes',type:'textarea'},
+      {k:'hidden',label:'Show in the sheet',type:'seg',
+       opts:[{k:false,label:'Show'},{k:true,label:'Hide'}]}
+    ],
+    save:v=>{
+      if(!String(v.name||'').trim()){toast('Give it a name');return false;}
+      v.hidden=(String(v.hidden)==='true');
+      if(v.id){const i=D.exercises.findIndex(x=>x.id===v.id);D.exercises[i]=v;}
+      else{v.id=uid('x');D.exercises.push(v);}
+      delete DRAFTS[v.id];
+    },
+    /* Catalogue lifts come back on the next load, so hide rather than
+       delete — otherwise "delete" looks broken. */
+    del:ex?(v=>{
+      if(CAT.some(c=>c.id===v.id)){
+        const e=exById(v.id);e.hidden=true;OPEN=null;
+        return null;
+      }
+      OPEN=null;return pull(D.exercises,v.id);
+    }):null
+  });
+}
+function macroSheet(){
+  form({
+    title:'Daily targets',
+    sub:'What you are aiming at each day. Recipes below can be checked against these.',
+    value:Object.assign({},D.nutrition),
+    fields:[
+      {k:'kcal',label:'Calories',type:'number',int:true},
+      {k:'protein',label:'Protein g',type:'number',int:true,half:true},
+      {k:'carbs',label:'Carbs g',type:'number',int:true,half:true},
+      {k:'fat',label:'Fat g',type:'number',int:true,half:true}
+    ],
+    save:v=>{D.nutrition=Object.assign({},D.nutrition,{
+      kcal:+v.kcal||0,protein:+v.protein||0,carbs:+v.carbs||0,fat:+v.fat||0});}
+  });
+}
+function editStaple(id){
+  const ex=id?D.staples.find(x=>x.id===id):null;
+  form({
+    title:ex?'Edit item':'Add to the list',
+    sub:'The things you always need. Ticked items stay on the list for next time.',
+    value:ex?Object.assign({},ex):{id:null,name:'',qty:'',cost:null,have:false},
+    fields:[
+      {k:'name',label:'Item',ph:'Chicken thighs'},
+      {k:'qty',label:'How much',ph:'2kg',half:true},
+      {k:'cost',label:'Roughly £',type:'number',step:'0.01',half:true}
+    ],
+    save:v=>{
+      if(!String(v.name||'').trim()){toast('Name it');return false;}
+      v.cost=+v.cost||0;
+      if(v.id){const i=D.staples.findIndex(x=>x.id===v.id);D.staples[i]=v;}
+      else{v.id=uid('s');D.staples.push(v);}
+    },
+    del:ex?(v=>pull(D.staples,v.id)):null
+  });
+}
+function editRecipe(id){
+  const ex=id?D.recipes.find(x=>x.id===id):null;
+  form({
+    title:ex?ex.name:'New recipe',
+    sub:'Per serving, so it lines up with your daily targets.',
+    value:ex?Object.assign({},ex)
+             :{id:null,name:'',serves:1,kcal:null,p:null,c:null,f:null,ingredients:'',method:''},
+    fields:[
+      {k:'name',label:'Name'},
+      {k:'serves',label:'Serves',type:'number',int:true,half:true},
+      {k:'kcal',label:'Kcal each',type:'number',int:true,half:true},
+      {k:'p',label:'Protein g',type:'number',int:true,half:true,of:3},
+      {k:'c',label:'Carbs g',type:'number',int:true,half:true,of:3},
+      {k:'f',label:'Fat g',type:'number',int:true,half:true,of:3},
+      {k:'ingredients',label:'Ingredients',type:'textarea',ph:'One per line'},
+      {k:'method',label:'Method',type:'textarea'}
+    ],
+    save:v=>{
+      if(!String(v.name||'').trim()){toast('Name it');return false;}
+      if(v.id){const i=D.recipes.findIndex(x=>x.id===v.id);D.recipes[i]=v;}
+      else{v.id=uid('r');D.recipes.push(v);}
+    },
+    del:ex?(v=>pull(D.recipes,v.id)):null
+  });
+}
+
+/* ── car ─────────────────────────────────────────────────────── */
+function editFuel(id){
+  const ex=id?D.fuel.find(x=>x.id===id):null;
+  const f=fuelStats();
+  form({
+    title:ex?'Edit fill-up':'Fill-up',
+    sub:f.odo?`Last reading was ${f.odo.toLocaleString('en-GB')} miles. Two fill-ups is all it takes to start giving you MPG.`
+             :'Record the odometer each time — the gap between two fill-ups is what gives you MPG.',
+    value:ex?Object.assign({},ex):{id:null,date:today(),litres:null,cost:null,odo:null},
+    fields:[
+      {k:'date',label:'Date',type:'date'},
+      {k:'litres',label:'Litres',type:'number',step:'0.01',half:true},
+      {k:'cost',label:'Cost £',type:'number',step:'0.01',half:true},
+      {k:'odo',label:'Odometer miles',type:'number',int:true}
+    ],
+    save:v=>{
+      v.litres=+v.litres||0;v.cost=+v.cost||0;v.odo=+v.odo||0;
+      if(!v.odo){toast('The odometer reading is what makes this work');return false;}
+      if(v.id){const i=D.fuel.findIndex(x=>x.id===v.id);D.fuel[i]=v;}
+      else{v.id=uid('f');D.fuel.push(v);}
+      D.car.odo=Math.max(+D.car.odo||0,v.odo);
+    },
+    del:ex?(v=>pull(D.fuel,v.id)):null
+  });
+}
+function editService(id){
+  const ex=id?D.service.find(x=>x.id===id):null;
+  form({
+    title:ex?'Edit service':'Log work done',
+    sub:'What was done, when, and at what mileage.',
+    value:ex?Object.assign({},ex)
+             :{id:null,name:'',date:today(),odo:+D.car.odo||null,cost:null,note:''},
+    fields:[
+      {k:'name',label:'What was done',ph:'Full service'},
+      {k:'date',label:'Date',type:'date',half:true},
+      {k:'cost',label:'Cost £',type:'number',step:'0.01',half:true},
+      {k:'odo',label:'Mileage',type:'number',int:true},
+      {k:'note',label:'Notes',type:'textarea',ph:'Oil, filters, plugs'}
+    ],
+    save:v=>{
+      if(!String(v.name||'').trim()){toast('What was done?');return false;}
+      v.cost=+v.cost||0;v.odo=+v.odo||0;
+      if(v.id){const i=D.service.findIndex(x=>x.id===v.id);D.service[i]=v;}
+      else{v.id=uid('v');D.service.push(v);}
+    },
+    del:ex?(v=>pull(D.service,v.id)):null
+  });
+}
+function editFix(id){
+  const ex=id?D.fixes.find(x=>x.id===id):null;
+  form({
+    title:ex?'Edit job':'Needs doing',
+    sub:'A price here lands in the forecast before it lands on your card.',
+    value:ex?Object.assign({},ex):{id:null,name:'',cost:null,due:'',note:'',done:false},
+    fields:[
+      {k:'name',label:'What needs doing',ph:'Front discs and pads'},
+      {k:'cost',label:'Quoted £',type:'number',step:'0.01',half:true},
+      {k:'due',label:'Do it by',type:'date',half:true},
+      {k:'note',label:'Notes',type:'textarea'},
+      {k:'done',label:'Status',type:'seg',opts:[{k:false,label:'Outstanding'},{k:true,label:'Done'}]}
+    ],
+    save:v=>{
+      if(!String(v.name||'').trim()){toast('What needs doing?');return false;}
+      v.cost=+v.cost||0;v.done=(String(v.done)==='true');
+      if(v.id){const i=D.fixes.findIndex(x=>x.id===v.id);D.fixes[i]=v;}
+      else{v.id=uid('k');D.fixes.push(v);}
+    },
+    del:ex?(v=>pull(D.fixes,v.id)):null
+  });
+}
+
+/* ── goals ───────────────────────────────────────────────────── */
+function editGoal(id){
+  const ex=id?D.targets.find(x=>x.id===id):null;
+  form({
+    title:ex?'Edit goal':'New goal',
+    sub:'Pin one to put it on the Home page. Steps go on the goal once it is saved.',
+    value:ex?Object.assign({},ex,{steps:ex.steps||[]})
+             :{id:null,name:'',tier:'month',pinned:false,steps:[],source:'',goal:null},
+    fields:[
+      {k:'name',label:'What are you trying to do',ph:'Clear the car finance'},
+      {k:'tier',label:'Horizon',type:'seg',opts:TIERS.map(t=>({k:t,
+        label:t==='life'?'Main':t==='year'?'Year':t==='month'?'Month':'Week'}))},
+      {k:'pinned',label:'On the Home page',type:'seg',
+       opts:[{k:false,label:'No'},{k:true,label:'Pinned'}]}
+    ],
+    save:v=>{
+      if(!String(v.name||'').trim()){toast('Give it a name');return false;}
+      v.pinned=(String(v.pinned)==='true');
+      if(v.pinned)D.targets.forEach(t=>{if(t.id!==v.id)t.pinned=false;});
+      if(v.id){const i=D.targets.findIndex(x=>x.id===v.id);D.targets[i]=v;}
+      else{v.id=uid('t');D.targets.push(v);}
+    },
+    del:ex?(v=>pull(D.targets,v.id)):null
+  });
+}
+function editStep(gid,sid){
+  const t=D.targets.find(x=>x.id===gid);if(!t)return;
+  t.steps=t.steps||[];
+  const ex=sid?t.steps.find(x=>x.id===sid):null;
+  const others=t.steps.filter(s=>s.id!==sid);
+  form({
+    title:ex?'Edit step':'New step',
+    sub:'Point a step at a real number and it ticks itself. Make it wait on another step and it stays locked until that one is done.',
+    value:ex?Object.assign({},ex)
+             :{id:null,name:'',bind:'',ref:'',cmp:'',value:null,after:'',done:false},
+    fields:[
+      {k:'name',label:'Step',ph:'Get the balance under £10,000'},
+      {k:'bind',label:'What decides it',type:'select',opts:BINDS.map(b=>({k:b.k,label:b.label}))},
+      {k:'ref',label:'Which one',type:'select',
+       hide:v=>v.bind!=='debtOne'&&v.bind!=='oneRm',
+       opts:[{k:'',label:'Pick one'}].concat(
+         D.debts.map(d=>({k:d.id,label:d.name})),
+         D.exercises.filter(e=>!e.hidden).map(e=>({k:e.id,label:e.name})))},
+      {k:'cmp',label:'Done when it is',type:'seg',half:false,
+       hide:v=>!v.bind||v.bind==='debtOne',
+       opts:[{k:'gte',label:'At or above'},{k:'lte',label:'At or below'}]},
+      {k:'value',label:'The number',type:'number',step:'0.01',
+       hide:v=>!v.bind||v.bind==='debtOne'},
+      {k:'after',label:'Locked until',type:'select',hide:()=>!others.length,
+       opts:[{k:'',label:'Nothing — available now'}].concat(others.map(s=>({k:s.id,label:s.name})))}
+    ],
+    save:v=>{
+      if(!String(v.name||'').trim()){toast('Name the step');return false;}
+      v.value=v.value==null||v.value===''?null:+v.value;
+      if(!v.cmp&&v.bind)v.cmp=(BINDS.find(b=>b.k===v.bind)||{}).dir||'gte';
+      if(v.id){const i=t.steps.findIndex(x=>x.id===v.id);t.steps[i]=v;}
+      else{v.id=uid('p');t.steps.push(v);}
+    },
+    del:ex?(v=>pull(t.steps,v.id)):null
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   THE GRID
+   You came from a spreadsheet, so every list can turn back into one:
+   tab across the cells, edit a column at a time, or paste a block
+   straight out of Excel. This is the annual tidy-up surface.
+   ═══════════════════════════════════════════════════════════════ */
+const GRIDS={
+  ledger:{title:'Bills',list:()=>D.ledger,
+    cols:[{k:'name',t:'Name'},
+          {k:'amount',t:'£',n:true,w:'86px'},
+          {k:'day',t:'Day',n:true,w:'60px'},
+          {k:'cadence',t:'Repeats',sel:['monthly','annual'],w:'104px'}],
+    make:()=>({id:uid('l'),name:'',amount:0,cadence:'monthly',day:1,month:1,
+               tags:[],debtId:null,active:true})},
+  fuel:{title:'Fill-ups',list:()=>D.fuel,
+    cols:[{k:'date',t:'Date',w:'132px'},
+          {k:'litres',t:'Litres',n:true,w:'82px'},
+          {k:'cost',t:'£',n:true,w:'82px'},
+          {k:'odo',t:'Miles',n:true,w:'92px'}],
+    make:()=>({id:uid('f'),date:today(),litres:0,cost:0,odo:0})},
+  staples:{title:'Shopping',list:()=>D.staples,
+    cols:[{k:'name',t:'Item'},{k:'qty',t:'How much',w:'110px'},{k:'cost',t:'£',n:true,w:'82px'}],
+    make:()=>({id:uid('s'),name:'',qty:'',cost:0,have:false})}
+};
+let GRIDK='ledger';
+function gridSheet(k){
+  GRIDK=k||GRIDK;
+  paintGrid();
+}
+function paintGrid(){
+  const g=GRIDS[GRIDK],rows=g.list();
+  openSheet(`<h2>${g.title}</h2>
+    <div class="sub">Edit anything in place. <b>Paste</b> takes a block copied straight out of a
+      spreadsheet — one row per line, columns in the order below.</div>
+    <div class="gwrap"><table class="g">
+      <thead><tr>${g.cols.map(c=>`<th${c.w?` style="width:${c.w}"`:''}>${c.t}</th>`).join('')}<th></th></tr></thead>
+      <tbody>${rows.map((r,i)=>`<tr>${g.cols.map(c=>`<td>${
+        c.sel?`<select onchange="gridSet(${i},'${c.k}',this.value)">${c.sel.map(o=>
+          `<option${String(r[c.k])===o?' selected':''}>${o}</option>`).join('')}</select>`
+        :`<input class="${c.n?'n':''}" ${c.n?'type="number" inputmode="decimal"':''}
+            value="${esc(r[c.k]==null?'':r[c.k])}" aria-label="${c.t}"
+            onchange="gridSet(${i},'${c.k}',this.value)">`}</td>`).join('')}
+        <td class="act"><button onclick="gridDel(${i})" aria-label="Delete row">✕</button></td></tr>`).join('')}
+      </tbody></table></div>
+    <div class="srow"><button class="sbtn" onclick="gridAdd()">Add a row</button>
+      <button class="sbtn" onclick="pasteSheet()">Paste</button></div>
+    <div class="srow"><button class="sbtn solid" onclick="closeSheet();render()">Done</button></div>`);
+}
+function gridSet(i,k,v){
+  const g=GRIDS[GRIDK],r=g.list()[i];if(!r)return;
+  const col=g.cols.find(c=>c.k===k);
+  r[k]=col&&col.n?(parseFloat(v)||0):v;
+  save();
+}
+function gridAdd(){GRIDS[GRIDK].list().push(GRIDS[GRIDK].make());save();paintGrid();}
+function gridDel(i){
+  const list=GRIDS[GRIDK].list(),snap=list[i];
+  list.splice(i,1);save();paintGrid();
+  toast('Deleted '+(snap.name||'row'),()=>{list.splice(Math.min(i,list.length),0,snap);save();paintGrid();});
+}
+function pasteSheet(){
+  const g=GRIDS[GRIDK];
+  openSheet(`<h2>Paste from a spreadsheet</h2>
+    <div class="sub">Copy the cells and paste them here. Columns are read in this order:
+      <b>${g.cols.map(c=>c.t).join(' · ')}</b>. A header row is skipped automatically.</div>
+    <div class="ef"><textarea id="pastebox" style="min-height:150px;font-size:14px"
+      placeholder="Broadband	32	1&#10;Phone	24	15"></textarea></div>
+    <div class="srow"><button class="sbtn solid" onclick="doPaste()">Add these rows</button>
+      <button class="sbtn" onclick="paintGrid()">Back</button></div>`);
+}
+/* Excel and Numbers both put a tab between cells and a newline between rows.
+   Strip currency symbols and thousands separators so a copied £1,056.00
+   arrives as a number rather than zero. */
+function doPaste(){
+  const g=GRIDS[GRIDK],txt=document.getElementById('pastebox').value||'';
+  const lines=txt.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
+  let added=0;
+  lines.forEach((line,i)=>{
+    const cells=line.split('\t').map(c=>c.trim());
+    if(i===0&&cells.every(c=>isNaN(parseFloat(c.replace(/[£$,]/g,'')))) &&
+       cells.some(c=>g.cols.some(col=>col.t.toLowerCase()===c.toLowerCase())))return;   // header
+    const row=g.make();
+    g.cols.forEach((c,j)=>{
+      if(cells[j]==null||cells[j]==='')return;
+      row[c.k]=c.n?(parseFloat(String(cells[j]).replace(/[£$,\s]/g,''))||0):cells[j];
+    });
+    g.list().push(row);added++;
+  });
+  save();
+  if(added){haptic(10);toast('Added '+added+' row'+(added>1?'s':''));}
+  else toast('Nothing to add');
+  paintGrid();
+}
+
+/* ═══ data ════════════════════════════════════════════════════
+   Export and import are the whole sync story for now — and the reason
    moving to a real backend later costs a day rather than a rewrite. */
 function dataSheet(){
   openSheet(`<h2>Your data</h2>
-  <div class="sub">Everything lives on this device only — nothing is uploaded and no figures ship with the app. This file is your backup and your way onto another device. Keep a copy somewhere that isn't your phone.</div>
-  <div class="srow"><button class="sbtn solid" onclick="exportData()">Export a copy</button></div>
+  <div class="sub">Everything lives on this device only — nothing is uploaded and no figures ship with the
+    app. This file is your backup and your way onto another device. Keep a copy somewhere that isn't your phone.</div>
+  <div class="kv"><span class="k">Bills</span><span class="v">${D.ledger.length}</span></div>
+  <div class="kv"><span class="k">Debts</span><span class="v">${D.debts.length}</span></div>
+  <div class="kv"><span class="k">Written entries</span><span class="v">${D.entries.length}</span></div>
+  <div class="kv"><span class="k">Training logs</span><span class="v">${D.logs.length}</span></div>
+  <div class="kv"><span class="k">Fill-ups</span><span class="v">${D.fuel.length}</span></div>
+  <div class="kv"><span class="k">Goals</span><span class="v">${D.targets.length}</span></div>
+  <div class="srow" style="margin-top:16px"><button class="sbtn solid" onclick="exportData()">Export a copy</button></div>
   <div class="srow"><button class="sbtn" onclick="document.getElementById('imp').click()">Import a file</button></div>
   <input type="file" id="imp" accept="application/json,.json" style="display:none" onchange="importData(this)">
   <div class="srow"><button class="sbtn danger" onclick="resetAll()">Erase everything</button></div>`);
@@ -855,19 +2416,15 @@ function importData(input){
     try{
       const d=JSON.parse(r.result);
       if(!d||typeof d!=='object'||!Array.isArray(d.ledger))throw new Error('not a daybook file');
-      D.ledger=d.ledger||[];D.debts=d.debts||[];D.entries=d.entries||[];
-      D.targets=d.targets||[];D.settings=Object.assign({},DEFAULTS,d.settings||{});
-      D.meta=Object.assign({paid:{}},d.meta||{});
-      save();closeSheet();render();toast('Imported');
+      adopt(d);attachCatalogue();save();closeSheet();render();toast('Imported');
     }catch(e){toast("That file isn't a Daybook export");}
   };
   r.readAsText(f);
 }
 function resetAll(){
-  if(!confirm('Erase every bill, debt and entry on this device? Export a copy first if you want one.'))return;
-  D.ledger=[];D.debts=[];D.entries=[];D.targets=[];
-  D.settings=Object.assign({},DEFAULTS);D.meta={paid:{}};
-  save();closeSheet();render();toast('Erased');
+  if(!confirm('Erase every bill, debt, entry and training log on this device? Export a copy first if you want one.'))return;
+  D=JSON.parse(JSON.stringify(BLANK));
+  attachCatalogue();save();closeSheet();render();toast('Erased');
 }
 
 /* ═══ boot ════════════════════════════════════════════════════ */
@@ -875,6 +2432,7 @@ load();render();
 window.addEventListener('pageshow',()=>{if(TAB==='home')render();});
 if('serviceWorker' in navigator)
   window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+
 </script>
 </body>
 </html>
