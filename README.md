@@ -14,27 +14,33 @@ has a `£` in it the app files it as a spend — everything else keeps as a note
 Below that: your net for the month, what needs you today, this week's training,
 and the next seven days of bills.
 
-**Money** answers one question before anything else: *how much do I need for
-this period?* Two dates set the period — today to the end of the month by
-default — and the total for it is the headline. Under that, every bill falling
-in the window sits in date order with a running column: read across any row and
-you have what it costs to cover everything up to and including it.
+**Money** is ordered by the questions, not by the data. *How much do I need
+for this period?* is the headline, and the period is two days of the month —
+today to month end by default, but 17th to 5th works and wraps into next month,
+because pay cycles do. Under it, every bill in the window sits in date order
+with a running column: read across any row and you have what it costs to cover
+everything up to and including it. No notes under the names, nothing but the
+figures.
 
-Because the dates are dates rather than days, a period can run across a month
-boundary, which is what a pay cycle usually does. Bills recur into each month it
-touches (a 31st bill lands on the 30th in September), annual ones appear only in
-their month, and a forecast minimum takes each month's own figure. Bills already
-paid fold into one line when the period reaches back over them.
+Then the two lines nobody has receipts for. **Food and fuel** sit right below
+the bills as budgets you can open and log against — fill-ups recorded on Car
+count automatically — so an average builds up and they stop being guesses. Then
+annual bills, spread across twelve months.
 
-The list ticks itself off as the date passes, with a manual override for the
-ones that fail or go early. *Edit* turns it into fields so a name, amount or day
-changes in place; *Grid* opens the lot at once and takes a paste straight out of
-a spreadsheet. Add a bill any time and the totals, the running column and the
-date chips all follow. A **round-up** setting lifts every bill to the nearest
-£1, £5 or £10 as a cushion for the month — it changes what the app asks you to
-set aside, never what you typed, and never a payment that has already gone. There's a subscription audit
-sorted by annual cost, annual bills amortised to monthly, and a five-year
-projection of your net position that steps up each time a debt ends.
+Then **the month**: bills, food and fuel, the annual share, what goes out, the
+wage coming in, and the net. That last figure is the one worth moving, so it is
+the biggest thing on the block.
+
+Everything after that is reference and stays folded — debt, subscriptions, your
+numbers — each saying what it holds while it is shut.
+
+The bill list ticks itself off as the date passes, with a manual override for
+the ones that fail or go early. *Edit* turns it into fields so a name, amount or
+day changes in place; *Grid* opens the lot at once and takes a paste straight
+out of a spreadsheet. Add a bill any time and the totals, the running column and
+the period all follow. A **round-up** setting lifts every bill to the nearest
+£1, £5 or £10 as a cushion — it changes what the app asks you to set aside,
+never what you typed, and never a payment that has already gone.
 
 **Debt is modelled properly**, because a balance is wrong if you conflate two
 different things:
