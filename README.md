@@ -48,6 +48,14 @@ round up and hope, so the month's total is right without maintenance. **Record
 a payment** when money actually leaves, and if it's more than the minimum the
 balance, the term, the interest and every future minimum all move with it.
 
+Crucially, **the balance accrues on its own**. It's stored against the date it
+was last read, and carried forward one cycle at a time — interest on, assumed
+payment off — so it stays right whether or not you record anything. Record a
+payment and it snaps to what actually happened; type a balance and that becomes
+the new anchor. After a couple of months without a real reading it asks you to
+confirm from a statement, because a number nobody has checked is how a tracker
+quietly stops being true.
+
 The gap between those is interest you have not paid yet, and it's the whole
 reason to model it: it tells you what overpaying is worth. Three solvers fill
 in whichever of borrowed / payment / term / rate you don't have — including the
