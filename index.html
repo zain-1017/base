@@ -92,6 +92,12 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 .bar i{display:block;height:100%;background:var(--ink)}
 .bar.thin{height:2px}
 
+.range{display:flex;align-items:center;gap:7px;padding:9px 16px;border-bottom:1px solid var(--line)}
+.range label{font-size:8.5px;font-weight:800;letter-spacing:1px;color:var(--mut);text-transform:uppercase}
+.range input{flex:1;min-width:0;height:34px;border:1px solid var(--line2);border-radius:8px;
+  padding:0 8px;font-size:13px;font-weight:700;background:var(--bg)}
+.range button{font-size:8.5px;font-weight:800;letter-spacing:.8px;color:var(--mut);flex-shrink:0;padding:0 2px}
+
 /* ── the bills table. The screen he actually lives in, so it gets the
       spreadsheet treatment: fixed columns, a running total, everything
       on one screen. ─────────────────────────────────────────────── */
@@ -105,8 +111,6 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 .brow.fold{background:var(--hl)}
 .brow.fold .nm{color:var(--mut);font-weight:700}
 .brow.done .nm,.brow.done .am{color:var(--mut);font-weight:600}
-.brow.upto{background:var(--hl)}
-.brow.mark{border-bottom:1px solid var(--ink)}
 .brow .dy{font-size:11px;font-weight:800;color:var(--dim);text-align:center}
 .brow.today .dy{color:var(--ink)}
 .brow .nm{font-size:13.5px;font-weight:600;letter-spacing:-.2px;overflow:hidden;
@@ -116,8 +120,10 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 .brow .nm i.warn{color:var(--crit);font-weight:700}
 .brow .am{font-size:13.5px;font-weight:700;letter-spacing:-.3px;text-align:right}
 .brow .rn{font-size:12px;font-weight:700;color:var(--dim);text-align:right;letter-spacing:-.2px}
-.brow.mark .rn{color:var(--ink);font-weight:800;font-size:13px}
 .brow .dot{margin:0 auto}
+.brow .dot:disabled{opacity:.45}
+.bmon{padding:11px 16px 4px;font-size:9px;font-weight:800;letter-spacing:1.2px;
+  color:var(--mut);text-transform:uppercase;border-top:1px solid var(--line)}
 .brow input.inl{height:30px;font-size:14px}
 
 /* ── debt block ────────────────────────────────────────────── */
@@ -468,7 +474,7 @@ const BLANK={schema:2,ledger:[],debts:[],entries:[],targets:[],
              nutrition:{kcal:0,protein:0,carbs:0,fat:0},recipes:[],staples:[],
              settings:Object.assign({},DEFAULTS),meta:{paid:{}}};
 let D=JSON.parse(JSON.stringify(BLANK));
-let TAB='home', DRAFT='', Q='', MANAGE=false, CALM=null, OPEN=null, JUMP='', TARGET=null;
+let TAB='home', DRAFT='', Q='', MANAGE=false, CALM=null, OPEN=null, JUMP='', RFROM=null, RTO=null;
 const DRAFTS={};
 
 const uid=p=>(p||'x')+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
@@ -588,6 +594,7 @@ function fmtClock(ms){
   return h?h+':'+String(m).padStart(2,'0')+':'+String(ss).padStart(2,'0')
           :m+':'+String(ss).padStart(2,'0');
 }
+const shortDate=ds=>{const d=new Date(ds+'T00:00');return d.getDate()+' '+MONS[d.getMonth()];};
 const fmtMins=ms=>{const m=Math.round(ms/60000);return m>=60?Math.floor(m/60)+'h '+(m%60)+'m':m+' min';};
 function relDate(ds){
   const n=daysBetween(ds,today());
@@ -902,6 +909,61 @@ const monthlyTotal=()=>sum(monthlyLines(),billAmount);
 /* Every bill this month in date order, each carrying the running total of what
    is still unpaid up to and including it. Read down the last column and any
    "how much do I need by the 17th" question is already answered. */
+/* Every time a bill lands between two dates. Monthly lines recur once a month
+   (clamped to the last day, so a 31st bill still lands in February), annual
+   ones only in their month. A range can span months, which is the point:
+   pay cycles rarely line up with a calendar. */
+function occurrences(from,to){
+  const f=new Date(from+'T00:00'),t=new Date(to+'T00:00'),out=[];
+  if(!(f<=t))return out;
+  const mono=monthlyLines(),ann=annualLines(),seen={};
+  let y=f.getFullYear(),m=f.getMonth();
+  while(new Date(y,m,1)<=t){
+    const dim=new Date(y,m+1,0).getDate();
+    const add=(l,day,annual)=>{
+      const d=new Date(y,m,Math.min(day||1,dim));
+      if(d<f||d>t)return;
+      const n=(seen[l.id]=(seen[l.id]||0)+1)-1;      // which occurrence of this bill
+      out.push({l:l,date:ymd(d),day:d.getDate(),ym:ymOf(ymd(d)),annual:!!annual,nth:n});
+    };
+    mono.forEach(l=>add(l,l.day,false));
+    ann.forEach(l=>{if((l.month|0)-1===m)add(l,l.day,true);});
+    m++;if(m>11){m=0;y++;}
+  }
+  out.sort((a,b)=>a.date.localeCompare(b.date)||a.l.name.localeCompare(b.l.name));
+  return out;
+}
+/* A forecast bill is a different figure every month, so match the occurrence to
+   the schedule row for its own month rather than repeating this month's figure
+   down the list. A payment already made stays what was actually paid. */
+function occAmount(o,sch){
+  const d=o.l.debtId?D.debts.find(x=>x.id===o.l.debtId):null;
+  if(d&&d.kind==='revolving'&&d.payMin){
+    const paidThis=(o.ym===ymOf(today()))&&isPaid(o.l,o.ym,new Date().getDate());
+    if(!paidThis){
+      const y=+o.ym.slice(0,4),m=+o.ym.slice(5,7)-1;
+      const row=(sch||minSchedule(d,120)).find(r=>r.y===y&&r.m===m);
+      if(row)return roundUp(row.due);
+    }
+  }
+  return billAmount(o.l);
+}
+/* The same list, scoped to a range, with the running total that answers
+   "what do I need to have covered by then". */
+function rangeRows(from,to){
+  const ym=ymOf(today()),dayNow=new Date().getDate();
+  const sched={};                                   // one schedule per forecast debt, not one per row
+  D.debts.forEach(d=>{if(d.kind==='revolving'&&d.payMin)sched[d.id]=minSchedule(d,120);});
+  let run=0;
+  return occurrences(from,to).map(o=>{
+    const paid=(o.ym===ym)&&isPaid(o.l,ym,dayNow);
+    const amount=occAmount(o,o.l.debtId?sched[o.l.debtId]:null);
+    if(!paid)run+=amount;
+    return Object.assign({},o,{paid:paid,amount:amount,running:paid?null:run,
+      due:!paid&&o.date<today(),today:o.date===today()});
+  });
+}
+
 function billRows(){
   const now=new Date(),ym=ymOf(today()),dayNow=now.getDate();
   let run=0;
@@ -1091,7 +1153,17 @@ function onDraft(v,el){
   if(b&&was!==!!DRAFT.trim())b.disabled=!DRAFT.trim();
 }
 const toggleManage=()=>{MANAGE=!MANAGE;haptic(6);render();};
-function setTarget(d){TARGET=(TARGET===d)?null:d;haptic(4);render();}
+function setRange(which,v){
+  if(!v)return;
+  if(which==='from'){RFROM=v;if(RTO<v)RTO=v;}
+  else{RTO=v;if(v<RFROM)RFROM=v;}
+  haptic(4);render();
+}
+function resetRange(){
+  const n=new Date();
+  RFROM=today();RTO=ymd(new Date(n.getFullYear(),n.getMonth()+1,0));
+  haptic(5);render();
+}
 function togglePaidRows(){D.settings.showPaid=!D.settings.showPaid;save();haptic(5);render();}
 
 /* ═══ HOME — the day's page ═══════════════════════════════════ */
@@ -1239,25 +1311,23 @@ function renderMoney(){
   const subMo=sum(subs,l=>l.cadence==='annual'?l.amount/12:l.amount);
   const f30=fuelLast30();
 
-  const rows=billRows(),unpaid=rows.filter(r=>!r.paid);
-  const days=[];unpaid.forEach(r=>{if(days.indexOf(r.day)<0)days.push(r.day);});
-  days.sort((a,b)=>a-b);
-  const target=(TARGET!=null&&days.indexOf(TARGET)>=0)?TARGET:null;
-  const left=stillToPay(rows);
-  const need=target!=null?neededBy(rows,target):left;
-  const after=left-need;
+  if(!RFROM)RFROM=today();
+  if(!RTO)RTO=ymd(new Date(now.getFullYear(),now.getMonth()+1,0));
+  const rows=rangeRows(RFROM,RTO),unpaid=rows.filter(r=>!r.paid);
+  const left=sum(unpaid,r=>r.amount);
   const overdue=unpaid.filter(r=>r.due);
+  const monthEnd=ymd(new Date(now.getFullYear(),now.getMonth()+1,0));
+  const dirty=!(RFROM===today()&&RTO===monthEnd);
+  const spans=rows.length&&rows[0].ym!==rows[rows.length-1].ym;
 
   let h=`<div class="top"><h1>${MONS[now.getMonth()]}</h1>
     <div class="meta"><button class="${MANAGE?'on':''}" onclick="toggleManage()">${MANAGE?'DONE':'EDIT'}</button>
       &nbsp;·&nbsp;${dd===0?'PAYDAY':dd+' TO PAYDAY'}</div></div>
   <div class="hero">
-    <div class="v">${money(need,need%1!==0)}</div>
-    <div class="u">${target!=null
-      ?`NEEDED BY THE ${ordinal(target).toUpperCase()} · <b>${unpaid.filter(r=>r.day<=target).length}</b> BILLS`
-       +(after>0?` · <b>${money(after,after%1!==0)}</b> MORE AFTER THAT`:' · NOTHING AFTER THAT')
-      :`STILL TO PAY THIS MONTH · <b>${unpaid.length}</b> OF ${rows.length} BILLS`
-       +(unpaid.length?` · NEXT ${esc(unpaid[0].l.name).toUpperCase()} ON THE ${ordinal(unpaid[0].day).toUpperCase()}`:'')}</div>
+    <div class="v">${money(left,left%1!==0)}</div>
+    <div class="u">${shortDate(RFROM).toUpperCase()} TO ${shortDate(RTO).toUpperCase()} ·
+      <b>${unpaid.length}</b> BILL${unpaid.length===1?'':'S'}${
+      unpaid.length?` · FIRST IS ${esc(unpaid[0].l.name).toUpperCase()} ON THE ${ordinal(unpaid[0].day).toUpperCase()}`:''}</div>
   </div>
   <div class="strip">
     <div><div class="n">${money(paidSum)}</div><div class="l">PAID SO FAR</div></div>
@@ -1265,14 +1335,15 @@ function renderMoney(){
     <div><div class="n${netPosition()<0?' neg':''}">${money(netPosition())}</div><div class="l">NET</div></div>
   </div>`;
 
-  if(days.length>1){
-    h+=`<div class="jump">
-      <button class="${target==null?'on':''}" onclick="setTarget(null)">ALL MONTH</button>
-      ${days.map(d=>`<button class="${target===d?'on':''}" onclick="setTarget(${d})">TO ${ordinal(d)}</button>`).join('')}
-    </div>`;
-  }
-
-  h+=`<div class="lab">Monthly bills<span class="r">${
+  h+=`<div class="range">
+    <input id="r-from" type="date" value="${RFROM}" aria-label="From date"
+      onchange="setRange('from',this.value)">
+    <label for="r-to">to</label>
+    <input id="r-to" type="date" value="${RTO}" aria-label="To date"
+      onchange="setRange('to',this.value)">
+    ${dirty?'<button onclick="resetRange()">REST OF MONTH</button>':''}
+  </div>
+  <div class="lab">Bills in this period<span class="r">${
       (+D.settings.roundTo||0)?'ROUNDED UP TO £'+(+D.settings.roundTo)+' · ':''}${rows.length}</span>
     <button onclick="gridSheet('ledger')">GRID</button></div>`;
 
@@ -1309,17 +1380,22 @@ function renderMoney(){
         <span class="nm">${done.length} already paid<i>Tap to show them</i></span>
         <span class="am">${money(sum(done,r=>r.amount),sum(done,r=>r.amount)%1!==0)}</span>
         <span class="rn"></span></button>`;
+    let lastYm='';
     (show?rows:rows.filter(r=>!r.paid)).forEach(r=>{
       const l=r.l;
-      const upto=target!=null&&!r.paid&&r.day<=target;
-      h+=`<div class="brow${r.paid?' done':''}${r.today?' today':''}${upto?' upto':''}${
-          target!=null&&r.day===target&&!r.paid?' mark':''}">
+      if(spans&&r.ym!==lastYm){
+        lastYm=r.ym;
+        h+=`<div class="bmon">${MONS[+r.ym.slice(5,7)-1]} ${r.ym.slice(0,4)}</div>`;
+      }
+      h+=`<div class="brow${r.paid?' done':''}${r.today?' today':''}">
         <button class="dot${r.paid?'':r.due?' o due':' o'}" onclick="togglePaid('${l.id}')"
-          aria-label="Mark ${esc(l.name)} ${r.paid?'unpaid':'paid'}" style="padding:0"></button>
-        <span class="dy">${l.day}</span>
+          aria-label="Mark ${esc(l.name)} ${r.paid?'unpaid':'paid'}" style="padding:0"
+          ${r.ym===ymOf(today())?'':'disabled'}></button>
+        <span class="dy">${r.day}</span>
         <button class="nm" onclick="editLedger('${l.id}')">${esc(l.name)}${
           r.due?'<i class="warn">Past its date</i>'
-          :isForecast(l)&&!r.paid?'<i>Next minimum</i>'
+          :r.annual?'<i>Annual</i>'
+          :isForecast(l)&&!r.paid?'<i>Minimum, forecast</i>'
           :l.debtId&&!r.paid?'<i>'+debtPart(l)+'</i>':''}</button>
         <span class="am">${money(r.amount,r.amount%1!==0)}</span>
         <span class="rn">${r.paid?'':money(r.running,r.running%1!==0)}</span></div>`;
@@ -1332,10 +1408,10 @@ function renderMoney(){
     if(overdue.length)h+=`<div class="gnote"><b>${overdue.length} bill${overdue.length>1?'s are':' is'}
       past its date and not ticked off.</b> Tap the circle to mark it paid, or leave it if it really
       has not gone out.</div>`;
-    else if(!unpaid.length)h+=`<div class="gnote">Everything for ${MONS[now.getMonth()]} is paid.
-      <b>${money(monthlyTotal())}</b> went out. Next month starts again on the 1st.</div>`;
-    else h+=`<div class="gnote">The last column is what you need to have covered everything up to that
-      row. ${days.length>1?'Tap a date above to fix on one.':''}</div>`;
+    else if(!unpaid.length)h+=`<div class="gnote">Nothing left to pay between
+      ${shortDate(RFROM)} and ${shortDate(RTO)}.</div>`;
+    else h+=`<div class="gnote">The last column is what you need to have covered everything up to and
+      including that row. Change the dates above for any other period.</div>`;
   }
 
   h+=renderDebts();

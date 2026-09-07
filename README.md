@@ -14,12 +14,17 @@ has a `£` in it the app files it as a spend — everything else keeps as a note
 Below that: your net for the month, what needs you today, this week's training,
 and the next seven days of bills.
 
-**Money** answers one question before anything else: *how much do I still need
-this month?* That figure is the headline, and under it every remaining bill sits
-in date order with a running column — read across any row and you have what it
-costs to cover everything up to that date. Tap a date to fix the headline on it
-("£206.54 needed by the 17th, £120 more after that") and the rows up to it light
-up. Bills already paid fold into one line so the live ones are what you see.
+**Money** answers one question before anything else: *how much do I need for
+this period?* Two dates set the period — today to the end of the month by
+default — and the total for it is the headline. Under that, every bill falling
+in the window sits in date order with a running column: read across any row and
+you have what it costs to cover everything up to and including it.
+
+Because the dates are dates rather than days, a period can run across a month
+boundary, which is what a pay cycle usually does. Bills recur into each month it
+touches (a 31st bill lands on the 30th in September), annual ones appear only in
+their month, and a forecast minimum takes each month's own figure. Bills already
+paid fold into one line when the period reaches back over them.
 
 The list ticks itself off as the date passes, with a manual override for the
 ones that fail or go early. *Edit* turns it into fields so a name, amount or day
