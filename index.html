@@ -129,6 +129,9 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 .range label{flex-shrink:0}
 .range button{font-size:8.5px;font-weight:800;letter-spacing:.8px;color:var(--mut);margin-left:auto;padding:0 2px}
 .range .rtot{margin-left:auto;font-size:17px;font-weight:800;letter-spacing:-.4px;flex-shrink:0}
+.range .rmode{height:28px;padding:0 11px;border:1px solid var(--line2);border-radius:14px;margin-left:4px;
+  font-size:8.5px;font-weight:800;letter-spacing:.8px;color:var(--mut);flex-shrink:0;white-space:nowrap}
+.range .rmode.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 
 /* ── the bills table. The screen he actually lives in, so it gets the
       spreadsheet treatment: fixed columns, a running total, everything
@@ -508,7 +511,7 @@ const BLANK={schema:2,ledger:[],debts:[],entries:[],targets:[],
              nutrition:{kcal:0,protein:0,carbs:0,fat:0},recipes:[],staples:[],
              settings:Object.assign({},DEFAULTS),meta:{paid:{}}};
 let D=JSON.parse(JSON.stringify(BLANK));
-let TAB='home', DRAFT='', Q='', MANAGE=false, CALM=null, OPEN=null, JUMP='', RFROM=null, RTO=null;
+let TAB='home', DRAFT='', Q='', MANAGE=false, CALM=null, OPEN=null, JUMP='', RFROM=null, RTO=null, RPAID=false;
 const DRAFTS={};
 
 const uid=p=>(p||'x')+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
@@ -1325,7 +1328,7 @@ function renderMoney(){
      is always the month. */
   if(!RFROM)RFROM=dayNow;
   if(!RTO)RTO=dim;
-  const span=sum(rangeRows(RFROM,RTO).filter(r=>!r.paid),r=>r.amount);
+  const span=sum(rangeRows(RFROM,RTO).filter(r=>RPAID||!r.paid),r=>r.amount);
 
   let dp=D.settings.payday|0||1,dd=dp-dayNow;
   if(dd<0)dd+=dim;
@@ -1348,12 +1351,13 @@ function renderMoney(){
     <div><div class="n ${net<0?'neg':'pos'}">${money(net)}</div><div class="l">NET</div></div>
   </div>
   <div class="range">
-    <label>Need</label>
     <input type="number" inputmode="numeric" min="1" max="31" value="${RFROM}"
       aria-label="From day of the month" onchange="setRange('from',this.value)">
     <label>to</label>
     <input type="number" inputmode="numeric" min="1" max="31" value="${RTO}"
       aria-label="To day of the month" onchange="setRange('to',this.value)">
+    <button class="rmode${RPAID?' on':''}" onclick="toggleRangeMode()"
+      aria-pressed="${RPAID}">${RPAID?'ALL BILLS':'TO PAY'}</button>
     <span class="rtot">${money(span,span%1!==0)}</span>
   </div>
 
@@ -1488,6 +1492,9 @@ function setRange(which,v){
   if(which==='from')RFROM=n;else RTO=n;
   haptic(4);render();
 }
+/* Two questions the same days can answer: what is still to find, or what the
+   period costs whether or not it has gone out yet. */
+function toggleRangeMode(){RPAID=!RPAID;haptic(4);render();}
 function resetRange(){
   const n=new Date();
   RFROM=n.getDate();RTO=new Date(n.getFullYear(),n.getMonth()+1,0).getDate();

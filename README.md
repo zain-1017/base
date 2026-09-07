@@ -18,9 +18,10 @@ and the next seven days of bills.
 month is the headline, and under it the two figures a turn-based game would
 show: **Bank**, what you have, and **Net**, what this month does to it.
 
-Then a small calculator — *need from the 12th to the 17th: £206.54* — which
-answers any period without touching anything else. It wraps, so 17th to 5th
-reaches into next month, because pay cycles do.
+Then a small calculator — *3rd to 24th: £231.54* — which answers any period
+without touching anything else. A switch beside it swaps between what is still
+to pay in those days and what they cost in total, paid or not. It wraps, so
+17th to 5th reaches into next month, because pay cycles do.
 
 Then the month's bills, all of them, first to last. Paid ones greyed in place;
 the rest carry a running column, so reading across any row gives what it costs
