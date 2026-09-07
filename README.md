@@ -14,22 +14,24 @@ has a `£` in it the app files it as a spend — everything else keeps as a note
 Below that: your net for the month, what needs you today, this week's training,
 and the next seven days of bills.
 
-**Money** is ordered by the questions, not by the data. *How much do I need
-for this period?* is the headline, and the period is two days of the month —
-today to month end by default, but 17th to 5th works and wraps into next month,
-because pay cycles do. Under it, every bill in the window sits in date order
-with a running column: read across any row and you have what it costs to cover
-everything up to and including it. No notes under the names, nothing but the
-figures.
+**Money** is ordered by the questions, not by the data. Three figures sit at the
+top: what is left to pay this month, the net for the month, and the savings
+balance. Under them the period — two days of the month, the whole of it by
+default, but 17th to 5th works and wraps into next month, because pay cycles do.
+
+Then every bill in the period, in date order, paid ones greyed out and the rest
+carrying a running column: read across any row and you have what it costs to
+cover everything up to and including it. No notes under the names, nothing but
+the figures.
 
 Then the two lines nobody has receipts for. **Food and fuel** sit right below
 the bills as budgets you can open and log against — fill-ups recorded on Car
 count automatically — so an average builds up and they stop being guesses. Then
 annual bills, spread across twelve months.
 
-Then **the month**: bills, food and fuel, the annual share, what goes out, the
-wage coming in, and the net. That last figure is the one worth moving, so it is
-the biggest thing on the block.
+Then **the month**, set out like an account: bills, food and fuel, the annual
+share, then total costs, wage and net at the same weight, with a rule above the
+net. That last figure is the one worth moving.
 
 Everything after that is reference and stays folded — debt, subscriptions, your
 numbers — each saying what it holds while it is shut.

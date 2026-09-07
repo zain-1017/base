@@ -85,12 +85,10 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 .total .tr:first-child{border-top:none}
 .total .tr span{flex:1;color:var(--mut);font-weight:600}
 .total .tr b{font-weight:700;letter-spacing:-.3px}
-.total .tr.sum{border-top:1px solid var(--line2)}
+.total .tr.sum{border-top:1px solid var(--line2);font-size:16px;padding:12px 0}
 .total .tr.sum span,.total .tr.sum b{color:var(--ink);font-weight:800}
-.total .tnet{border-top:1px solid var(--line2);margin-top:4px;padding:16px 0 18px}
-.total .tnet .v{font-size:44px;font-weight:300;letter-spacing:-2.4px;line-height:1}
-.total .tnet .v.neg{color:var(--crit)} .total .tnet .v.pos{color:var(--pos)}
-.total .tnet .l{font-size:9px;font-weight:800;letter-spacing:1.2px;color:var(--mut);margin-top:8px}
+.total .tr.net{border-top:1px solid var(--ink);margin-bottom:6px}
+.total .tr b.neg{color:var(--crit)} .total .tr b.pos{color:var(--pos)}
 
 /* ── rows. No cards anywhere: hairlines and air only. ──────── */
 .row{display:flex;align-items:center;gap:10px;padding:10px 16px;border-top:1px solid var(--line);
@@ -141,9 +139,9 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 .bhead span{white-space:nowrap;overflow:hidden}
 .bhead .r{text-align:right}
 .brow{padding:7px 16px;border-bottom:1px solid var(--line);width:100%;text-align:left}
-.brow.fold{background:var(--hl)}
-.brow.fold .nm{color:var(--mut);font-weight:700}
 .brow.done .nm,.brow.done .am{color:var(--mut);font-weight:600}
+.brow.done .dy{color:var(--line2)}
+.brow.done .dot{opacity:.5}
 .brow .dy{font-size:11px;font-weight:800;color:var(--dim);text-align:center}
 .brow.today .dy{color:var(--ink)}
 .brow .nm{font-size:13.5px;font-weight:600;letter-spacing:-.2px;overflow:hidden;
@@ -207,8 +205,9 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 
 /* ── stat strip ────────────────────────────────────────────── */
 .strip{display:flex;border-top:1px solid var(--line)}
-.strip div{flex:1;padding:14px 8px;text-align:center;border-left:1px solid var(--line);min-width:0}
-.strip div:first-child{border-left:none}
+.strip div,.strip .cell{flex:1;padding:14px 8px;text-align:center;border-left:1px solid var(--line);min-width:0}
+.strip div:first-child,.strip .cell:first-child{border-left:none}
+.strip .cell:active{background:var(--hl)}
 .strip .n{font-size:21px;font-weight:300;letter-spacing:-1.2px;line-height:1.1}
 .strip .n.neg{color:var(--crit)}
 .strip .n.pos{color:var(--pos)}
@@ -1172,7 +1171,6 @@ function onDraft(v,el){
   if(b&&was!==!!DRAFT.trim())b.disabled=!DRAFT.trim();
 }
 const toggleManage=()=>{MANAGE=!MANAGE;haptic(6);render();};
-function togglePaidRows(){D.settings.showPaid=!D.settings.showPaid;save();haptic(5);render();}
 
 /* ═══ HOME — the day's page ═══════════════════════════════════ */
 function renderHome(){
@@ -1315,7 +1313,7 @@ function renderHome(){
 function renderMoney(){
   const now=new Date(),ym=ymOf(today()),dayNow=now.getDate();
   const dim=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
-  if(!RFROM)RFROM=dayNow;
+  if(!RFROM)RFROM=1;
   if(!RTO)RTO=dim;
 
   const rows=rangeRows(RFROM,RTO),unpaid=rows.filter(r=>!r.paid);
@@ -1323,7 +1321,7 @@ function renderMoney(){
   const overdue=unpaid.filter(r=>r.due);
   const month=rangeRows(1,dim);
   const paidSum=sum(month.filter(r=>r.paid),r=>r.amount);
-  const dirty=!(RFROM===dayNow&&RTO===dim);
+  const dirty=!(RFROM===1&&RTO===dim);
 
   let dp=D.settings.payday|0||1,dd=dp-dayNow;
   if(dd<0)dd+=dim;
@@ -1341,13 +1339,19 @@ function renderMoney(){
       <b>${unpaid.length}</b> BILL${unpaid.length===1?'':'S'}${
       unpaid.length?` · FIRST IS ${esc(unpaid[0].l.name).toUpperCase()} ON THE ${ordinal(unpaid[0].day).toUpperCase()}`:''}</div>
   </div>
+  <div class="strip">
+    <button class="cell" onclick="go('home')"><div class="n ${net<0?'neg':'pos'}">${money(net)}</div>
+      <div class="l">NET A MONTH</div></button>
+    <button class="cell" onclick="savingsSheet()"><div class="n">${money(+D.settings.savings||0)}</div>
+      <div class="l">SAVINGS ›</div></button>
+  </div>
   <div class="range">
     <input type="number" inputmode="numeric" min="1" max="31" value="${RFROM}"
       aria-label="From day of the month" onchange="setRange('from',this.value)">
     <label>to</label>
     <input type="number" inputmode="numeric" min="1" max="31" value="${RTO}"
       aria-label="To day of the month" onchange="setRange('to',this.value)">
-    ${dirty?'<button onclick="resetRange()">REST OF MONTH</button>':''}
+    ${dirty?'<button onclick="resetRange()">WHOLE MONTH</button>':''}
   </div>
 
   <div class="lab">Monthly bills<span class="r">${
@@ -1378,15 +1382,8 @@ function renderMoney(){
   }else{
     h+=`<div class="bhead"><span></span><span>Day</span><span>Bill</span>
       <span class="r">Amount</span><span class="r">Need by</span></div>`;
-    const done=rows.filter(r=>r.paid),show=D.settings.showPaid;
-    if(done.length&&!show)
-      h+=`<button class="brow fold" onclick="togglePaidRows()">
-        <span class="dot"></span><span class="dy"></span>
-        <span class="nm">${done.length} already paid</span>
-        <span class="am">${money(sum(done,r=>r.amount),sum(done,r=>r.amount)%1!==0)}</span>
-        <span class="rn"></span></button>`;
     let rolled=false;
-    (show?rows:rows.filter(r=>!r.paid)).forEach(r=>{
+    rows.forEach(r=>{
       const l=r.l;
       if(r.next&&!rolled){rolled=true;h+=`<div class="bmon">Next month</div>`;}
       h+=`<div class="brow${r.paid?' done':''}${r.today?' today':''}">
@@ -1398,9 +1395,6 @@ function renderMoney(){
         <span class="am">${money(r.amount,r.amount%1!==0)}</span>
         <span class="rn">${r.paid?'':money(r.running,r.running%1!==0)}</span></div>`;
     });
-    if(done.length&&show)
-      h+=`<div class="row tap"><button class="nm" onclick="togglePaidRows()"
-        style="text-align:left;color:var(--mut)">Hide the ${done.length} already paid</button></div>`;
     h+=`<div class="row tap"><button class="nm" onclick="editLedger(null,'monthly')"
       style="text-align:left;color:var(--mut)">+ Add a bill</button></div>`;
     if(overdue.length)h+=`<div class="gnote"><b>${overdue.length} bill${overdue.length>1?'s are':' is'}
@@ -1443,12 +1437,9 @@ function renderMoney(){
     <div class="tr"><span>Monthly bills</span><b>${money(bills,true)}</b></div>
     <div class="tr"><span>Food and fuel</span><b>${money(food+fuel,true)}</b></div>
     <div class="tr"><span>Annual bills, monthly share</span><b>${money(ann,true)}</b></div>
-    <div class="tr sum"><span>Going out</span><b>${money(out,true)}</b></div>
-    <div class="tr"><span>Wage coming in</span><b>${money(wage,true)}</b></div>
-    <div class="tnet">
-      <div class="v ${net<0?'neg':'pos'}">${money(net,net%1!==0)}</div>
-      <div class="l">${net<0?'SHORT EVERY MONTH':net>0?'SPARE EVERY MONTH':'BREAKING EVEN'}</div>
-    </div>
+    <div class="tr sum"><span>Total costs</span><b>${money(out,true)}</b></div>
+    <div class="tr sum"><span>Wage</span><b>${money(wage,true)}</b></div>
+    <div class="tr sum net"><span>Net</span><b class="${net<0?'neg':'pos'}">${money(net,true)}</b></div>
   </div>`;
 
   h+=fold('debt','Debt',money(debtSettle())+' · '+money(debtService())+'/MO',
@@ -1495,19 +1486,17 @@ function setRange(which,v){
 }
 function resetRange(){
   const n=new Date();
-  RFROM=n.getDate();RTO=new Date(n.getFullYear(),n.getMonth()+1,0).getDate();
+  RFROM=1;RTO=new Date(n.getFullYear(),n.getMonth()+1,0).getDate();
   haptic(5);render();
 }
 
 function renderDebts(){
   if(!D.debts.length)
-    return `<div class="lab">Debt</div>
-      <div class="row tap"><button class="nm" onclick="editDebt(null)"
-        style="text-align:left;color:var(--mut)">+ Add a debt</button></div>`;
+    return `<div class="row tap"><button class="nm" onclick="editDebt(null)"
+      style="text-align:left;color:var(--mut)">+ Add a debt</button></div>`;
 
   const rated=debtsRated(),il=debtInterestLeft();
-  let h=`<div class="lab">Debt<span class="r">${money(debtSettle())} · ${money(debtService())}/MO</span>
-    <button onclick="editDebt(null)">+ ADD</button></div>`;
+  let h='';
 
   D.debts.slice().sort((a,b)=>debtCalc(a).left-debtCalc(b).left).forEach(d=>{
     const c=debtCalc(d);
@@ -1544,6 +1533,8 @@ function renderDebts(){
         :c.paid+' of '+c.months+' paid · '+money(+d.monthly||0)+' each'}</i></button>
       ${c.revolving?`<button class="v mut" onclick="scheduleSheet('${d.id}')">SCHEDULE ›</button>`:''}</div>`;
   });
+  h+=`<div class="row tap"><button class="nm" onclick="editDebt(null)"
+    style="text-align:left;color:var(--mut)">+ Add a debt</button></div>`;
   h+=`<div class="gnote">`;
   if(rated<D.debts.length)
     h+=`<b>${D.debts.length-rated} of ${D.debts.length} have no rate set.</b> Until they do, "clear today" just
@@ -1624,6 +1615,18 @@ function setNum(k,v){D.settings[k]=parseFloat(v)||0;save();render();}
 /* Food and fuel start as budgets. Log what actually goes out and the average
    turns them into measurements — which is the only way the net figure below
    them ever becomes true. */
+function savingsSheet(){
+  form({
+    title:'Savings',
+    sub:'What you have put aside. Nothing tracks this automatically, so update it whenever you move money.',
+    value:{savings:+D.settings.savings||0,savingsGoal:+D.settings.savingsGoal||0},
+    fields:[
+      {k:'savings',label:'Balance £',type:'number',step:'0.01',half:true},
+      {k:'savingsGoal',label:'Goal £',type:'number',step:'0.01',half:true}
+    ],
+    save:v=>{D.settings.savings=+v.savings||0;D.settings.savingsGoal=+v.savingsGoal||0;}
+  });
+}
 function variableSheet(kind){
   const name=kind==='food'?'Food':'Fuel';
   const budget=+D.settings[kind]||0,spent=spentThisMonth(kind),avg=spendAverage(kind);
