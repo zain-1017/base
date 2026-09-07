@@ -48,6 +48,12 @@ round up and hope, so the month's total is right without maintenance. **Record
 a payment** when money actually leaves, and if it's more than the minimum the
 balance, the term, the interest and every future minimum all move with it.
 
+**Payments can be recorded on any debt.** On a fixed-term agreement that pins
+the count to a date instead of leaving it to arithmetic about start dates — and
+that arithmetic is easy to get wrong, because an agreement names the date of the
+*first payment*, not the day a clock starts. On a credit line, it snaps the
+balance to what actually happened.
+
 Crucially, **the balance accrues on its own**. It's stored against the date it
 was last read, and carried forward one cycle at a time — interest on, assumed
 payment off — so it stays right whether or not you record anything. Record a

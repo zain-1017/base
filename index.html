@@ -595,14 +595,18 @@ function rateAt(d,m){
   return monthlyRate(m<promo?(+d.promoApr||0):(+d.apr||0));
 }
 
-/* Months of payments made, reproducing the spreadsheet's own convention
-   exactly — payment n lands n months after the start date — so figures
-   carried over from the sheet don't jump on the day you switch. */
+/* Payments made. A credit agreement names the date of the FIRST payment, so
+   that date is payment one — the spreadsheet treated it as the day a clock
+   started and came out one payment short on every debt. A recorded payment
+   overrides the arithmetic entirely: nothing beats knowing. */
 function monthsPaid(d){
+  const n=d.months|0;
+  const a=d.paidAnchor;
+  if(a&&a.date)return clamp((a.count|0)+cyclesBetween(a.date,today()),0,n);
   const s=new Date(d.start+'T00:00'),t=new Date();
-  let n=(t.getFullYear()-s.getFullYear())*12+(t.getMonth()-s.getMonth());
-  if(t.getDate()<s.getDate())n--;
-  return clamp(n,0,d.months|0);
+  let m=(t.getFullYear()-s.getFullYear())*12+(t.getMonth()-s.getMonth());
+  if(t.getDate()>=s.getDate())m++;
+  return clamp(m,0,n);
 }
 
 /* Walk the schedule. Returns the balance after `upto` payments, plus the
@@ -719,6 +723,7 @@ function revolvingCalc(d){
   const n=run.months;
   const now=new Date();
   const free=new Date(now.getFullYear(),now.getMonth()+(stalled?600:n)+1,1);
+  const endM=new Date(free.getFullYear(),free.getMonth()-1,1);
   const paymentsLeft=run.paid;
   return {revolving:true,stalled:stalled,
           paid:0,left:stalled?Infinity:n,months:stalled?Infinity:n,
@@ -729,7 +734,7 @@ function revolvingCalc(d){
           cycles:proj.cycles,balanceFrom:proj.from,stored:Math.max(0,+d.balance||0),
           principal:B,ratedKnown:+d.apr>0,
           progress:opening>0?clamp(1-B/opening,0,1):0,
-          endLabel:monLabel(free.getFullYear(),free.getMonth()-1),
+          endLabel:monLabel(endM.getFullYear(),endM.getMonth()),
           freeLabel:monLabel(free.getFullYear(),free.getMonth()),
           freeY:free.getFullYear(),freeM:free.getMonth(),
           done:B<=0};
@@ -738,8 +743,10 @@ function revolvingCalc(d){
 function debtCalc(d){
   if(d.kind==='revolving')return revolvingCalc(d);
   const n=d.months|0,paid=monthsPaid(d),left=n-paid,pay=+d.monthly||0,balloon=+d.balloon||0;
-  const s=new Date(d.start+'T00:00');
-  const end=new Date(s.getFullYear(),s.getMonth()+n,1);   // month of the final payment
+  const a=d.paidAnchor;
+  const anchor=(a&&a.date)?new Date(a.date+'T00:00'):new Date(d.start+'T00:00');
+  const ahead=(a&&a.date)?(n-(a.count|0)):(n-1);
+  const end=new Date(anchor.getFullYear(),anchor.getMonth()+ahead,1);  // the final payment
   const free=new Date(end.getFullYear(),end.getMonth()+1,1);
   const paymentsLeft=left<=0?0
     :(d.kind==='schedule'&&d.total!=null)
@@ -748,7 +755,7 @@ function debtCalc(d){
 
   let settle=paymentsLeft,interestLeft=0,interestTotal=null,principal=null,known=false;
   if(d.kind==='apr'&&+d.principal>0){
-    settle=amortise(d,paid).balance;
+    settle=left<=0?0:amortise(d,paid).balance;
     interestLeft=Math.max(0,paymentsLeft-settle);
     interestTotal=amortise(d,n).interest;
     principal=+d.principal;
@@ -1279,13 +1286,14 @@ function renderDebts(){
     </button>`;
   });
 
-  const rev=D.debts.filter(d=>d.kind==='revolving'&&!debtCalc(d).done);
-  rev.forEach(d=>{
-    const n=minSchedule(d,1)[0];
-    if(!n)return;
+  D.debts.filter(d=>!debtCalc(d).done).forEach(d=>{
+    const c=debtCalc(d);
+    const n=c.revolving?minSchedule(d,1)[0]:null;
+    if(c.revolving&&!n)return;
     h+=`<div class="row tap"><button class="nm" onclick="payDebt('${d.id}')" style="text-align:left">
-      Record a ${esc(d.name)} payment<i>Next due ${money(n.due,true)} · ${n.label}</i></button>
-      <button class="v mut" onclick="scheduleSheet('${d.id}')">SCHEDULE ›</button></div>`;
+      Record a ${esc(d.name)} payment<i>${n?'Next due '+money(n.due,true)+' · '+n.label
+        :c.paid+' of '+c.months+' paid · '+money(+d.monthly||0)+' each'}</i></button>
+      ${c.revolving?`<button class="v mut" onclick="scheduleSheet('${d.id}')">SCHEDULE ›</button>`:''}</div>`;
   });
   h+=`<div class="gnote">`;
   if(rated<D.debts.length)
@@ -2193,6 +2201,9 @@ function debtExtra(v){
   if(v.kind==='revolving')return revolvingExtra(v,c);
   let h=`<div class="brk"><div class="bh">Where it stands</div>
     <div class="kv"><span class="k">Payments made</span><span class="v">${c.paid} of ${c.months}</span></div>
+    <div class="kv"><span class="k">Counted from</span><span class="v">${v.paidAnchor&&v.paidAnchor.date
+      ?'your payment on '+v.paidAnchor.date
+      :'the first payment, '+(v.start||'—')}</span></div>
     <div class="kv"><span class="k">Pay it out as agreed</span><span class="v">${money(c.paymentsLeft)}</span></div>`;
   if(c.ratedKnown){
     h+=`<div class="kv"><span class="k">Clear it today</span><span class="v pos">${money(c.settle)}</span></div>
@@ -2202,7 +2213,8 @@ function debtExtra(v){
     h+=`<div class="kv"><span class="k">Clear it today</span><span class="v">Needs a rate</span></div>`;
   }
   h+=`<div class="kv"><span class="k">Last payment</span><span class="v">${c.endLabel}</span></div>
-    <div class="kv"><span class="k">Frees up</span><span class="v pos">${money(+v.monthly||0)}/mo from ${c.freeLabel}</span></div>`;
+    <div class="kv"><span class="k">Frees up</span><span class="v pos">${money(+v.monthly||0)}/mo from ${c.freeLabel}</span></div>
+    <div class="srow" style="margin-top:12px"><button class="sbtn" onclick="payDebt('${v.id}')">Record a payment</button></div>`;
 
   if(v.kind==='apr'){
     const implied=solveApr(v.principal,v.monthly,v.months,v.balloon);
@@ -2367,6 +2379,7 @@ function scheduleSheet(id){
    minimum — moves on its own. */
 function payDebt(id){
   const d=D.debts.find(x=>x.id===id);if(!d)return;
+  if(d.kind!=='revolving')return payTermDebt(d);
   const next=minSchedule(d,1)[0];
   form({
     title:'Record a payment',
@@ -2394,6 +2407,34 @@ function payDebt(id){
       if(amt>0)d.lastPaid=amt;
       d.history=(d.history||[]).concat([{date:when,amount:amt,purchases:buy,
                                          balance:d.balance}]).slice(-36);
+    }
+  });
+}
+
+/* On a fixed-term agreement the useful thing to record is that a payment
+   happened, because it pins the count instead of leaving it to arithmetic
+   about start dates. Overpayments are the lender's business — they shorten
+   the term, but by rules only they can tell you, so say so rather than
+   inventing a figure. */
+function payTermDebt(d){
+  const c=debtCalc(d);
+  form({
+    title:'Record a payment',
+    sub:`<b>${c.paid} of ${c.months}</b> paid so far. Recording one pins that count to a date, so it
+      stops depending on assumptions about when the agreement started.`,
+    value:{amount:+d.monthly||0,date:today()},
+    fields:[
+      {k:'amount',label:'You paid £',type:'number',step:'0.01',half:true},
+      {k:'date',label:'Date',type:'date',half:true}
+    ],
+    save:v=>{
+      const amt=+v.amount||0,when=v.date||today();
+      if(amt<=0){toast('Nothing to record');return false;}
+      d.paidAnchor={date:when,count:clamp(c.paid+1,0,d.months|0)};
+      d.history=(d.history||[]).concat([{date:when,amount:amt,purchases:0,
+                                         balance:null}]).slice(-36);
+      if(amt>(+d.monthly||0)+0.5)
+        toast('Logged — an overpayment usually shortens the term, so check the new figure');
     }
   });
 }
