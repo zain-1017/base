@@ -24,11 +24,16 @@ projection of your net position that steps up each time a debt ends.
 **Debt is modelled properly**, because a balance is wrong if you conflate two
 different things:
 
-- A **schedule** knows only what you will hand over in total. Its balance is
+- A **fixed total** knows only what you will hand over. Its balance is
   *payments left* — what it costs to see the agreement out.
 - Give it **what you actually borrowed and the rate** and it amortises month by
   month, so the balance becomes the real outstanding principal — what it costs
   to *clear it today*.
+- A **credit line** has no term at all. It carries a balance, a rate and
+  whatever you choose to pay, and the app works out how long that takes — or
+  tells you it never finishes, if the payment doesn't cover the interest. It
+  shows how much of each payment is interest, what paying £50 or £100 more
+  would save, and how long the minimum payment alone would run.
 
 The gap between those is interest you have not paid yet, and it's the whole
 reason to model it: it tells you what overpaying is worth. Three solvers fill

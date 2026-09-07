@@ -109,6 +109,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 .dbt .l3 .n{font-size:14px;font-weight:700;letter-spacing:-.3px}
 .dbt .l3 .n.crit{color:var(--crit)}
 .dbt .l3 .k{font-size:8.5px;font-weight:800;color:var(--mut);letter-spacing:.6px;margin-top:3px}
+.dbt .l4{font-size:10px;font-weight:700;color:var(--mut);line-height:1.45;margin-top:8px}
 
 /* ── capture ───────────────────────────────────────────────── */
 .cap{padding:12px 16px 14px;border-bottom:1px solid var(--line)}
@@ -618,7 +619,49 @@ function amortise(d,upto){
   return {balance:bal,interest:interest};
 }
 
+/* A credit line has no term and no principal — just a balance that grows by
+   interest and shrinks by whatever you pay over it. How long it takes is
+   something you work out, not something the agreement tells you, and if the
+   payment ever stops covering the interest it never ends at all. */
+/* Walk the balance down month by month. The last payment is only ever what is
+   left, so counting it as a full one overstates the interest. */
+function runDown(B,r,pay,spend,cap){
+  let bal=B,interest=0,paid=0,months=0;
+  cap=cap||1200;
+  while(bal>0.005&&months<cap){
+    const i=bal*r;interest+=i;
+    const due=bal+i+(spend||0);
+    const p=Math.min(pay,due);
+    bal=due-p;paid+=p;months++;
+  }
+  return {months:months,interest:interest,paid:paid,cleared:bal<=0.005};
+}
+function revolvingCalc(d){
+  const B=Math.max(0,+d.balance||0), r=monthlyRate(d.apr);
+  const pay=+d.monthly||0, spend=+d.spend||0, opening=+d.opening||B;
+  const interestNow=B*r, net=pay-spend-interestNow;
+  const minPay=interestNow+B*((+d.minPct||0)/100);
+  const stalled=B>0&&net<=0;
+  const run=stalled?{months:Infinity,interest:Infinity,paid:Infinity}:runDown(B,r,pay,spend);
+  const n=run.months;
+  const now=new Date();
+  const free=new Date(now.getFullYear(),now.getMonth()+(stalled?600:n)+1,1);
+  const paymentsLeft=run.paid;
+  return {revolving:true,stalled:stalled,
+          paid:0,left:stalled?Infinity:n,months:stalled?Infinity:n,
+          paymentsLeft:paymentsLeft,
+          settle:B,                                   // a credit line settles at its balance
+          interestLeft:run.interest,interestTotal:run.interest,
+          interestNow:interestNow,minPay:minPay,principal:B,ratedKnown:+d.apr>0,
+          progress:opening>0?clamp(1-B/opening,0,1):0,
+          endLabel:monLabel(free.getFullYear(),free.getMonth()-1),
+          freeLabel:monLabel(free.getFullYear(),free.getMonth()),
+          freeY:free.getFullYear(),freeM:free.getMonth(),
+          done:B<=0};
+}
+
 function debtCalc(d){
+  if(d.kind==='revolving')return revolvingCalc(d);
   const n=d.months|0,paid=monthsPaid(d),left=n-paid,pay=+d.monthly||0,balloon=+d.balloon||0;
   const s=new Date(d.start+'T00:00');
   const end=new Date(s.getFullYear(),s.getMonth()+n,1);   // month of the final payment
@@ -687,9 +730,10 @@ function solvePayment(principal,apr,months,balloon){
 const solvePrincipal=(pay,apr,months,balloon)=>pvOf(+pay||0,months|0,monthlyRate(apr),+balloon||0);
 
 const debtSettle=()=>sum(D.debts,d=>debtCalc(d).settle);
-const debtPaymentsLeft=()=>sum(D.debts,d=>debtCalc(d).paymentsLeft);
+const fin=v=>isFinite(v)?v:0;
+const debtPaymentsLeft=()=>sum(D.debts,d=>fin(debtCalc(d).paymentsLeft));
 const debtService=()=>sum(D.debts.filter(d=>!debtCalc(d).done),d=>+d.monthly||0);
-const debtInterestLeft=()=>sum(D.debts,d=>debtCalc(d).interestLeft);
+const debtInterestLeft=()=>sum(D.debts,d=>fin(debtCalc(d).interestLeft));
 const debtsRated=()=>D.debts.filter(d=>debtCalc(d).ratedKnown).length;
 
 /* ═══ money ═══════════════════════════════════════════════════ */
@@ -739,7 +783,7 @@ function projection(months){
     let freed=0;
     D.debts.forEach(d=>{
       const c=debtCalc(d);
-      if(y>c.freeY||(y===c.freeY&&m>=c.freeM))freed+=linkedBill(d);
+      if(!c.stalled&&(y>c.freeY||(y===c.freeY&&m>=c.freeM)))freed+=linkedBill(d);
     });
     out.push({y:y,m:m,net:wage-(base-freed),freed:freed});
   }
@@ -1116,9 +1160,14 @@ function renderDebts(){
         <span class="up">${c.done?'':'+'+money(linkedBill(d))}</span></div>
       ${c.done?'':`<div class="l3">
         <div><div class="n">${money(c.settle)}</div><div class="k">CLEAR TODAY</div></div>
-        <div><div class="n">${money(c.paymentsLeft)}</div><div class="k">PAY IT OUT</div></div>
-        <div><div class="n${c.interestLeft>0?' crit':''}">${c.ratedKnown?money(c.interestLeft):'—'}</div>
-          <div class="k">INTEREST LEFT</div></div></div>`}
+        <div><div class="n">${isFinite(c.paymentsLeft)?money(c.paymentsLeft):'∞'}</div><div class="k">PAY IT OUT</div></div>
+        <div><div class="n${c.interestLeft>0?' crit':''}">${
+          c.ratedKnown?(isFinite(c.interestLeft)?money(c.interestLeft):'∞'):'—'}</div>
+          <div class="k">INTEREST LEFT</div></div></div>
+        ${c.revolving?`<div class="l4">${
+          c.stalled?`Your payment doesn't cover the ${money(c.interestNow)} of interest — this one grows.`
+          :`${money(c.interestNow)} of every ${money(+d.monthly||0)} payment is interest. ${
+            money(Math.max(0,(+d.monthly||0)-(+d.spend||0)-c.interestNow))} comes off the balance.`}</div>`:''}`}
     </button>`;
   });
 
@@ -1131,6 +1180,9 @@ function renderDebts(){
     h+=`Clearing everything today would cost <b>${money(debtSettle())}</b> against <b>${money(debtPaymentsLeft())}</b>
         of remaining payments. <b>${money(il)}</b> of that is interest you have not paid yet — which is what any
         overpayment is really buying back.`;
+  const stuck=D.debts.filter(d=>debtCalc(d).stalled);
+  if(stuck.length)h+=` <b>${stuck.map(d=>esc(d.name)).join(', ')}</b> ${stuck.length>1?'are':'is'} growing:
+    the payment doesn't cover the interest.`;
   return h+`</div>`;
 }
 
@@ -1729,7 +1781,7 @@ function goalProgress(t){
   if(t.source){
     const s=D.settings;
     if(t.source==='debtTotal'){
-      const now=debtSettle(),start=sum(D.debts,d=>+d.total||+d.principal||0);
+      const now=debtSettle(),start=sum(D.debts,d=>+d.total||+d.principal||+d.opening||+d.balance||0);
       return {pct:start?1-now/start:0,label:money(now),
               sub:money(debtService())+'/MO · '+D.debts.filter(d=>!debtCalc(d).done).length+' LEFT'};
     }
@@ -1947,22 +1999,33 @@ function editDebt(id){
   const ex=id?D.debts.find(x=>x.id===id):null;
   form({
     title:(ex?'Edit':'New')+' debt',
-    sub:'A schedule knows only what you will hand over. Give it what you actually borrowed and the rate, and it can tell you what clearing it today would cost instead.',
+    sub:'A fixed total knows only what you will hand over. Give it what you borrowed and the rate and it can tell you what clearing it today would cost. A credit line has no end date at all until you decide what to pay.',
     value:ex?JSON.parse(JSON.stringify(ex))
              :{id:null,name:'',kind:'schedule',total:null,principal:null,apr:null,
-               monthly:null,start:today(),months:12,balloon:null,promoMonths:null,promoApr:null},
+               monthly:null,start:today(),months:12,balloon:null,promoMonths:null,promoApr:null,
+               balance:null,spend:0,opening:null,minPct:2},
     fields:[
       {k:'name',label:'Name',ph:'Car loan'},
-      {k:'kind',label:'What do you know?',type:'seg',
-       opts:[{k:'schedule',label:'Total repayable'},{k:'apr',label:'Amount + rate'}]},
+      {k:'kind',label:'What kind of debt is it?',type:'seg',
+       opts:[{k:'schedule',label:'Fixed total'},{k:'apr',label:'Loan + rate'},
+             {k:'revolving',label:'Credit line'}]},
+      {k:'balance',label:'Balance now £',type:'number',step:'0.01',hide:v=>v.kind!=='revolving',
+       note:'Straight off your latest statement. A credit line has no term — how long it takes depends on what you pay.'},
       {k:'total',label:'Total repayable £',type:'number',step:'0.01',
        hide:v=>v.kind!=='schedule',
        note:'Every payment added up. The rate is already inside this number, so the app will not guess at one.'},
       {k:'principal',label:'You borrowed £',type:'number',step:'0.01',half:true,hide:v=>v.kind!=='apr'},
       {k:'apr',label:'APR %',type:'number',step:'0.01',half:true,hide:v=>v.kind!=='apr'},
-      {k:'monthly',label:'Monthly £',type:'number',step:'0.01',half:true},
-      {k:'months',label:'Term months',type:'number',int:true,half:true},
-      {k:'start',label:'Start date',type:'date',half:true},
+      {k:'apr',label:'APR %',type:'number',step:'0.01',half:true,hide:v=>v.kind!=='revolving'},
+      {k:'spend',label:'New spending a month £',type:'number',step:'0.01',half:true,
+       hide:v=>v.kind!=='revolving',},
+      {k:'monthly',label:'You pay £',type:'number',step:'0.01',half:true},
+      {k:'months',label:'Term months',type:'number',int:true,half:true,hide:v=>v.kind==='revolving'},
+      {k:'opening',label:'Balance when you started £',type:'number',step:'0.01',half:true,
+       hide:v=>v.kind!=='revolving'},
+      {k:'minPct',label:'Minimum is interest + %',type:'number',step:'0.1',half:true,
+       hide:v=>v.kind!=='revolving'},
+      {k:'start',label:'Start date',type:'date',half:true,hide:v=>v.kind==='revolving'},
       {k:'balloon',label:'Final payment £',type:'number',step:'0.01',half:true,hide:v=>v.kind!=='apr'},
       {k:'promoMonths',label:'0% months',type:'number',int:true,half:true,hide:v=>v.kind!=='apr'},
       {k:'promoApr',label:'Rate during those %',type:'number',step:'0.01',half:true,hide:v=>v.kind!=='apr'}
@@ -1971,7 +2034,8 @@ function editDebt(id){
     save:v=>{
       if(!String(v.name||'').trim()){toast('Give it a name');return false;}
       v.months=parseInt(v.months)||0;
-      ['total','principal','apr','monthly','balloon','promoMonths','promoApr']
+      ['total','principal','apr','monthly','balloon','promoMonths','promoApr',
+       'balance','spend','opening','minPct']
         .forEach(k=>{v[k]=v[k]==null||v[k]===''?null:+v[k];});
       if(v.id){const i=D.debts.findIndex(x=>x.id===v.id);D.debts[i]=v;}
       else{v.id=uid('d');D.debts.push(v);}
@@ -1987,6 +2051,7 @@ function editDebt(id){
    one nobody ever tells you is the rate. */
 function debtExtra(v){
   const c=debtCalc(v);
+  if(v.kind==='revolving')return revolvingExtra(v,c);
   let h=`<div class="brk"><div class="bh">Where it stands</div>
     <div class="kv"><span class="k">Payments made</span><span class="v">${c.paid} of ${c.months}</span></div>
     <div class="kv"><span class="k">Pay it out as agreed</span><span class="v">${money(c.paymentsLeft)}</span></div>`;
@@ -2023,6 +2088,56 @@ function debtExtra(v){
   }
   return h+`</div>`;
 }
+/* The question a credit line actually raises is not "how much is left" but
+   "how much of what I pay is doing anything". Everything here answers that. */
+function revolvingExtra(v,c){
+  const pay=+v.monthly||0, off=Math.max(0,pay-(+v.spend||0)-c.interestNow);
+  const bite=pay?c.interestNow/pay:0;
+  let h=`<div class="brk"><div class="bh">Where it stands</div>
+    <div class="kv"><span class="k">Balance</span><span class="v">${money(c.settle,true)}</span></div>
+    <div class="kv"><span class="k">Interest on this balance</span><span class="v crit">${money(c.interestNow,true)}</span></div>
+    <div class="kv"><span class="k">Of your ${money(pay)} payment</span>
+      <span class="v${bite>0.4?' crit':''}">${money(c.interestNow)} is interest</span></div>
+    <div class="kv"><span class="k">Actually comes off the balance</span>
+      <span class="v${off<=0?' crit':' pos'}">${money(off)}</span></div>`;
+  if(c.stalled){
+    h+=`<div class="kv"><span class="k">Time to clear</span><span class="v crit">Never</span></div>
+      <div class="note" style="font-size:10.5px;color:var(--crit);font-weight:700;line-height:1.5;margin-top:9px">
+        What you pay does not cover the interest and the new spending, so this balance grows. Pay more than
+        <b>${money(c.interestNow+(+v.spend||0),true)}</b> a month or it never ends.</div>`;
+  }else{
+    h+=`<div class="kv"><span class="k">Clear in</span>
+        <span class="v">${c.left} months · ${c.freeLabel}</span></div>
+      <div class="kv"><span class="k">Interest before it's gone</span>
+        <span class="v crit">${money(c.interestLeft)}</span></div>
+      <div class="kv"><span class="k">Total you'll hand over</span>
+        <span class="v">${money(c.paymentsLeft)}</span></div>`;
+  }
+  if(+v.minPct>0){
+    const p=(+v.minPct)/100;
+    const n=Math.ceil(Math.log(5/Math.max(5,c.settle))/Math.log(1-p));
+    h+=`<div class="brk"><div class="bh">If you only paid the minimum</div>
+      <div class="kv"><span class="k">Minimum right now</span><span class="v">${money(c.minPay,true)}</span></div>
+      <div class="kv"><span class="k">It would take</span>
+        <span class="v crit">${n} months · ${(n/12).toFixed(0)} years</span></div>
+      <div class="note" style="font-size:10.5px;color:var(--mut);font-weight:600;line-height:1.5;margin-top:9px">
+        The minimum is the interest plus <b>${v.minPct}%</b> of the balance, so it only ever clears
+        ${v.minPct}% a month — and it shrinks as the balance does. It is designed not to finish.</div></div>`;
+  }
+  h+=`<div class="brk"><div class="bh">What paying more would do</div>`;
+  const r=monthlyRate(v.apr), B=c.settle, sp=+v.spend||0;
+  [pay+50,pay+100,pay+150].forEach(p=>{
+    const net=p-sp-B*r;
+    if(net<=0)return;
+    const n=Math.ceil(-Math.log(1-r*B/(p-sp))/Math.log(1+r));
+    const int=Math.max(0,n*p-B-n*sp);
+    const saved=c.stalled?null:c.interestLeft-int;
+    h+=`<div class="kv"><span class="k">${money(p)} a month</span>
+      <span class="v">${n} months${saved!=null&&saved>0?' · saves '+money(saved):''}</span></div>`;
+  });
+  return h+`</div>`;
+}
+
 function solveField(which){
   grabForm();
   const v=FORM.value;
