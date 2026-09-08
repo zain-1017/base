@@ -140,6 +140,9 @@ starts empty, and you add things by hand or import a file you exported.
 import to move a snapshot between them. Money → *Back up your data* does both.
 Keep a copy somewhere that isn't the device it came from.
 
+A fixed bar across the top carries today's date and a one-tap **Save a copy**,
+so backing up never means going hunting for it.
+
 ## Design
 
 Monochrome. The only two colours encode state — ahead, and overdue — never
