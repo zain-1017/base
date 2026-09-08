@@ -315,16 +315,14 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 .search input{flex:1;height:36px;border:1px solid var(--line2);border-radius:9px;padding:0 12px;
   background:var(--hl);font-size:16px;font-weight:500}
 .search .x{font-size:11px;font-weight:800;color:var(--mut);letter-spacing:.5px;padding:0 4px}
-.wk{position:sticky;top:0;z-index:21;background:var(--bg);border-bottom:1px solid var(--line);
-  padding:6px 12px;display:flex;align-items:center;gap:10px}
-.wk.on{background:var(--ink);color:var(--bg);border-bottom-color:var(--ink)}
-.wk-b{height:32px;padding:0 14px;border-radius:8px;font-size:11px;font-weight:800;letter-spacing:.8px;
-  background:var(--ink);color:var(--bg);flex-shrink:0}
-.wk.on .wk-b{background:rgba(127,127,127,.34);color:var(--bg)}
-.wk-t{font-size:21px;font-weight:800;letter-spacing:-.8px;flex-shrink:0}
-.wk-s{flex:1;min-width:0;font-size:10px;font-weight:800;letter-spacing:.4px;color:var(--mut);
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.wk.on .wk-s{color:var(--bg);opacity:.62}
+/* Three pages behind one tab. */
+.hnav{display:flex;gap:0;border-bottom:1px solid var(--line2);background:var(--bg);
+  position:sticky;top:0;z-index:24}
+.hnav button{flex:1;height:44px;font-size:11px;font-weight:800;letter-spacing:1.1px;
+  text-transform:uppercase;color:var(--mut);border-bottom:2px solid transparent}
+.hnav button.on{color:var(--ink);border-bottom-color:var(--ink)}
+.hnav button:active{background:var(--hl)}
+
 .jump{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--line);
   display:flex;gap:6px;padding:7px 12px;overflow-x:auto;scrollbar-width:none}
 .jump::-webkit-scrollbar{display:none}
@@ -332,82 +330,92 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
   border:1px solid var(--line);font-size:11px;font-weight:800;letter-spacing:.6px;color:var(--mut)}
 .jump button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 
-.grp{display:flex;align-items:center;gap:8px;padding:12px 14px 5px;cursor:pointer;width:100%;text-align:left}
+.grp{display:flex;align-items:center;gap:8px;padding:14px 14px 5px;cursor:pointer;width:100%;text-align:left}
 .grp .gname{font-size:14px;font-weight:800;letter-spacing:-.3px}
 .grp .gcount{margin-left:auto;font-size:10px;font-weight:800;color:var(--dim)}
 .grp .gchev{width:11px;height:11px;stroke:var(--dim);fill:none;stroke-width:3;stroke-linecap:round;
   stroke-linejoin:round;flex-shrink:0;transition:transform .16s;transform:rotate(90deg)}
 .grp.shut .gchev{transform:rotate(0)}
 .bph{background:var(--hl);border-top:1px solid var(--line);border-bottom:1px solid var(--line);
-  display:grid;align-items:center;padding:3px 12px 3px 14px;
+  display:grid;align-items:center;padding:4px 12px 4px 14px;
   font-size:9px;font-weight:800;letter-spacing:1.1px;color:var(--mut)}
-.bph,.r-main{grid-template-columns:1fr 42px 42px 50px;column-gap:6px}
+.bph,.r-main{grid-template-columns:1fr 46px 50px 62px;column-gap:6px}
 .bph .num{text-align:right}
-.bph .stale{color:var(--crit);font-weight:800;letter-spacing:.4px}
+.bph .pctb{color:var(--ink);text-decoration:underline;text-underline-offset:2px;
+  font-size:9px;font-weight:800;letter-spacing:1.1px}
 .r{border-bottom:1px solid var(--line);padding:0 12px 0 14px}
 .r.open{background:var(--hl)}
-.r-main{display:grid;align-items:baseline;padding:5px 0;line-height:1.2;cursor:pointer;width:100%;text-align:left}
+.r-main{display:grid;align-items:baseline;padding:6px 0;line-height:1.2;width:100%;text-align:left}
 .r-nm{font-size:13px;font-weight:600;letter-spacing:-.2px;overflow:hidden;text-overflow:ellipsis;
   white-space:nowrap;min-width:0}
-.r-nm .v{color:var(--mut);font-weight:500}
 .r-n{text-align:right;font-size:13px;font-weight:700;letter-spacing:-.3px}
 .r-n.kg{font-size:14px;font-weight:800}
 .r-n.nx{color:var(--pos)}
-.r-n.est{color:var(--mut);font-weight:600}
 .r-n.none{color:var(--dim);font-weight:500}
 
-/* ── inline logger ─────────────────────────────────────────── */
-.log{padding:4px 0 14px}
-.wbar{display:flex;align-items:center;gap:9px;margin:6px 0 12px}
-.wstep{display:flex;align-items:center;border:1px solid var(--line2);border-radius:11px;
-  overflow:hidden;background:var(--bg)}
-.wstep button{width:50px;height:46px;font-size:23px;font-weight:500;background:var(--hl)}
-.wstep button:active{background:var(--line2)}
-.wstep input{width:76px;height:46px;text-align:center;border-left:1px solid var(--line2);
-  border-right:1px solid var(--line2);font-size:19px;font-weight:800;background:var(--bg)}
-.wstep .u{font-size:11px;color:var(--mut);padding:0 9px;font-weight:800}
-.wbar .hint{font-size:10px;color:var(--mut);font-weight:700;line-height:1.35;flex:1}
-.wbar .hint b{color:var(--pos)}
-.sl{display:flex;align-items:center;gap:7px;margin-bottom:7px}
-.sl .n{font-size:11px;font-weight:800;color:var(--dim);width:12px;flex-shrink:0}
-.sl input{height:44px;border:1px solid var(--line2);border-radius:9px;text-align:center;
-  font-size:17px;font-weight:700;background:var(--bg);min-width:0}
-.sl input.rp{flex:1}
-.sl input.wt{width:72px;flex-shrink:0}
-.sl .x{font-size:12px;color:var(--dim);font-weight:800}
-.sl .ok{width:46px;height:44px;border:1px solid var(--line2);border-radius:9px;font-size:17px;
-  font-weight:800;color:var(--dim);background:var(--bg);flex-shrink:0}
-.sl.done input{border-color:var(--ink);background:var(--ink);color:var(--bg)}
-.sl.done .ok{background:var(--ink);border-color:var(--ink);color:var(--bg)}
-.sl .rmv{width:24px;font-size:15px;color:var(--dim);flex-shrink:0}
-.addset{width:100%;height:38px;border:1px dashed var(--line2);border-radius:9px;
-  font-size:11px;font-weight:800;letter-spacing:.7px;color:var(--mut);margin-top:2px}
-.stats{display:flex;align-items:center;gap:12px;margin:14px 0 2px;padding-top:12px;
-  border-top:1px solid var(--line2)}
-.stats .sv{font-size:10px;font-weight:700;color:var(--mut);line-height:1.5;flex:1}
-.stats .sv b{color:var(--ink);font-weight:800;font-size:11px}
-.notebox{margin-top:11px}
-.notebox label{display:block;font-size:9px;font-weight:800;letter-spacing:1px;color:var(--mut);margin-bottom:4px}
-.notebox input{width:100%;height:38px;border:1px solid var(--line2);border-radius:9px;padding:0 11px;
-  font-size:16px;font-weight:600}
-.hist{margin-top:13px}
-.hist-h{font-size:9px;font-weight:800;letter-spacing:1px;color:var(--mut);margin-bottom:2px}
-.hd{display:flex;align-items:baseline;gap:9px;padding:6px 0;border-top:1px solid var(--line)}
-.hd .d{font-size:11px;font-weight:800;width:54px;flex-shrink:0;color:var(--mut)}
-.hd .s{flex:1;font-size:12px;font-weight:600}
-.hd .t{font-size:10px;font-weight:700;color:var(--dim)}
-.hd .del{font-size:11px;color:var(--dim);font-weight:700;padding:2px 4px}
-.hist-empty{font-size:11px;color:var(--dim);font-style:italic;padding:5px 0}
-.rowacts{display:flex;gap:8px;margin-top:12px}
-.rowacts button{flex:1;height:36px;border:1px solid var(--line2);border-radius:9px;font-size:11px;
-  font-weight:800;letter-spacing:.4px;color:var(--mut)}
-#rest{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(58px + var(--safe-b));z-index:40;
-  background:var(--ink);color:var(--bg);border-radius:20px;height:36px;padding:0 8px 0 15px;
-  display:none;align-items:center;gap:10px;font-size:14px;font-weight:800;
-  box-shadow:0 4px 16px rgba(0,0,0,.22)}
-#rest.on{display:flex}
-#rest .lbl{font-size:9px;font-weight:800;letter-spacing:1px;opacity:.55}
-#rest button{width:26px;height:26px;border-radius:13px;background:rgba(127,127,127,.32);font-size:13px;font-weight:800}
+/* ── the logger. One weight, then reps. Nothing else in the way. ── */
+.log{padding:8px 0 14px}
+.lglab{font-size:8.5px;font-weight:800;letter-spacing:1.1px;color:var(--mut);
+  text-transform:uppercase;margin-bottom:6px}
+.lgw{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:11px}
+.lgw .stp{width:44px;height:48px;border:1px solid var(--line2);border-radius:11px;
+  font-size:22px;font-weight:500;background:var(--bg);flex-shrink:0}
+.lgw .stp:active{background:var(--line2)}
+.lgw .wnum{width:92px;height:48px;border:1px solid var(--line2);border-radius:11px;text-align:center;
+  font-size:22px;font-weight:800;background:var(--bg);flex-shrink:0}
+.lgw .wu{font-size:10px;font-weight:800;color:var(--mut);letter-spacing:.8px}
+.lgw .wchip{height:28px;padding:0 10px;border-radius:14px;border:1px solid var(--line2);
+  font-size:10px;font-weight:800;color:var(--mut);letter-spacing:.2px}
+.lgw .wchip:active{background:var(--line2);color:var(--ink)}
+.lgs{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:11px}
+.setbox{width:56px;height:52px;border:1px solid var(--line2);border-radius:11px;text-align:center;
+  font-size:20px;font-weight:800;background:var(--bg)}
+.setbox.done{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.setbox::placeholder{color:var(--dim);font-weight:500}
+.setadd{width:56px;height:52px;border:1px dashed var(--line2);border-radius:11px;
+  font-size:20px;font-weight:500;color:var(--mut)}
+.lgm{font-size:10.5px;font-weight:700;color:var(--mut);line-height:1.6;margin-bottom:10px}
+.lgm b{color:var(--ink);font-weight:800}
+.lgn{width:100%;height:40px;border:1px solid var(--line2);border-radius:10px;padding:0 11px;
+  font-size:15px;font-weight:600;background:var(--bg);margin-bottom:10px}
+.lgh{border-top:1px solid var(--line2);padding-top:4px}
+.lgr{display:flex;align-items:baseline;gap:9px;padding:6px 0;font-size:12px}
+.lgr .d{font-size:10px;font-weight:800;color:var(--mut);width:54px;flex-shrink:0}
+.lgr .s{flex:1;font-weight:700}
+.lgr .w{font-size:10.5px;font-weight:700;color:var(--dim)}
+.lgr .x{font-size:11px;color:var(--dim);font-weight:700;padding:0 3px}
+.lgr .x:active{color:var(--crit)}
+.lgacts{display:flex;gap:8px;margin-top:10px}
+.lgacts button{flex:1;height:38px;border:1px solid var(--line2);border-radius:10px;font-size:10px;
+  font-weight:800;letter-spacing:.9px;color:var(--mut)}
+
+/* ── the bar you use between sets ─────────────────────────────── */
+.wkpad{height:96px}
+#wk{position:fixed;left:8px;right:8px;bottom:calc(56px + var(--safe-b));z-index:34;
+  display:none;align-items:stretch;gap:8px;padding:9px 10px;
+  background:var(--sheet);border:1px solid var(--line2);border-radius:16px;
+  box-shadow:0 8px 28px rgba(0,0,0,.45)}
+#wk.on{display:flex}
+#wk .wkL,#wk .wkR{display:flex;flex-direction:column;align-items:center;gap:3px;flex-shrink:0}
+#wk .wkgo{min-width:82px;height:42px;border-radius:11px;background:var(--ink);color:var(--bg);
+  font-size:14px;font-weight:800;letter-spacing:-.2px;padding:0 10px}
+#wk .wkgo.on{font-variant-numeric:tabular-nums}
+#wk .wkgo.over{background:var(--crit);color:#fff}
+#wk .wksw{min-width:74px;height:42px;border-radius:11px;border:1px solid var(--line2);
+  font-size:14px;font-weight:800;letter-spacing:-.2px;color:var(--ink);padding:0 8px}
+#wk .wksw.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+#wk .wkx{font-size:8.5px;font-weight:800;letter-spacing:.6px;color:var(--mut);height:14px}
+#wk .wkx.idle{color:var(--dim)}
+#wk .wkm{display:flex;align-items:center;gap:3px;height:14px}
+#wk .wkm input{width:30px;height:14px;border:none;background:none;text-align:right;
+  font-size:9px;font-weight:800;color:var(--ink);padding:0}
+#wk .wkm i{font-style:normal;font-size:8.5px;font-weight:800;color:var(--mut);letter-spacing:.6px}
+#wk .wkC{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:2px;
+  overflow:hidden}
+#wk .wkC span{font-size:9.5px;font-weight:700;color:var(--mut);letter-spacing:.2px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#wk .wkC b{color:var(--ink);font-weight:800;letter-spacing:.6px}
+#wk .wkC .idle{color:var(--dim);font-weight:600}
 
 /* ── calendar ──────────────────────────────────────────────── */
 .cal-nav{display:flex;align-items:center;justify-content:space-between;padding:13px 18px 9px}
@@ -490,7 +498,7 @@ table.g td.act button:active{color:var(--crit)}
 <body>
 <div id="bar"><span id="bar-d"></span><button onclick="exportData()">SAVE A COPY</button></div>
 <div id="app"></div>
-<div id="rest"><span class="lbl">REST</span><span id="rest-t">0:00</span><button onclick="stopRest()">✕</button></div>
+<div id="wk"></div>
 <nav id="nav">
   <button class="ni on" id="ni-home" onclick="go('home')">
     <svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>HOME</button>
@@ -1209,7 +1217,7 @@ function render(){
   if(TAB!=='home')app.scrollTop=y;
   const ta=document.getElementById('capin');
   if(ta){ta.value=DRAFT;autoGrow(ta);}
-  if(TAB==='health')syncWorkoutTick();
+  paintWorkoutBar();
 }
 function autoGrow(ta){ta.style.height='auto';ta.style.height=Math.min(150,ta.scrollHeight)+'px';}
 function onDraft(v,el){
@@ -1767,35 +1775,40 @@ function quickAdd(){
 
 /* ═══════════════════════════════════════════════════════════════
    HEALTH
-   The sheet stays dense on purpose: the more lifts on screen, the faster
-   the eye finds the one it wants mid-set. Groups separate by hairline and
-   a heavier label — no category tints, because the app is monochrome.
+   The sheet stays dense on purpose: the more lifts on screen, the faster the
+   eye finds the one it wants mid-set. Three pages behind one tab — the sheet,
+   the calendar, the food — and a bar of controls that stays put while you
+   scroll, because you use it between sets rather than at the end.
    ═══════════════════════════════════════════════════════════════ */
-let HSUB='sheet', RESTT=null, RESTEND=0, TICK=null;
+let HSUB='gym', SW={run:false,base:0,t0:0}, TICK=null, SWTICK=null;
 
 function renderHealth(){
-  if(HSUB==='food')return renderFood();
-  if(HSUB==='history')return renderHistory();
+  const nav=`<div class="hnav">${
+    [['gym','Gym'],['cal','Calendar'],['food','Food']].map(([k,n])=>
+      `<button class="${HSUB===k?'on':''}" onclick="setSub('${k}')">${n}</button>`).join('')}</div>`;
+  if(HSUB==='cal')return nav+renderHistory();
+  if(HSUB==='food')return nav+renderFood();
+  return nav+renderGym();
+}
+function setSub(s){HSUB=s;OPEN=null;render();haptic(5);document.getElementById('app').scrollTop=0;}
 
+function renderGym(){
   const q=Q.trim().toLowerCase();
   let list=D.exercises.filter(e=>!e.hidden);
   if(q)list=list.filter(e=>e.name.toLowerCase().includes(q)||(e.bp||'').toLowerCase().includes(q));
   else if(JUMP)list=list.filter(e=>e.cat===JUMP);
 
-  let h=renderClock()+`
-  <div class="search"><input value="${esc(Q)}" placeholder="Search 102 lifts…" aria-label="Search exercises"
-      oninput="onSearch(this.value)">${Q?'<button class="x" onclick="onSearch(\'\')">CLEAR</button>':''}</div>
+  let h=`<div class="search"><input value="${esc(Q)}" placeholder="Search ${D.exercises.length} lifts…"
+      aria-label="Search exercises" oninput="onSearch(this.value)">
+      ${Q?'<button class="x" onclick="onSearch(\'\')">CLEAR</button>':''}</div>
   <div class="jump">
     <button class="${!JUMP&&!q?'on':''}" onclick="setJump('')">ALL</button>
     ${CATS.map(c=>`<button class="${JUMP===c?'on':''}" onclick="setJump('${c}')">${c}</button>`).join('')}
-    <button onclick="setSub('history')">HISTORY</button>
-    <button onclick="setSub('food')">FOOD</button>
   </div>`;
 
   if(!list.length)return h+`<div class="empty"><h3>Nothing matches</h3>
     <p>${q?'No lift called “'+esc(Q)+'”.':'Nothing in this group yet.'}</p></div>`;
 
-  /* Group by category, then body part — the order the sheet was written in. */
   const cats=q?[null]:CATS.filter(c=>list.some(e=>e.cat===c));
   cats.forEach(cat=>{
     const inCat=cat?list.filter(e=>e.cat===cat):list;
@@ -1810,39 +1823,48 @@ function renderHealth(){
     const bps=(BPS[cat]||[]).filter(b=>inCat.some(e=>e.bp===b));
     const groups=cat?bps.map(b=>[b,inCat.filter(e=>e.bp===b)]):[['RESULTS',inCat]];
     groups.forEach(([bp,exs])=>{
-      const stale=staleDays(exs);
-      h+=`<div class="bph"><b>${bp}</b><span class="num">1RM</span><span class="num">KG</span>
-        <span class="num ${stale>21?'stale':''}">${stale!=null?(stale>21?stale+'D':'REPS'):'REPS'}</span></div>`;
+      h+=`<div class="bph"><b>${bp}</b><span class="num">1RM</span>
+        <button class="num pctb" onclick="multSheet()">${pctLabel()}</button>
+        <span class="num">DONE</span></div>`;
       exs.forEach(e=>{h+=renderRow(e);});
     });
   });
-  return h+`<div class="spacer"></div>`;
+  return h+`<div class="wkpad"></div>`;
 }
-function staleDays(exs){
-  let best=null;
-  exs.forEach(e=>{const l=lastSession(e,true);
-    if(l){const d=daysBetween(l.date,today());if(best==null||d<best)best=d;}});
-  return best;
+const workMult=()=>{const m=+D.settings.mult;return m>0&&m<=2?m:0.65;};
+const pctLabel=()=>Math.round(workMult()*100)+'%';
+/* The working weight the sheet prescribes: a percentage of the one-rep max,
+   rounded to something the gym actually has on the rack. */
+function workWeight(e){
+  if(e.rec==null)return null;
+  const w=(+e.rec||0)*workMult();
+  return w>0?plate(w,e):null;
 }
-function setJump(c){JUMP=c;Q='';render();haptic(4);}
-function setSub(s){HSUB=s;OPEN=null;render();haptic(5);document.getElementById('app').scrollTop=0;}
-function onSearch(v){Q=v;if(v)JUMP='';render();}
-function toggleCat(c){
-  D.settings.collapsed[c]=!D.settings.collapsed[c];save();haptic(5);render();
+function multSheet(){
+  form({
+    title:'Working weight',
+    sub:'Every lift’s working column is this share of its one-rep max. Change it here and the whole sheet moves.',
+    value:{pct:Math.round(workMult()*1000)/10},
+    fields:[{k:'pct',label:'Percentage of 1RM',type:'number',step:'0.5',
+             note:'Your sheet used <b>65%</b>. Anything from 1 to 100.'}],
+    save:v=>{const p=+v.pct||65;D.settings.mult=clamp(p,1,100)/100;}
+  });
 }
 
 function renderRow(e){
   const open=OPEN===e.id;
-  const last=lastSession(e,true),est=estMax(e),nx=nextWeight(e);
-  const rec=e.rec!=null?fmtKg(e.rec):(est?fmtKg(est):null);
-  const kg=e.w!=null?fmtKg(e.w):null;
-  const reps=last&&(last.sets||[]).length?last.sets.map(s=>s.reps).join(','):(e.reps?e.reps.join(','):null);
+  const last=lastSession(e,true);
+  const target=workWeight(e);
+  const done=last&&(last.sets||[]).length
+    ? last.sets.map(s=>s.reps).join(',')
+    : (e.reps?e.reps.join(','):null);
+  const fresh=last&&last.date===today();
   return `<div class="r${open?' open':''}">
     <button class="r-main" onclick="toggleEx('${e.id}')" aria-expanded="${open}">
       <span class="r-nm">${esc(e.name)}</span>
-      <span class="r-n ${rec?(e.rec!=null?'':'est'):'none'}">${rec||'—'}</span>
-      <span class="r-n kg ${kg?(nx&&nx.up?'nx':''):'none'}">${kg||'—'}</span>
-      <span class="r-n ${reps?'':'none'}">${reps||'—'}</span>
+      <span class="r-n ${e.rec!=null?'':'none'}">${e.rec!=null?fmtKg(e.rec):'—'}</span>
+      <span class="r-n kg ${target!=null?'':'none'}">${target!=null?fmtKg(target):'—'}</span>
+      <span class="r-n ${done?(fresh?'nx':''):'none'}">${done||'—'}</span>
     </button>${open?renderLogger(e):''}</div>`;
 }
 function toggleEx(id){
@@ -1851,121 +1873,99 @@ function toggleEx(id){
     if(el)el.scrollIntoView({block:'nearest',behavior:'smooth'});}
 }
 
-/* A draft is the set list you're part-way through. It lives in memory until
-   a set is ticked, then it becomes a log — so a half-typed row never
-   pollutes your history. */
+/* A draft is the set list you are part way through. It becomes a log the
+   moment a set has reps in it, so nothing needs committing by hand. */
 function draftFor(e){
   if(DRAFTS[e.id])return DRAFTS[e.id];
   const t=todayLog(e.id);
-  if(t)return DRAFTS[e.id]={w:t.w,sets:(t.sets||[]).map(s=>({reps:s.reps,w:s.w,done:true}))};
-  const nx=nextWeight(e),last=lastSession(e,false);
-  const w=nx?nx.w:(e.w!=null?e.w:(last?last.w:0));
-  const n=last&&(last.sets||[]).length?last.sets.length:3;
-  return DRAFTS[e.id]={w:w,sets:Array.from({length:n},()=>({reps:'',w:null,done:false}))};
+  if(t)return DRAFTS[e.id]={w:t.w,sets:(t.sets||[]).map(s=>({reps:s.reps,w:s.w}))};
+  const target=workWeight(e);
+  return DRAFTS[e.id]={w:target!=null?target:(e.w!=null?e.w:0),sets:[{reps:'',w:null}]};
 }
 function renderLogger(e){
-  const dr=draftFor(e),goal=+D.settings.repGoal||12;
-  const nx=nextWeight(e),best=bestEffort(e),est=estMax(e);
-  const hist=logsFor(e.id).slice(0,6);
-  const time=isTime(e),bw=isBw(e);
+  const dr=draftFor(e),time=isTime(e);
+  const last=lastSession(e,false),est=estMax(e),best=bestEffort(e);
+  const target=workWeight(e);
+  const hist=logsFor(e.id).slice(0,5);
+  const lastW=last?(last.sets&&last.sets[0]&&last.sets[0].w!=null?last.sets[0].w:last.w):null;
 
   let h=`<div class="log">
-    <div class="wbar">
-      <div class="wstep">
-        <button onclick="stepW('${e.id}',-1)" aria-label="Less weight">−</button>
-        <input type="number" inputmode="decimal" value="${dr.w||0}" aria-label="Working weight"
-          onchange="setW('${e.id}',this.value)">
-        <button onclick="stepW('${e.id}',1)" aria-label="More weight">+</button>
-        <span class="u">${time?'SEC':bw?'+KG':'KG'}</span>
-      </div>
-      <div class="hint">${nx?(nx.up?`<b>Up ${fmtKg(nx.w)}${time?'s':'kg'}</b> — you hit ${goal} on every set`
-        :`Hold ${fmtKg(nx.w)}${time?'s':'kg'} until all sets reach ${goal}`)
-        :'First time on this one — pick something you can hold form on'}</div>
-    </div>`;
-
+    <div class="lglab">Weight</div>
+    <div class="lgw">
+      <button class="stp" onclick="stepW('${e.id}',-1)" aria-label="Less">−</button>
+      <input class="wnum" type="number" inputmode="decimal" value="${dr.w||0}"
+        aria-label="Weight" onchange="setW('${e.id}',this.value)">
+      <button class="stp" onclick="stepW('${e.id}',1)" aria-label="More">+</button>
+      <span class="wu">${time?'SEC':isBw(e)?'+KG':'KG'}</span>
+      ${lastW!=null&&Math.abs(lastW-(+dr.w||0))>0.01
+        ?`<button class="wchip" onclick="setW('${e.id}',${lastW})">last ${fmtKg(lastW)}</button>`:''}
+      ${target!=null&&Math.abs(target-(+dr.w||0))>0.01
+        ?`<button class="wchip" onclick="setW('${e.id}',${target})">${pctLabel()} ${fmtKg(target)}</button>`:''}
+    </div>
+    <div class="lglab">Reps — type one box per set</div>
+    <div class="lgs">`;
   dr.sets.forEach((s,i)=>{
-    h+=`<div class="sl${s.done?' done':''}">
-      <span class="n">${i+1}</span>
-      <input class="rp" type="number" inputmode="numeric" value="${s.reps}" placeholder="${time?'secs':'reps'}"
-        aria-label="Set ${i+1} ${time?'seconds':'reps'}" onchange="setRep('${e.id}',${i},this.value)">
-      <span class="x">×</span>
-      <input class="wt" type="number" inputmode="decimal" value="${s.w!=null?s.w:dr.w}"
-        aria-label="Set ${i+1} weight" onchange="setSetW('${e.id}',${i},this.value)">
-      <button class="ok" onclick="commitSet('${e.id}',${i})" aria-label="${s.done?'Undo set':'Log set'}">${s.done?'✓':'○'}</button>
-      <button class="rmv" onclick="rmSet('${e.id}',${i})" aria-label="Remove set">✕</button></div>`;
+    h+=`<input class="setbox${s.reps!==''&&s.reps!=null?' done':''}" type="number" inputmode="numeric"
+      value="${s.reps}" aria-label="Set ${i+1}"
+      onchange="setRep('${e.id}',${i},this.value)">`;
   });
-  h+=`<button class="addset" onclick="addSet('${e.id}')">+ ANOTHER SET</button>`;
-
-  h+=`<div class="stats">${spark(e)}<div class="sv">
-    ${est?`Estimated 1RM <b>${fmtKg(est)}kg</b>`:'No estimate yet'}${
-      e.rec!=null?` · sheet says <b>${fmtKg(e.rec)}kg</b>`:''}<br>
-    ${best?`Best <b>${fmtKg(best.w)}kg × ${best.reps}</b> · ${relDate(best.date)}`:'No logged sets yet'}
-  </div></div>`;
-
-  h+=`<div class="notebox"><label>Notes</label>
-    <input value="${esc(e.note||'')}" placeholder="Cues, settings, what to watch"
-      onchange="setNote('${e.id}',this.value)"></div>`;
-
-  h+=`<div class="hist"><div class="hist-h">HISTORY</div>`;
-  if(!hist.length)h+=`<div class="hist-empty">Nothing logged yet.</div>`;
-  hist.forEach(l=>{
-    h+=`<div class="hd"><span class="d">${relDate(l.date)}</span>
-      <span class="s">${(l.sets||[]).map(s=>`${s.reps}${time?'s':''}${s.w!=null&&s.w!==l.w?'@'+fmtKg(s.w):''}`).join(', ')}
-        ${l.w!=null?`<span class="t">@ ${fmtKg(l.w)}kg</span>`:''}</span>
-      <button class="del" onclick="delLog('${l.id}')" aria-label="Delete this session">✕</button></div>`;
-  });
-  h+=`</div><div class="rowacts">
-    <button onclick="startRest()">REST ${D.settings.rest|0}s</button>
-    <button onclick="editExercise('${e.id}')">EDIT LIFT</button></div></div>`;
-  return h;
-}
-/* Twelve sessions of estimated 1RM. Endpoint emphasised, because the
-   question is always "is it going up". */
-function spark(e){
-  const pts=logsFor(e.id).slice(0,12).reverse()
-    .map(l=>Math.max.apply(null,[0].concat((l.sets||[]).map(s=>epley(s.w!=null?s.w:l.w,s.reps)))))
-    .filter(v=>v>0);
-  if(pts.length<2)return '';
-  const w=62,hh=24,lo=Math.min.apply(null,pts),hi=Math.max.apply(null,pts),sp=(hi-lo)||1;
-  const X=i=>(i/(pts.length-1))*w,Y=v=>hh-2-((v-lo)/sp)*(hh-5);
-  return `<svg width="${w}" height="${hh}" viewBox="0 0 ${w} ${hh}" aria-hidden="true">
-    <polyline points="${pts.map((v,i)=>X(i)+','+Y(v)).join(' ')}" fill="none"
-      stroke="var(--mut)" stroke-width="1.2" stroke-linejoin="round"/>
-    <circle cx="${X(pts.length-1)}" cy="${Y(pts[pts.length-1])}" r="2.2" fill="var(--ink)"/></svg>`;
+  h+=`<button class="setadd" onclick="addSet('${e.id}')" aria-label="Another set">+</button></div>
+    <div class="lgm">${
+      [est?`est <b>${fmtKg(est)}kg</b>`:'',
+       e.rec!=null?`1RM <b>${fmtKg(e.rec)}</b>`:'',
+       best?`best <b>${fmtKg(best.w)}×${best.reps}</b>`:'',
+       last?`last ${relDate(last.date)}`:''].filter(Boolean).join(' · ')}</div>
+    <input class="lgn" value="${esc(e.note||'')}" placeholder="Notes"
+      onchange="setNote('${e.id}',this.value)">`;
+  if(hist.length){
+    h+=`<div class="lgh">`;
+    hist.forEach(l=>{
+      h+=`<div class="lgr"><span class="d">${relDate(l.date)}</span>
+        <span class="s">${(l.sets||[]).map(s=>s.reps).join(', ')}</span>
+        <span class="w">${l.w!=null?fmtKg(l.w)+'kg':''}</span>
+        <button class="x" onclick="delLog('${l.id}')" aria-label="Delete">✕</button></div>`;
+    });
+    h+=`</div>`;
+  }
+  return h+`<div class="lgacts">
+    <button onclick="editExercise('${e.id}')">EDIT LIFT</button>
+    <button onclick="toggleEx('${e.id}')">CLOSE</button></div></div>`;
 }
 
 function stepW(id,dir){
   const e=exById(id),dr=draftFor(e),i=incOf(e)||1;
   dr.w=Math.max(0,Math.round(((+dr.w||0)+dir*i)/i)*i);
-  dr.sets.forEach(s=>{if(!s.done)s.w=null;});
   haptic(4);syncAndSave(e,dr);
 }
-function setW(id,v){const e=exById(id),dr=draftFor(e);
-  dr.w=Math.max(0,parseFloat(v)||0);syncAndSave(e,dr);}
-function setRep(id,i,v){const e=exById(id),dr=draftFor(e);
-  dr.sets[i].reps=v===''?'':Math.max(0,parseInt(v)||0);
-  if(dr.sets[i].done)syncAndSave(e,dr);else render();}
-function setSetW(id,i,v){const e=exById(id),dr=draftFor(e);
-  dr.sets[i].w=v===''?null:Math.max(0,parseFloat(v)||0);
-  if(dr.sets[i].done)syncAndSave(e,dr);else render();}
-function addSet(id){const e=exById(id),dr=draftFor(e);
-  const l=dr.sets[dr.sets.length-1];
-  dr.sets.push({reps:'',w:l?l.w:null,done:false});haptic(4);render();}
-function rmSet(id,i){const e=exById(id),dr=draftFor(e);
-  dr.sets.splice(i,1);syncAndSave(e,dr);}
-function commitSet(id,i){
-  const e=exById(id),dr=draftFor(e),s=dr.sets[i];
-  if(s.done){s.done=false;haptic(4);syncAndSave(e,dr);return;}
-  if(s.reps===''||s.reps==null){toast('How many '+(isTime(e)?'seconds':'reps')+'?');return;}
-  s.done=true;haptic([10,30,10]);
-  if(!D.workout)startWorkout(true);
-  startRest();
+function setW(id,v){
+  const e=exById(id),dr=draftFor(e);
+  dr.w=Math.max(0,parseFloat(v)||0);syncAndSave(e,dr);
+}
+/* Typing reps is the whole interaction: it logs the set, keeps an empty box
+   ready for the next one, and clears the box to remove it again. */
+function setRep(id,i,v){
+  const e=exById(id),dr=draftFor(e);
+  const n=v===''?'':Math.max(0,parseInt(v)||0);
+  if(n===''||n===0){
+    dr.sets.splice(i,1);
+    if(!dr.sets.length)dr.sets.push({reps:'',w:null});
+  }else{
+    dr.sets[i].reps=n;
+    if(dr.sets.every(s=>s.reps!==''&&s.reps!=null))dr.sets.push({reps:'',w:null});
+    if(!D.workout)startWorkout(true);
+    swReset(true);                        // the stopwatch doubles as the rest clock
+    haptic([10,30,10]);
+  }
   syncAndSave(e,dr);
 }
+function addSet(id){
+  const dr=draftFor(exById(id));
+  dr.sets.push({reps:'',w:null});haptic(4);render();
+}
 /* One place where a draft turns into stored history, so a set can never be
-   half-saved and the working weight always follows what you actually lifted. */
+   half saved and the working weight always follows what was actually lifted. */
 function syncAndSave(e,dr){
-  const done=dr.sets.filter(s=>s.done&&s.reps!==''&&s.reps!=null);
+  const done=dr.sets.filter(s=>s.reps!==''&&s.reps!=null&&s.reps>0);
   const existing=todayLog(e.id);
   if(!done.length){
     if(existing)D.logs.splice(D.logs.indexOf(existing),1);
@@ -1985,51 +1985,119 @@ function delLog(lid){
   const snap=D.logs[i];D.logs.splice(i,1);delete DRAFTS[snap.exId];save();render();
   toast('Deleted',()=>{D.logs.splice(Math.min(i,D.logs.length),0,snap);delete DRAFTS[snap.exId];save();render();});
 }
-
-/* ── the clock ───────────────────────────────────────────────── */
-function renderClock(){
-  const w=D.workout;
-  const t=w?fmtClock(Date.now()-w.start):'0:00';
-  const n=w?D.logs.filter(l=>l.date===today()).length:0;
-  const wk=trainedThisWeek().filter(x=>x.done).length;
-  return `<div class="wk${w?' on':''}">
-    <button class="wk-b" onclick="${w?'stopWorkout()':'startWorkout()'}">${w?'STOP':'START'}</button>
-    <span class="wk-t" id="wk-t">${t}</span>
-    <span class="wk-s">${w?n+' LIFTS LOGGED':wk+' OF 6 THIS WEEK'}</span></div>`;
+function staleDays(exs){
+  let best=null;
+  exs.forEach(e=>{const l=lastSession(e,true);
+    if(l){const d=daysBetween(l.date,today());if(best==null||d<best)best=d;}});
+  return best;
 }
+function setJump(c){JUMP=c;Q='';render();haptic(4);}
+function onSearch(v){Q=v;if(v)JUMP='';render();}
+function toggleCat(c){D.settings.collapsed[c]=!D.settings.collapsed[c];save();haptic(5);render();}
+
+/* ── the bar you actually use between sets ────────────────────────
+   A countdown you set before you start, a stopwatch for anything you want to
+   time on the spot, and between them a running count of what has been done —
+   so the question "have I done enough legs today" has an answer on screen. */
+function todayTally(){
+  const byCat={};
+  D.logs.filter(l=>l.date===today()).forEach(l=>{
+    const e=exById(l.exId);if(!e)return;
+    const c=byCat[e.cat]=byCat[e.cat]||{lifts:0,sets:0};
+    c.lifts++;c.sets+=(l.sets||[]).length;
+  });
+  return byCat;
+}
+function paintWorkoutBar(){
+  const el=document.getElementById('wk');
+  if(!el)return;
+  const on=TAB==='health'&&HSUB==='gym';
+  el.classList.toggle('on',on);
+  if(!on){clearInterval(TICK);clearInterval(SWTICK);return;}
+
+  const w=D.workout,mins=D.settings.wkMins|0||60;
+  const tally=todayTally();
+  const cats=Object.keys(tally);
+  const tick=cats.length
+    ? cats.map(c=>`<span><b>${c.slice(0,4)}</b> ${tally[c].lifts}·${tally[c].sets}</span>`).join('')
+    : `<span class="idle">nothing logged today</span>`;
+
+  el.innerHTML=`
+    <div class="wkL">
+      <button class="wkgo${w?' on':''}${w&&remainMs(w)<0?' over':''}"
+        onclick="${w?'stopWorkout()':'startWorkout()'}">
+        <span id="wk-t">${w?clockText(remainMs(w)):'START'}</span></button>
+      ${w?`<button class="wkx" onclick="cancelWorkout()">✕ cancel</button>`
+         :`<span class="wkm"><input type="number" inputmode="numeric" min="1" max="600" value="${mins}"
+             aria-label="Workout length in minutes" onchange="setWkMins(this.value)"><i>min</i></span>`}
+    </div>
+    <div class="wkC">${tick}</div>
+    <div class="wkR">
+      <button class="wksw${SW.run?' on':''}" onclick="swToggle()">
+        <span id="sw-t">${fmtDur(swMs()/1000)}</span></button>
+      ${(SW.run||SW.base>0)?`<button class="wkx" onclick="swReset()">↺ reset</button>`:`<span class="wkx idle">stopwatch</span>`}
+    </div>`;
+  syncTicks();
+}
+/* Counts down from the length you set, then counts up past it, so running over
+   is visible rather than quietly forgotten. Negative means overrun. */
+function remainMs(w){
+  return (w.mins|0||60)*60000-(Date.now()-w.start);
+}
+const clockText=ms=>(ms<0?'+':'')+fmtClock(Math.abs(ms));
+function setWkMins(v){D.settings.wkMins=clamp(parseInt(v)||60,1,600);save();}
 function startWorkout(quiet){
-  D.workout={start:Date.now()};save();
-  if(!quiet){render();haptic([12,30,12]);toast('Workout started');}
+  D.workout={start:Date.now(),mins:D.settings.wkMins|0||60};
+  save();
+  if(!quiet){haptic([12,30,12]);toast('Started — '+(D.workout.mins)+' minutes');}
+  render();
 }
 function stopWorkout(){
   const w=D.workout;if(!w)return;
-  const mins=Date.now()-w.start;
+  const ms=Date.now()-w.start;
   D.sessions.push({id:uid('s'),date:today(),start:w.start,end:Date.now()});
   D.workout=null;save();render();haptic([14,40,14]);
-  toast('Done — '+fmtMins(mins));
+  toast('Done — '+fmtMins(ms));
 }
-function syncWorkoutTick(){
-  clearInterval(TICK);
+/* Cancel drops the session. Sets already logged are their own records and stay
+   where they are — losing them silently would be its own bug. */
+function cancelWorkout(){
   if(!D.workout)return;
-  TICK=setInterval(()=>{
-    const el=document.getElementById('wk-t');
-    if(!el||!D.workout){clearInterval(TICK);return;}
-    el.textContent=fmtClock(Date.now()-D.workout.start);
-  },1000);
+  D.workout=null;save();render();haptic(10);
+  toast('Timer cancelled — logged sets kept');
 }
-function startRest(){
-  RESTEND=Date.now()+(D.settings.rest|0||90)*1000;
-  const el=document.getElementById('rest');el.classList.add('on');
-  clearInterval(RESTT);
-  RESTT=setInterval(()=>{
-    const left=Math.max(0,RESTEND-Date.now());
-    document.getElementById('rest-t').textContent=fmtDur(left/1000);
-    if(left<=0){stopRest();haptic([20,60,20,60,20]);}
+const swMs=()=>SW.base+(SW.run?Date.now()-SW.t0:0);
+function swToggle(){
+  if(SW.run){SW.base=swMs();SW.run=false;}
+  else{SW.t0=Date.now();SW.run=true;}
+  haptic(6);paintWorkoutBar();
+}
+function swReset(startAgain){
+  SW.base=0;
+  if(startAgain){SW.t0=Date.now();SW.run=true;}
+  else{SW.run=false;haptic(6);}
+  paintWorkoutBar();
+}
+function syncTicks(){
+  clearInterval(TICK);clearInterval(SWTICK);
+  if(D.workout)TICK=setInterval(()=>{
+    const t=document.getElementById('wk-t');
+    if(!t||!D.workout){clearInterval(TICK);return;}
+    const left=remainMs(D.workout);
+    t.textContent=clockText(left);
+    if(left<=0&&!D.workout.rang){
+      D.workout.rang=true;haptic([25,80,25,80,25]);
+      t.parentElement.classList.add('over');
+      toast('Time — '+(D.workout.mins)+' minutes done');
+    }
+  },500);
+  if(SW.run)SWTICK=setInterval(()=>{
+    const t=document.getElementById('sw-t');
+    if(!t){clearInterval(SWTICK);return;}
+    t.textContent=fmtDur(swMs()/1000);
   },250);
 }
-function stopRest(){clearInterval(RESTT);document.getElementById('rest').classList.remove('on');}
 
-/* ── history ─────────────────────────────────────────────────── */
 function renderHistory(){
   const m=CALM||new Date();
   const y=m.getFullYear(),mo=m.getMonth();
@@ -2049,8 +2117,7 @@ function renderHistory(){
   const prs=D.exercises.map(e=>({e:e,b:bestEffort(e)})).filter(x=>x.b)
     .sort((a,b)=>b.b.date.localeCompare(a.b.date)).slice(0,8);
 
-  return `<div class="top"><h1>History</h1>
-    <div class="meta"><button onclick="setSub('sheet')">SHEET</button></div></div>
+  return `<div class="top"><h1>History</h1><div class="meta">${all} LOGS</div></div>
   <div class="cal-nav">
     <button onclick="calMove(-1)" aria-label="Previous month">‹</button>
     <span class="mo">${MONS[mo]} ${y}</span>
@@ -2078,8 +2145,7 @@ function renderFood(){
   const n=D.nutrition;
   const need=D.staples.filter(s=>!s.have);
   const cost=sum(need,s=>s.cost);
-  return `<div class="top"><h1>Food</h1>
-    <div class="meta"><button onclick="setSub('sheet')">SHEET</button></div></div>
+  return `<div class="top"><h1>Food</h1><div class="meta">DAILY TARGETS</div></div>
   <div class="hero"><div class="v">${(+n.kcal||0).toLocaleString('en-GB')}<small> kcal</small></div>
     <div class="u">DAILY TARGET · <b>${+n.protein||0}P</b> · <b>${+n.carbs||0}C</b> · <b>${+n.fat||0}F</b></div></div>
   <div class="lab">Targets<button onclick="macroSheet()">EDIT</button></div>
@@ -3219,8 +3285,36 @@ function resetAll(){
   attachCatalogue();save();closeSheet();render();toast('Erased');
 }
 
+/* ═══ chrome ══════════════════════════════════════════════════
+   position:fixed pins to the layout viewport, so pinching magnifies the top
+   bar and the tab bar along with everything else and shoves them off screen.
+   These two are furniture: hold them against the visual viewport at a
+   constant size, whatever the zoom. */
+function pinChrome(){
+  const v=window.visualViewport;if(!v)return;
+  const z=v.scale||1,inv=1/z;
+  [['bar',0],['nav',1]].forEach(([id,atBottom])=>{
+    const el=document.getElementById(id);if(!el)return;
+    const h=el.offsetHeight;
+    const y=atBottom ? v.offsetTop+v.height-h*inv : v.offsetTop;
+    el.style.transformOrigin='0 0';
+    el.style.transform='translate('+v.offsetLeft+'px,'+y+'px) scale('+inv+')';
+  });
+}
+if(window.visualViewport){
+  ['resize','scroll'].forEach(ev=>window.visualViewport.addEventListener(ev,pinChrome));
+  window.addEventListener('orientationchange',()=>setTimeout(pinChrome,200));
+}
+
+/* Tapping a figure should let you type over it, not make you clear it first. */
+document.addEventListener('focusin',e=>{
+  const t=e.target;
+  if(t&&t.matches&&t.matches('input[type=number],input.selall'))
+    setTimeout(()=>{try{t.select();}catch(_){}} ,0);
+});
+
 /* ═══ boot ════════════════════════════════════════════════════ */
-load();render();
+load();render();pinChrome();
 window.addEventListener('pageshow',()=>{if(TAB==='home')render();});
 if('serviceWorker' in navigator)
   window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));

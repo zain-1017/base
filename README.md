@@ -94,10 +94,25 @@ in whichever of borrowed / payment / term / rate you don't have — including th
 APR nobody ever puts in writing. Promotional 0% periods and final balloon
 payments are handled.
 
-**Health** is the exercise sheet: 102 lifts grouped by muscle, an inline logger
-with a rest timer and a running workout clock, estimated 1RM from Epley, and a
-next-weight suggestion that only goes up once every set hits the rep goal. Plus
-a training calendar, recent bests, macro targets, recipes and a shopping list.
+**Health** holds three pages behind one tab — the sheet, the calendar, the food.
+
+The sheet is 102 lifts grouped by muscle, four columns wide: the name, the
+one-rep max, **the working weight** — a percentage of that max, 65% by default,
+changed once in the header and every lift follows — and what you actually did.
+Opening a lift gives you a weight already set to the working figure and a row of
+boxes; type reps into one and the set is logged. No commit step, no dialog.
+Clearing a box removes it again.
+
+Along the bottom sits the bar you use between sets rather than at the end: a
+**countdown** you set the length of before you start, which counts past zero
+rather than stopping so an overrun is visible; a **stopwatch** for anything you
+want to time on the spot, which also restarts itself each time you log a set, so
+it doubles as the rest clock; and between them a running **tally of lifts and
+sets per muscle group**, so "have I done enough legs today" has an answer on
+screen. Cancelling the timer drops the session and keeps every set you logged.
+
+Plus a training calendar, recent bests, macro targets, recipes and a shopping
+list.
 
 **Car** turns fuel into a cost per mile. Two fill-ups with odometer readings is
 all it needs. Insurance, tax and the MOT are the same ledger records Money
