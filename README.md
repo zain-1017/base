@@ -1,10 +1,8 @@
-# Daybook
+# BASE
 
-One book for money, training, the car and goals — instead of five scattered
+One place for money, training, the car and goals — instead of five scattered
 sources. Runs offline, installs to a phone home screen, stores everything in
 the browser on that device.
-
-Working title.
 
 ## What it does
 

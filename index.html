@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#ffffff">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>Daybook</title>
+<title>BASE</title>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-180.png">
 <style>
@@ -473,13 +473,13 @@ table.g td.act button:active{color:var(--crit)}
 
 <script>
 /* ═══════════════════════════════════════════════════════════════
-   DAYBOOK
-   Money, training, the car and goals in one book.
+   BASE
+   Money, training, the car and goals in one place.
 
    Four primitives, and everything in the app is one of them:
      ledger   money moving on a schedule
      debts    a ledger line with a term, so it can end
-     entries  something written down on a day (the daybook proper)
+     entries  something written down on a day
      targets  a number with a direction and a finish line
 
    No figures ship with the app. The repo is public; the numbers are
@@ -502,7 +502,8 @@ const TIERS=['life','year','month','week'];
 const LITRES_PER_GAL=4.54609;   // imperial, because MOT and MPG are imperial
 
 /* ═══ state ═══════════════════════════════════════════════════ */
-const KEY='daybook_v1', BKEY='daybook_v1_bak';
+const KEY='base_v1', BKEY='base_v1_bak';
+const OLDKEYS=['daybook_v1','daybook_v1_bak'];    // the working title, still readable
 const DEFAULTS={wage:0,incomeTarget:0,savings:0,savingsGoal:0,food:0,fuel:0,payday:1,roundTo:0,rangeAll:false,
                 rest:90,repGoal:12,mult:0.65,collapsed:{}};
 const BLANK={schema:2,ledger:[],debts:[],entries:[],targets:[],
@@ -529,7 +530,8 @@ const daysBetween=(a,b)=>Math.round((new Date(b+'T00:00')-new Date(a+'T00:00'))/
    else in the app knows where the data lives. */
 function load(){
   let raw=null;
-  try{raw=localStorage.getItem(KEY)||localStorage.getItem(BKEY);}catch(e){}
+  try{raw=localStorage.getItem(KEY)||localStorage.getItem(BKEY)
+        ||OLDKEYS.map(k=>localStorage.getItem(k)).filter(Boolean)[0];}catch(e){}
   if(raw){
     try{ adopt(JSON.parse(raw)); }catch(e){ console.error('load',e); }
   }
@@ -1029,7 +1031,7 @@ function projection(months){
   return out;
 }
 
-/* ═══ entries — the daybook proper ════════════════════════════
+/* ═══ entries — the day's page ═══════════════════════════════
    One capture surface. A line with a £ amount is a spend; a line without
    one is a note. Nothing else to learn, and nothing is lost: both keep
    their full text. */
@@ -1180,8 +1182,8 @@ const toggleManage=()=>{MANAGE=!MANAGE;haptic(6);render();};
 function renderHome(){
   const now=new Date(),ds=today(),ym=ymOf(ds),dayNow=now.getDate();
 
-  if(isEmpty())return `<div class="top"><h1>Daybook</h1><div class="meta">EMPTY</div></div>
-    <div class="empty"><h3>Nothing in the book yet</h3>
+  if(isEmpty())return `<div class="top"><h1>BASE</h1><div class="meta">EMPTY</div></div>
+    <div class="empty"><h3>Nothing in here yet</h3>
       <p>Bring in a file you exported from another device, or just start adding things as you go.</p></div>
     <div style="padding:0 16px 10px"><button class="sbtn solid" style="width:100%"
       onclick="dataSheet()">Import a file</button></div>
@@ -3151,7 +3153,7 @@ function dataSheet(){
 function exportData(){
   const blob=new Blob([JSON.stringify(D,null,2)],{type:'application/json'});
   const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);a.download='daybook-'+today()+'.json';
+  a.href=URL.createObjectURL(blob);a.download='base-'+today()+'.json';
   document.body.appendChild(a);a.click();a.remove();
   setTimeout(()=>URL.revokeObjectURL(a.href),2000);
   closeSheet();toast('Exported');
@@ -3162,9 +3164,9 @@ function importData(input){
   r.onload=()=>{
     try{
       const d=JSON.parse(r.result);
-      if(!d||typeof d!=='object'||!Array.isArray(d.ledger))throw new Error('not a daybook file');
+      if(!d||typeof d!=='object'||!Array.isArray(d.ledger))throw new Error('not a BASE file');
       adopt(d);attachCatalogue();save();closeSheet();render();toast('Imported');
-    }catch(e){toast("That file isn't a Daybook export");}
+    }catch(e){toast("That file isn't a BASE export");}
   };
   r.readAsText(f);
 }

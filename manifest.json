@@ -1,7 +1,7 @@
 {
-  "name": "Daybook",
-  "short_name": "Daybook",
-  "description": "Money, health, car and goals in one book",
+  "name": "BASE",
+  "short_name": "BASE",
+  "description": "Money, training, the car and goals in one place",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
