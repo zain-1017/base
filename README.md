@@ -160,13 +160,18 @@ starts empty, and you add things by hand or import a file you exported.
 import to move a snapshot between them. Money → *Back up your data* does both.
 Keep a copy somewhere that isn't the device it came from.
 
-A fixed bar across the top carries today's date, a text-size control and a
-one-tap **Save**, so backing up never means going hunting for it.
+A fixed bar across the top carries today's date and a one-tap **Save a copy**.
+
+**Settings** is its own tab, and files live there. Loading one never silently
+replaces what you have: it shows what is on the device, what is in the file,
+what you would lose — and takes a copy first, which **Put it back** restores.
+Erasing does the same. A backup written at the same moment as the live data is
+a copy, not a previous version, and no use at all when something has gone.
 
 Browser pinch-zoom is off, deliberately. It drags `position:fixed` chrome around
 with it on iOS and no amount of counter-transforming wins that fight, so the
-page does not zoom at all — the content inside it does, on a slider in the top
-bar, and the top bar and tab bar cannot move because nothing is asking them to.
+page does not zoom at all — the exercise sheet does — pinch it and only it, so the top bar
+and tab bar cannot move because nothing is asking them to.
 
 ## Design
 

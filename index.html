@@ -39,17 +39,8 @@ body{height:100%;background:var(--bg);color:var(--ink);
   border-bottom:1px solid var(--line);padding:calc(var(--safe-t) + 9px) 16px 9px;
   display:flex;align-items:center;gap:10px}
 #bar #bar-d{font-size:10px;font-weight:800;letter-spacing:1.3px;color:var(--mut)}
-#bar button{font-size:9px;font-weight:800;letter-spacing:1px;color:var(--ink);
+#bar button{margin-left:auto;font-size:9px;font-weight:800;letter-spacing:1px;color:var(--ink);
   border:1px solid var(--line2);border-radius:13px;height:26px;padding:0 12px;flex-shrink:0}
-#bar .zwrap{margin-left:auto;display:flex;align-items:center;gap:5px;flex-shrink:0}
-#bar .zwrap i{font-style:normal;font-size:9px;font-weight:800;color:var(--mut);line-height:1}
-#bar .zwrap i.big{font-size:13px}
-#bar .zs{width:88px;height:26px;-webkit-appearance:none;appearance:none;background:none;padding:0}
-#bar .zs::-webkit-slider-runnable-track{height:2px;background:var(--line2);border-radius:1px}
-#bar .zs::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:9px;
-  background:var(--ink);margin-top:-8px}
-#bar .zs::-moz-range-track{height:2px;background:var(--line2)}
-#bar .zs::-moz-range-thumb{width:18px;height:18px;border:none;border-radius:9px;background:var(--ink)}
 #bar button:active{background:var(--hl)}
 #app{position:fixed;top:calc(var(--safe-t) + 39px);left:0;right:0;
   bottom:calc(50px + var(--safe-b));overflow-y:auto;-webkit-overflow-scrolling:touch}
@@ -407,34 +398,34 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
   font-weight:800;letter-spacing:.9px;color:var(--mut)}
 
 /* ── the bar you use between sets ─────────────────────────────── */
-.wkpad{height:126px}
+.wkpad{height:152px}
 #wk{position:fixed;left:8px;right:8px;bottom:calc(56px + var(--safe-b));z-index:34;
-  display:none;flex-direction:column;gap:7px;padding:9px 9px 8px;
+  display:none;flex-direction:column;gap:8px;padding:11px 11px 10px;
   background:var(--float);border:1px solid var(--line2);border-radius:16px;
   box-shadow:0 10px 34px rgba(0,0,0,.6)}
 #wk.on{display:flex}
-#wk .wkrow{display:flex;align-items:center;gap:7px}
-#wk .wkgo{min-width:78px;height:46px;border-radius:12px;background:var(--ink);color:var(--bg);
-  font-size:15px;font-weight:800;letter-spacing:-.2px;padding:0 10px;font-variant-numeric:tabular-nums}
+#wk .wkrow{display:flex;align-items:center;gap:8px}
+#wk .wkgo{min-width:94px;height:55px;border-radius:14px;background:var(--ink);color:var(--bg);
+  font-size:18px;font-weight:800;letter-spacing:-.2px;padding:0 10px;font-variant-numeric:tabular-nums}
 #wk .wkgo.over{background:var(--crit);color:#fff}
-#wk .wkm{display:flex;align-items:baseline;gap:3px;height:46px;padding:0 9px;flex-shrink:0;
-  border:1px solid var(--line2);border-radius:12px;align-items:center}
-#wk .wkm input{width:26px;height:44px;border:none;background:none;text-align:right;
-  font-size:16px;font-weight:800;color:var(--ink);padding:0}
-#wk .wkm i{font-style:normal;font-size:9px;font-weight:800;color:var(--mut);letter-spacing:.6px}
+#wk .wkm{display:flex;gap:4px;height:55px;padding:0 11px;flex-shrink:0;
+  border:1px solid var(--line2);border-radius:14px;align-items:center}
+#wk .wkm input{width:31px;height:53px;border:none;background:none;text-align:right;
+  font-size:19px;font-weight:800;color:var(--ink);padding:0}
+#wk .wkm i{font-style:normal;font-size:10px;font-weight:800;color:var(--mut);letter-spacing:.6px}
 #wk .wkC{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:2px;
   overflow:hidden;padding:0 2px}
-#wk .wkC span{font-size:10px;font-weight:700;color:var(--mut);letter-spacing:.2px;
+#wk .wkC span{font-size:12px;font-weight:700;color:var(--mut);letter-spacing:.2px;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #wk .wkC b{color:var(--ink);font-weight:800;letter-spacing:.6px}
 #wk .wkC .idle{color:var(--dim);font-weight:600}
-#wk .wksw{min-width:76px;height:46px;border-radius:12px;border:1px solid var(--line2);
-  font-size:15px;font-weight:800;letter-spacing:-.2px;color:var(--ink);padding:0 8px;
+#wk .wksw{min-width:91px;height:55px;border-radius:14px;border:1px solid var(--line2);
+  font-size:18px;font-weight:800;letter-spacing:-.2px;color:var(--ink);padding:0 8px;
   font-variant-numeric:tabular-nums;flex-shrink:0}
 #wk .wksw.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-#wk .wkrow2{display:flex;gap:7px}
-#wk .wkx{flex:1;height:34px;border-radius:10px;border:1px solid var(--line2);
-  font-size:10px;font-weight:800;letter-spacing:.7px;color:var(--mut)}
+#wk .wkrow2{display:flex;gap:8px}
+#wk .wkx{flex:1;height:41px;border-radius:12px;border:1px solid var(--line2);
+  font-size:12px;font-weight:800;letter-spacing:.8px;color:var(--mut)}
 #wk .wkx:active{background:var(--hl);color:var(--ink)}
 #wk .wkx:disabled{opacity:.32}
 
@@ -505,9 +496,10 @@ table.g td.act button:active{color:var(--crit)}
 #nav{position:fixed;left:0;right:0;bottom:0;background:var(--bg);border-top:1px solid var(--line);
   display:flex;z-index:30;padding-bottom:var(--safe-b)}
 .ni{flex:1 1 0;min-width:0;height:50px;display:flex;flex-direction:column;align-items:center;
-  justify-content:center;gap:3px;color:var(--dim);font-size:8.5px;font-weight:800;letter-spacing:.4px;
-  overflow:hidden;white-space:nowrap}
-.ni svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.7;
+  justify-content:center;gap:3px;color:var(--dim);font-size:7.5px;font-weight:800;letter-spacing:.2px;
+  overflow:hidden;white-space:nowrap;padding:0 1px}
+.ni span{max-width:100%;overflow:hidden;text-overflow:clip}
+.ni svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.7;
   stroke-linecap:round;stroke-linejoin:round}
 .ni.on{color:var(--ink)}
 
@@ -524,11 +516,7 @@ table.g td.act button:active{color:var(--crit)}
 </head>
 <body>
 <div id="bar"><span id="bar-d"></span>
-  <span class="zwrap"><i>A</i>
-    <input class="zs" type="range" min="0" max="5" step="1" value="${0}"
-      aria-label="Text size" oninput="setZoom(this.value)" onchange="save()">
-    <i class="big">A</i></span>
-  <button onclick="exportData()">SAVE</button></div>
+  <button onclick="exportData()">SAVE A COPY</button></div>
 <div id="app"></div>
 <div id="wk"></div>
 <nav id="nav">
@@ -542,6 +530,8 @@ table.g td.act button:active{color:var(--crit)}
     <svg viewBox="0 0 24 24"><path d="M4 16v-3.2L6 8h12l2 4.8V16"/><path d="M4 16h16"/><circle cx="7.5" cy="17.5" r="1.6"/><circle cx="16.5" cy="17.5" r="1.6"/></svg>CAR</button>
   <button class="ni" id="ni-goals" onclick="go('goals')">
     <svg viewBox="0 0 24 24"><path d="M4 20V4"/><path d="M4 5h13l-2.5 3.5L17 12H4"/></svg>GOALS</button>
+  <button class="ni" id="ni-set" onclick="go('set')">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>SETTINGS</button>
 </nav>
 <div class="toast" id="toast"></div>
 
@@ -666,6 +656,40 @@ function closeStaleWorkout(){
   if(end>w.start)D.sessions.push({id:uid('s'),date:d,start:w.start,end:end});
   D.workout=null;
 }
+/* base_v1_bak was written at the same moment as base_v1 with the same content,
+   so it was a copy rather than a previous version and no use at all when an
+   import wiped the lot. This one is taken *before* anything destructive and is
+   never touched by save(). */
+const UNDOKEY='base_v1_undo';
+function snapshot(reason){
+  try{localStorage.setItem(UNDOKEY,JSON.stringify({at:Date.now(),reason:reason,data:D}));}
+  catch(e){}
+}
+function undoInfo(){
+  try{
+    const u=JSON.parse(localStorage.getItem(UNDOKEY)||'null');
+    if(!u||!u.data)return null;
+    return {at:u.at,reason:u.reason,
+            counts:countsOf(u.data)};
+  }catch(e){return null;}
+}
+function undoRestore(){
+  const raw=(()=>{try{return JSON.parse(localStorage.getItem(UNDOKEY)||'null');}catch(e){return null;}})();
+  if(!raw||!raw.data){toast('Nothing to go back to');return;}
+  snapshot('before undoing');
+  adopt(raw.data);attachCatalogue();save();closeSheet();render();
+  toast('Put back');
+}
+function countsOf(d){
+  d=d||{};
+  const n=k=>Array.isArray(d[k])?d[k].length:0;
+  return {bills:n('ledger'),debts:n('debts'),written:n('entries'),
+          training:n('logs'),lifts:(d.exercises||[]).filter(e=>e.rec!=null||e.w!=null).length,
+          fuel:n('fuel'),spends:n('spends'),goals:n('targets'),recipes:n('recipes')};
+}
+const countLine=c=>[c.bills+' bills',c.debts+' debts',c.written+' written',c.training+' training logs',
+  c.lifts+' lifts with figures',c.fuel+' fill-ups',c.goals+' goals'].join(' · ');
+
 function save(){
   try{
     const j=JSON.stringify(D);
@@ -1229,11 +1253,16 @@ function fuelLast30(){
 }
 
 /* ═══ router ══════════════════════════════════════════════════ */
-const PAGES={home:renderHome,money:renderMoney,health:renderHealth,car:renderCar,goals:renderGoals};
+const PAGES={home:renderHome,money:renderMoney,health:renderHealth,car:renderCar,
+             goals:renderGoals,set:renderSettings};
+/* A tab is a place, not a toggle: tapping it lands on that section's front page
+   whether or not you were already somewhere inside it. */
 function go(t){
-  if(TAB===t){document.getElementById('app').scrollTo({top:0,behavior:'smooth'});return;}
-  TAB=t;MANAGE=false;Q='';render();haptic(5);
-  document.getElementById('app').scrollTop=0;
+  const same=TAB===t;
+  TAB=t;MANAGE=false;Q='';HSUB='gym';OPEN=null;JUMP='';CALM=null;
+  render();haptic(5);
+  const app=document.getElementById('app');
+  if(same)app.scrollTo({top:0,behavior:'smooth'});else app.scrollTop=0;
 }
 function render(){
   const n=new Date();
@@ -1247,7 +1276,7 @@ function render(){
      need a rule of its own. */
   const first=app.querySelector('.lab');
   if(first)first.classList.add('first');
-  ['home','money','health','car','goals'].forEach(t=>
+  ['home','money','health','car','goals','set'].forEach(t=>
     document.getElementById('ni-'+t).classList.toggle('on',t===TAB));
   if(TAB!=='home')app.scrollTop=y;
   const ta=document.getElementById('capin');
@@ -1280,7 +1309,7 @@ function renderHome(){
     <div class="empty"><h3>Nothing in here yet</h3>
       <p>Bring in a file you exported from another device, or just start adding things as you go.</p></div>
     <div style="padding:0 16px 10px"><button class="sbtn solid" style="width:100%"
-      onclick="dataSheet()">Import a file</button></div>
+      onclick="go('set')">Load a file</button></div>
     <div style="padding:0 16px"><button class="sbtn" style="width:100%"
       onclick="editLedger(null,'monthly')">Add your first bill</button></div>
     <div class="spacer"></div>`;
@@ -1565,7 +1594,7 @@ function renderMoney(){
         <span class="v">${money(l.amount)}</span></div>`;
     }).join('');
   });
-  h+=fold('nums','Your numbers','',()=>settingsRows(fuelLast30()));
+
 
   return h+`<div class="spacer"></div>`;
 }
@@ -1701,24 +1730,75 @@ function renderProjection(){
   </div>`;
 }
 
-function settingsRows(f30){
-  const s=D.settings;
-  const f=(k,t,d)=>`<div class="sr"><div class="l"><div class="t">${t}</div><div class="d">${d}</div></div>
-    <input class="numin" type="number" inputmode="decimal" value="${s[k]}" aria-label="${t}"
-      onchange="setNum('${k}',this.value)"></div>`;
-  const r=+s.roundTo||0;
-  return `<div class="sr"><div class="l"><div class="t">Round bills up</div>
-      <div class="d">${r?'Every bill rounded up to the nearest £'+r+'. A cushion for the month — what you typed is untouched.'
-        :'Bills show their exact amounts.'}</div></div>
-      <button class="cyc" onclick="cycleRound()">${r?'£'+r:'OFF'}</button></div>`
-    +f('wage','Monthly wage','What actually lands, after tax')
-    +f('savings','Savings balance','Update whenever you move money')
-    +f('payday','Payday','Day of the month the wage arrives')
-    +`<div class="sr"><div class="l"><div class="t">Back up your data</div>
-      <div class="d">${D.entries.length} entries · ${D.ledger.length} bills · ${D.debts.length} debts · ${D.logs.length} training logs. This device only.</div></div>
-      <button class="arrow" onclick="dataSheet()" aria-label="Data options">›</button></div>`;
-}
 function setNum(k,v){D.settings[k]=parseFloat(v)||0;save();render();}
+
+/* ═══ SETTINGS ════════════════════════════════════════════════════
+   Files first, because that is the part that can lose something. */
+function renderSettings(){
+  const s2=D.settings,c=countsOf(D),u=undoInfo();
+  const num=(k,t,d)=>`<div class="sr"><div class="l"><div class="t">${t}</div><div class="d">${d}</div></div>
+    <input class="numin" type="number" inputmode="decimal" value="${s2[k]}" aria-label="${t}"
+      onchange="setNum('${k}',this.value)"></div>`;
+
+  let h=`<div class="top"><h1>Settings</h1><div class="meta">BASE</div></div>
+  <div class="lab">Your data</div>
+  <button class="sr" onclick="exportData()">
+    <div class="l"><div class="t">Save a copy</div>
+      <div class="d">Writes base-${today()}.json. Keep it somewhere that isn't this device.</div></div>
+    <span class="arrow">›</span></button>
+  <button class="sr" onclick="document.getElementById('imp').click()">
+    <div class="l"><div class="t">Load from a file</div>
+      <div class="d">Shows you what is in it and what you would lose before anything changes.</div></div>
+    <span class="arrow">›</span></button>
+  <input type="file" id="imp" accept="application/json,.json" style="display:none" onchange="importData(this)">`;
+
+  if(u){
+    const ago=Math.round((Date.now()-u.at)/60000);
+    h+=`<button class="sr" onclick="undoRestore()">
+      <div class="l"><div class="t">Put it back</div>
+        <div class="d">Kept ${ago<1?'just now':ago<60?ago+' minutes ago':Math.round(ago/60)+' hours ago'}
+          ${esc(u.reason||'')} — ${esc(countLine(u.counts))}.</div></div>
+      <span class="arrow">›</span></button>`;
+  }else{
+    h+=`<div class="sr"><div class="l"><div class="t" style="color:var(--mut)">Nothing to put back</div>
+      <div class="d">A copy is kept automatically before anything replaces what is here.</div></div></div>`;
+  }
+  h+=`<button class="sr" onclick="resetAll()">
+      <div class="l"><div class="t" style="color:var(--crit)">Erase everything</div>
+        <div class="d">Clears this device. A copy is kept first.</div></div></button>
+    <div class="gnote">On this device: <b>${countLine(c)}</b>. Nothing is uploaded anywhere —
+      the file above is the only way it moves.</div>
+
+  <div class="lab">Money</div>
+  ${num('wage','Monthly wage','What actually lands, after tax')}
+  ${num('savings','Bank balance','Update whenever you move money')}
+  ${num('payday','Payday','Day of the month the wage arrives')}
+  <div class="sr"><div class="l"><div class="t">Round bills up</div>
+    <div class="d">${(+s2.roundTo||0)
+      ?'Every bill lifted to the nearest £'+(+s2.roundTo)+'. A cushion — what you typed is untouched.'
+      :'Bills show their exact amounts.'}</div></div>
+    <button class="cyc" onclick="cycleRound()">${(+s2.roundTo||0)?'£'+(+s2.roundTo):'OFF'}</button></div>
+
+  <div class="lab">Training</div>
+  <div class="sr"><div class="l"><div class="t">Working weight</div>
+    <div class="d">The sheet's third column, as a share of each lift's one-rep max.</div></div>
+    <button class="cyc" onclick="multSheet()">${pctLabel()}</button></div>
+  ${num('wkMins','Workout length','Minutes the timer counts down from')}
+  ${num('repGoal','Rep goal','Reps a set aims for')}
+  ${num('rest','Rest','Seconds, for reference')}
+
+  <div class="lab">Food</div>
+  ${num('food','Food budget','A month')}
+  ${num('fuel','Fuel budget','A month, before the Car page measures it')}
+
+  <div class="lab">What's in here</div>`;
+  [['Bills',c.bills],['Debts',c.debts],['Written entries',c.written],['Training logs',c.training],
+   ['Lifts with figures',c.lifts],['Fill-ups',c.fuel],['Logged spends',c.spends],
+   ['Goals',c.goals],['Recipes',c.recipes]].forEach(([k,v])=>{
+    h+=`<div class="row"><div class="nm">${k}</div><span class="v">${v}</span></div>`;
+  });
+  return h+`<div class="spacer"></div>`;
+}
 
 /* Food and fuel start as budgets. Log what actually goes out and the average
    turns them into measurements — which is the only way the net figure below
@@ -1854,6 +1934,10 @@ function renderGym(){
   if(!list.length)return h+`<div class="empty"><h3>Nothing matches</h3>
     <p>${q?'No lift called “'+esc(Q)+'”.':'Nothing in this group yet.'}</p></div>`;
 
+  /* The one place worth pinching: 102 rows of small figures. Everything else
+     stays put, so the chrome never has to be fought for. */
+  h+=`<div class="pinch" style="zoom:${sheetZoom()}">`;
+
   const cats=q?[null]:CATS.filter(c=>list.some(e=>e.cat===c));
   cats.forEach(cat=>{
     const inCat=cat?list.filter(e=>e.cat===cat):list;
@@ -1874,7 +1958,7 @@ function renderGym(){
       exs.forEach(e=>{h+=renderRow(e);});
     });
   });
-  return h+`<div class="wkpad"></div>`;
+  return h+`</div><div class="wkpad"></div>`;
 }
 const workMult=()=>{const m=+D.settings.mult;return m>0&&m<=2?m:0.65;};
 const pctLabel=()=>Math.round(workMult()*100)+'%';
@@ -2065,7 +2149,7 @@ function paintWorkoutBar(){
   const cats=Object.keys(tally);
   const tick=cats.length
     ? cats.map(c=>`<span><b>${c.slice(0,4)}</b> ${tally[c].lifts}·${tally[c].sets}</span>`).join('')
-    : `<span class="idle">no sets yet</span>`;
+    : '';
 
   el.innerHTML=`
     <div class="wkrow">
@@ -3424,21 +3508,6 @@ function doPaste(){
 /* ═══ data ════════════════════════════════════════════════════
    Export and import are the whole sync story for now — and the reason
    moving to a real backend later costs a day rather than a rewrite. */
-function dataSheet(){
-  openSheet(`<h2>Your data</h2>
-  <div class="sub">Everything lives on this device only — nothing is uploaded and no figures ship with the
-    app. This file is your backup and your way onto another device. Keep a copy somewhere that isn't your phone.</div>
-  <div class="kv"><span class="k">Bills</span><span class="v">${D.ledger.length}</span></div>
-  <div class="kv"><span class="k">Debts</span><span class="v">${D.debts.length}</span></div>
-  <div class="kv"><span class="k">Written entries</span><span class="v">${D.entries.length}</span></div>
-  <div class="kv"><span class="k">Training logs</span><span class="v">${D.logs.length}</span></div>
-  <div class="kv"><span class="k">Fill-ups</span><span class="v">${D.fuel.length}</span></div>
-  <div class="kv"><span class="k">Goals</span><span class="v">${D.targets.length}</span></div>
-  <div class="srow" style="margin-top:16px"><button class="sbtn solid" onclick="exportData()">Export a copy</button></div>
-  <div class="srow"><button class="sbtn" onclick="document.getElementById('imp').click()">Import a file</button></div>
-  <input type="file" id="imp" accept="application/json,.json" style="display:none" onchange="importData(this)">
-  <div class="srow"><button class="sbtn danger" onclick="resetAll()">Erase everything</button></div>`);
-}
 function exportData(){
   const blob=new Blob([JSON.stringify(D,null,2)],{type:'application/json'});
   const a=document.createElement('a');
@@ -3447,6 +3516,11 @@ function exportData(){
   setTimeout(()=>URL.revokeObjectURL(a.href),2000);
   closeSheet();toast('Exported');
 }
+/* Never replace what is on the device without showing what is about to go and
+   what is about to arrive. This reads the file, says what is in both, and only
+   then offers the button — having first put the current state somewhere it can
+   be fetched back from. */
+let PENDING=null;
 function importData(input){
   const f=input.files&&input.files[0];if(!f)return;
   const r=new FileReader();
@@ -3454,15 +3528,44 @@ function importData(input){
     try{
       const d=JSON.parse(r.result);
       if(!d||typeof d!=='object'||!Array.isArray(d.ledger))throw new Error('not a BASE file');
-      adopt(d);attachCatalogue();save();closeSheet();render();toast('Imported');
+      PENDING={data:d,name:f.name};
+      importSheet();
     }catch(e){toast("That file isn't a BASE export");}
   };
   r.readAsText(f);
 }
+function importSheet(){
+  if(!PENDING)return;
+  const mine=countsOf(D),theirs=countsOf(PENDING.data);
+  const bigger=k=>mine[k]>theirs[k];
+  const losing=['bills','debts','written','training','fuel','goals'].filter(bigger);
+  openSheet(`<h2>Load this file?</h2>
+    <div class="sub">${esc(PENDING.name)}</div>
+    <div class="brk"><div class="bh">On this device now</div>
+      <div class="gnote" style="padding:0">${countLine(mine)}</div></div>
+    <div class="brk"><div class="bh">In the file</div>
+      <div class="gnote" style="padding:0">${countLine(theirs)}</div></div>
+    ${losing.length?`<div class="brk"><div class="bh" style="color:var(--crit)">You would lose</div>
+      <div class="gnote" style="padding:0;color:var(--crit)">
+        ${losing.map(k=>(mine[k]-theirs[k])+' '+k).join(' · ')} — the file has fewer.</div></div>`:''}
+    <div class="gnote" style="padding:12px 0 0">Loading replaces everything on this device. A copy of
+      what is here now is kept first, and <b>Put it back</b> below will return it.</div>
+    <div class="srow" style="margin-top:14px">
+      <button class="sbtn solid" onclick="doImport()">Replace everything</button></div>
+    <div class="srow"><button class="sbtn" onclick="PENDING=null;closeSheet()">Cancel</button></div>`);
+}
+function doImport(){
+  if(!PENDING)return;
+  snapshot('before loading '+PENDING.name);
+  adopt(PENDING.data);attachCatalogue();save();
+  PENDING=null;closeSheet();render();
+  toast('Loaded — Settings can put it back');
+}
 function resetAll(){
-  if(!confirm('Erase every bill, debt, entry and training log on this device? Export a copy first if you want one.'))return;
+  if(!confirm('Erase everything on this device? A copy is kept, and Settings can put it back.'))return;
+  snapshot('before erasing');
   D=JSON.parse(JSON.stringify(BLANK));
-  attachCatalogue();save();closeSheet();render();toast('Erased');
+  attachCatalogue();save();closeSheet();render();toast('Erased — Settings can put it back');
 }
 
 /* Tapping a figure should let you type over it, not make you clear it first. */
@@ -3473,6 +3576,35 @@ document.addEventListener('focusin',e=>{
 });
 
 /* ═══ boot ════════════════════════════════════════════════════ */
+/* Pinch to zoom the exercise sheet. The page itself cannot zoom — that is what
+   kept dragging the top bar and the tab bar around — so this scales one element
+   and leaves the furniture alone. */
+const sheetZoom=()=>{const z=+D.settings.sheetZoom;return z>=0.7&&z<=2.2?z:1;};
+let PZ=null;
+(function(){
+  const app=document.getElementById('app');
+  const gap=t=>Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);
+  app.addEventListener('touchstart',e=>{
+    if(e.touches.length!==2)return;
+    const el=e.target&&e.target.closest?e.target.closest('.pinch'):null;
+    if(!el)return;
+    PZ={el:el,d0:gap(e.touches)||1,z0:sheetZoom(),live:0};
+  },{passive:true});
+  app.addEventListener('touchmove',e=>{
+    if(!PZ||e.touches.length!==2)return;
+    e.preventDefault();
+    PZ.live=clamp(PZ.z0*(gap(e.touches)/PZ.d0),0.7,2.2);
+    PZ.el.style.zoom=PZ.live;
+  },{passive:false});
+  const settle=()=>{
+    if(!PZ)return;
+    if(PZ.live){D.settings.sheetZoom=Math.round(PZ.live*100)/100;save();}
+    PZ=null;
+  };
+  app.addEventListener('touchend',settle);
+  app.addEventListener('touchcancel',settle);
+})();
+
 load();render();
 window.addEventListener('pageshow',()=>{if(TAB==='home')render();});
 if('serviceWorker' in navigator)
