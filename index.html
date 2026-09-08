@@ -71,6 +71,12 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
   padding:32px 16px 10px;text-transform:uppercase;display:flex;align-items:baseline;gap:8px;
   border-top:1px solid var(--line2);margin-top:14px}
 .lab.first{border-top:none;margin-top:0;padding-top:22px}
+/* Bills, food and fuel, other payments and the totals are one statement read
+   top to bottom, so they get subheadings rather than section breaks — the same
+   hairline the rows use, and a fraction of the space. The hard rules are saved
+   for the reference sections underneath, which really are separate. */
+.lab.tight{padding:17px 16px 7px;margin-top:0;border-top:1px solid var(--line)}
+.lab.foldable.tight{padding-top:15px;padding-bottom:13px}
 .lab .r{margin-left:auto;font-weight:800;color:var(--dim);letter-spacing:.6px;font-size:9px}
 .lab button{font-size:9px;font-weight:800;letter-spacing:.8px;color:var(--ink);
   border-bottom:1px solid var(--line2);padding-bottom:1px}
@@ -96,7 +102,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 .vrow .arrow{font-size:16px;color:var(--dim);font-weight:800;flex-shrink:0}
 
 /* the number he is trying to move */
-.total{padding:2px 16px 0}
+.total{padding:0 16px}
 .total .tr{display:flex;align-items:baseline;gap:12px;padding:9px 0;border-top:1px solid var(--line);font-size:13.5px}
 .total .tr:first-child{border-top:none}
 .total .tr span{flex:1;color:var(--mut);font-weight:600}
@@ -1399,7 +1405,7 @@ function renderMoney(){
     <span class="rtot">${money(span,span%1!==0)}</span>
   </div>
 
-  <div class="lab">Monthly bills<span class="r">${
+  <div class="lab tight">Monthly bills<span class="r">${
       (+D.settings.roundTo||0)?'ROUNDED UP TO £'+(+D.settings.roundTo)+' · ':''}${month.length}</span>
     <button onclick="gridSheet('ledger')">GRID</button></div>`;
 
@@ -1451,7 +1457,7 @@ function renderMoney(){
 
   /* Food and fuel are the two lines nobody has receipts for, so they sit right
      under the bills where they can be corrected. */
-  h+=`<div class="lab">Food and fuel<span class="r">${money(food+fuel)}/MO</span></div>`;
+  h+=`<div class="lab tight">Food and fuel<span class="r">${money(food+fuel)}/MO</span></div>`;
   [['food','Food'],['fuel','Fuel']].forEach(([k,name])=>{
     const budget=+D.settings[k]||0,spent=spentThisMonth(k),avg=spendAverage(k);
     const over=budget>0&&spent>budget;
@@ -1475,10 +1481,10 @@ function renderMoney(){
     });
     return a+`<div class="gnote">Annual bills are spread across twelve months so they never
       arrive as a surprise. ${money(annualTotal())} a year is ${money(ann,true)} a month.</div>`;
-  });
+  },true);
 
   /* The number he is trying to move. */
-  h+=`<div class="lab">The month</div>
+  h+=`<div class="lab tight">The month</div>
   <div class="total">
     <div class="tr"><span>Monthly bills</span><b>${money(bills,true)}</b></div>
     <div class="tr"><span>Food and fuel</span><b>${money(food+fuel,true)}</b></div>
@@ -1513,9 +1519,9 @@ function renderMoney(){
 
 /* A section that stays out of the way until asked for, but still says what it
    holds while it is shut. */
-function fold(key,title,right,body){
+function fold(key,title,right,body,tight){
   const open=!!(D.settings.open||{})[key];
-  return `<button class="lab foldable" onclick="toggleFold('${key}')" aria-expanded="${open}">
+  return `<button class="lab foldable${tight?' tight':''}" onclick="toggleFold('${key}')" aria-expanded="${open}">
       ${title}<span class="r">${right}</span>
       <svg class="fchev${open?' on':''}" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
     </button>${open?body():''}`;
