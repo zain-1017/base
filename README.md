@@ -111,10 +111,15 @@ it doubles as the rest clock; and between them a running **tally of lifts and
 sets per muscle group**, so "have I done enough legs today" has an answer on
 screen. Cancelling the timer drops the session and keeps every set you logged.
 
-Plus a training calendar, recent bests, macro targets, recipes and a shopping
-list.
+The calendar is a month of squares you can tap: each one opens what was on that
+day — the lifts and sets, the session length, anything spent — and lets you put
+something there yourself. Useful for the things no other page holds: when the
+service was booked, when the shoes were bought, when you last did a thing.
 
-**Car** turns fuel into a cost per mile. Two fill-ups with odometer readings is
+Plus recent bests, macro targets, recipes and a shopping list.
+
+**Car** holds the vehicle's own details — registration, VIN, engine, gearbox,
+the figures worth having to hand — and turns fuel into a cost per mile. Two fill-ups with odometer readings is
 all it needs. Insurance, tax and the MOT are the same ledger records Money
 holds — one entry, two pages. The fix list carries prices so planned work lands
 in the forecast before it lands on your card.
@@ -160,9 +165,8 @@ one-tap **Save**, so backing up never means going hunting for it.
 
 Browser pinch-zoom is off, deliberately. It drags `position:fixed` chrome around
 with it on iOS and no amount of counter-transforming wins that fight, so the
-page does not zoom at all — the content inside it does, in six steps under
-**A−/A+**, and the top bar and tab bar cannot move because nothing is asking
-them to.
+page does not zoom at all — the content inside it does, on a slider in the top
+bar, and the top bar and tab bar cannot move because nothing is asking them to.
 
 ## Design
 

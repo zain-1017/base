@@ -19,7 +19,7 @@
   --bg:#fff; --ink:#0a0a0a; --mut:#8b8b90; --dim:#bcbcc2;
   --line:#ededf0; --line2:#dcdce1; --hl:#f7f7f8;
   --pos:#12693a; --crit:#9b3a31;
-  --scrim:rgba(0,0,0,.5); --sheet:#ffffff;
+  --scrim:rgba(0,0,0,.5); --sheet:#ffffff; --float:#ffffff;
   --safe-t:env(safe-area-inset-top,0px); --safe-b:env(safe-area-inset-bottom,0px);
 }
 @media (prefers-color-scheme:dark){
@@ -28,7 +28,7 @@
         --pos:#4ad07d; --crit:#d97b70;
         /* Darkening black achieves nothing, so the page is veiled instead and
            the sheet becomes a lifted surface above it. */
-        --scrim:rgba(150,150,165,.20); --sheet:#16161a;}
+        --scrim:rgba(150,150,165,.20); --sheet:#16161a; --float:#08080a;}
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{height:100%;-webkit-text-size-adjust:100%}
@@ -41,8 +41,15 @@ body{height:100%;background:var(--bg);color:var(--ink);
 #bar #bar-d{font-size:10px;font-weight:800;letter-spacing:1.3px;color:var(--mut)}
 #bar button{font-size:9px;font-weight:800;letter-spacing:1px;color:var(--ink);
   border:1px solid var(--line2);border-radius:13px;height:26px;padding:0 12px;flex-shrink:0}
-#bar .zb{margin-left:0;padding:0 9px;letter-spacing:0;font-size:11px;color:var(--mut)}
-#bar .zb:first-of-type{margin-left:auto}
+#bar .zwrap{margin-left:auto;display:flex;align-items:center;gap:5px;flex-shrink:0}
+#bar .zwrap i{font-style:normal;font-size:9px;font-weight:800;color:var(--mut);line-height:1}
+#bar .zwrap i.big{font-size:13px}
+#bar .zs{width:88px;height:26px;-webkit-appearance:none;appearance:none;background:none;padding:0}
+#bar .zs::-webkit-slider-runnable-track{height:2px;background:var(--line2);border-radius:1px}
+#bar .zs::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:9px;
+  background:var(--ink);margin-top:-8px}
+#bar .zs::-moz-range-track{height:2px;background:var(--line2)}
+#bar .zs::-moz-range-thumb{width:18px;height:18px;border:none;border-radius:9px;background:var(--ink)}
 #bar button:active{background:var(--hl)}
 #app{position:fixed;top:calc(var(--safe-t) + 39px);left:0;right:0;
   bottom:calc(50px + var(--safe-b));overflow-y:auto;-webkit-overflow-scrolling:touch}
@@ -107,6 +114,9 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 .vrow .vv .s{display:block;font-size:10px;font-weight:700;color:var(--mut);margin-top:2px}
 .vrow .vv .s.crit{color:var(--crit)}
 .vrow .arrow{font-size:16px;color:var(--dim);font-weight:800;flex-shrink:0}
+.carid{padding:2px 16px 14px;border-bottom:1px solid var(--line)}
+.carid .cn{font-size:15px;font-weight:700;letter-spacing:-.3px}
+.carid .cs{font-size:11px;font-weight:700;color:var(--mut);margin-top:3px;letter-spacing:.3px}
 
 /* the number he is trying to move */
 .total{padding:0 16px}
@@ -397,44 +407,53 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
   font-weight:800;letter-spacing:.9px;color:var(--mut)}
 
 /* ── the bar you use between sets ─────────────────────────────── */
-.wkpad{height:96px}
+.wkpad{height:126px}
 #wk{position:fixed;left:8px;right:8px;bottom:calc(56px + var(--safe-b));z-index:34;
-  display:none;align-items:stretch;gap:8px;padding:9px 10px;
-  background:var(--sheet);border:1px solid var(--line2);border-radius:16px;
-  box-shadow:0 8px 28px rgba(0,0,0,.45)}
+  display:none;flex-direction:column;gap:7px;padding:9px 9px 8px;
+  background:var(--float);border:1px solid var(--line2);border-radius:16px;
+  box-shadow:0 10px 34px rgba(0,0,0,.6)}
 #wk.on{display:flex}
-#wk .wkL,#wk .wkR{display:flex;flex-direction:column;align-items:center;gap:3px;flex-shrink:0}
-#wk .wkgo{min-width:82px;height:42px;border-radius:11px;background:var(--ink);color:var(--bg);
-  font-size:14px;font-weight:800;letter-spacing:-.2px;padding:0 10px}
-#wk .wkgo.on{font-variant-numeric:tabular-nums}
+#wk .wkrow{display:flex;align-items:center;gap:7px}
+#wk .wkgo{min-width:78px;height:46px;border-radius:12px;background:var(--ink);color:var(--bg);
+  font-size:15px;font-weight:800;letter-spacing:-.2px;padding:0 10px;font-variant-numeric:tabular-nums}
 #wk .wkgo.over{background:var(--crit);color:#fff}
-#wk .wksw{min-width:74px;height:42px;border-radius:11px;border:1px solid var(--line2);
-  font-size:14px;font-weight:800;letter-spacing:-.2px;color:var(--ink);padding:0 8px}
-#wk .wksw.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-#wk .wkx{font-size:8.5px;font-weight:800;letter-spacing:.6px;color:var(--mut);height:14px}
-#wk .wkx.idle{color:var(--dim)}
-#wk .wkm{display:flex;align-items:center;gap:3px;height:14px}
-#wk .wkm input{width:30px;height:14px;border:none;background:none;text-align:right;
-  font-size:9px;font-weight:800;color:var(--ink);padding:0}
-#wk .wkm i{font-style:normal;font-size:8.5px;font-weight:800;color:var(--mut);letter-spacing:.6px}
+#wk .wkm{display:flex;align-items:baseline;gap:3px;height:46px;padding:0 9px;flex-shrink:0;
+  border:1px solid var(--line2);border-radius:12px;align-items:center}
+#wk .wkm input{width:26px;height:44px;border:none;background:none;text-align:right;
+  font-size:16px;font-weight:800;color:var(--ink);padding:0}
+#wk .wkm i{font-style:normal;font-size:9px;font-weight:800;color:var(--mut);letter-spacing:.6px}
 #wk .wkC{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:2px;
-  overflow:hidden}
-#wk .wkC span{font-size:9.5px;font-weight:700;color:var(--mut);letter-spacing:.2px;
+  overflow:hidden;padding:0 2px}
+#wk .wkC span{font-size:10px;font-weight:700;color:var(--mut);letter-spacing:.2px;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #wk .wkC b{color:var(--ink);font-weight:800;letter-spacing:.6px}
 #wk .wkC .idle{color:var(--dim);font-weight:600}
+#wk .wksw{min-width:76px;height:46px;border-radius:12px;border:1px solid var(--line2);
+  font-size:15px;font-weight:800;letter-spacing:-.2px;color:var(--ink);padding:0 8px;
+  font-variant-numeric:tabular-nums;flex-shrink:0}
+#wk .wksw.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+#wk .wkrow2{display:flex;gap:7px}
+#wk .wkx{flex:1;height:34px;border-radius:10px;border:1px solid var(--line2);
+  font-size:10px;font-weight:800;letter-spacing:.7px;color:var(--mut)}
+#wk .wkx:active{background:var(--hl);color:var(--ink)}
+#wk .wkx:disabled{opacity:.32}
 
 /* ── calendar ──────────────────────────────────────────────── */
 .cal-nav{display:flex;align-items:center;justify-content:space-between;padding:13px 18px 9px}
 .cal-nav button{width:40px;height:40px;font-size:22px;font-weight:500;border-radius:10px}
 .cal-nav button:active{background:var(--hl)}
-.cal-nav .mo{font-size:15px;font-weight:800;letter-spacing:-.3px}
+.cal-nav .mo{font-size:10px;font-weight:800;letter-spacing:.6px;color:var(--mut);text-transform:uppercase}
 .dow{display:grid;grid-template-columns:repeat(7,1fr);padding:0 12px}
 .dow div{text-align:center;font-size:9.5px;font-weight:800;color:var(--mut);padding:3px 0}
 .grid7{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;padding:0 12px}
 .cd{aspect-ratio:1;border-radius:9px;display:flex;align-items:center;justify-content:center;
-  font-size:13px;font-weight:700;position:relative;border:1px solid transparent}
-.cd.pad{visibility:hidden}
+  font-size:13px;font-weight:700;position:relative;border:1px solid transparent;
+  background:var(--hl);color:inherit}
+.cd:active{border-color:var(--dim)}
+.cd .mk{position:absolute;bottom:5px;left:50%;transform:translateX(-50%);
+  width:4px;height:4px;border-radius:2px;background:var(--mut)}
+.cd.went .mk{background:var(--bg)}
+.cd.pad{visibility:hidden;background:none}
 .cd.went{background:var(--ink);color:var(--bg)}
 .cd.today{border-color:var(--ink)}
 .cd.went.today{border-color:var(--mut)}
@@ -505,8 +524,10 @@ table.g td.act button:active{color:var(--crit)}
 </head>
 <body>
 <div id="bar"><span id="bar-d"></span>
-  <button class="zb" onclick="stepZoom(-1)" aria-label="Smaller text">A−</button>
-  <button class="zb" onclick="stepZoom(1)" aria-label="Larger text">A+</button>
+  <span class="zwrap"><i>A</i>
+    <input class="zs" type="range" min="0" max="5" step="1" value="${0}"
+      aria-label="Text size" oninput="setZoom(this.value)" onchange="save()">
+    <i class="big">A</i></span>
   <button onclick="exportData()">SAVE</button></div>
 <div id="app"></div>
 <div id="wk"></div>
@@ -602,6 +623,7 @@ function adopt(d){
   D.nutrition=Object.assign({kcal:0,protein:0,carbs:0,fat:0},d.nutrition||{});
   if(!D.meta.paid||typeof D.meta.paid!=='object')D.meta.paid={};
   D.settings.collapsed=Object.assign({},D.settings.collapsed||{});
+  D.settings.open=Object.assign({},D.settings.open||{});
   migrate();
   closeStaleWorkout();
 }
@@ -1219,6 +1241,7 @@ function render(){
     DAYS[n.getDay()].slice(0,3).toUpperCase()+' '+n.getDate()+' '+MONS[n.getMonth()].toUpperCase();
   const app=document.getElementById('app'),y=app.scrollTop;
   document.documentElement.style.setProperty('--z',zoomLevel());
+  const zs=document.querySelector('#bar .zs');if(zs)zs.value=zoomIndex();
   app.innerHTML='<div class="zw">'+PAGES[TAB]()+'</div>';
   /* The topmost section on a page has the page above it already, so it does not
      need a rule of its own. */
@@ -1233,11 +1256,14 @@ function render(){
 }
 const ZOOMS=[0.85,0.925,1,1.1,1.25,1.4];
 const zoomLevel=()=>{const z=+D.settings.zoom;return ZOOMS.indexOf(z)>=0?z:1;};
-function stepZoom(d){
-  const i=ZOOMS.indexOf(zoomLevel());
-  D.settings.zoom=ZOOMS[clamp(i+d,0,ZOOMS.length-1)];
-  save();haptic(4);render();
+/* Set live off the slider without a re-render — it is one custom property, and
+   redrawing the page on every pixel of a drag would feel like treacle. */
+function setZoom(i){
+  const z=ZOOMS[clamp(parseInt(i)||0,0,ZOOMS.length-1)];
+  D.settings.zoom=z;
+  document.documentElement.style.setProperty('--z',z);
 }
+const zoomIndex=()=>Math.max(0,ZOOMS.indexOf(zoomLevel()));
 function autoGrow(ta){ta.style.height='auto';ta.style.height=Math.min(150,ta.scrollHeight)+'px';}
 function onDraft(v,el){
   const was=!!DRAFT.trim();DRAFT=v;autoGrow(el);
@@ -2039,22 +2065,22 @@ function paintWorkoutBar(){
   const cats=Object.keys(tally);
   const tick=cats.length
     ? cats.map(c=>`<span><b>${c.slice(0,4)}</b> ${tally[c].lifts}·${tally[c].sets}</span>`).join('')
-    : `<span class="idle">nothing logged today</span>`;
+    : `<span class="idle">no sets yet</span>`;
 
   el.innerHTML=`
-    <div class="wkL">
-      <button class="wkgo${w?' on':''}${w&&remainMs(w)<0?' over':''}"
+    <div class="wkrow">
+      <button class="wkgo${w&&remainMs(w)<0?' over':''}"
         onclick="${w?'stopWorkout()':'startWorkout()'}">
         <span id="wk-t">${w?clockText(remainMs(w)):'START'}</span></button>
-      ${w?`<button class="wkx" onclick="cancelWorkout()">✕ cancel</button>`
-         :`<span class="wkm"><input type="number" inputmode="numeric" min="1" max="600" value="${mins}"
-             aria-label="Workout length in minutes" onchange="setWkMins(this.value)"><i>min</i></span>`}
-    </div>
-    <div class="wkC">${tick}</div>
-    <div class="wkR">
+      <span class="wkm"><input type="number" inputmode="numeric" min="1" max="600" value="${mins}"
+        aria-label="Workout length in minutes" onchange="setWkMins(this.value)"><i>MIN</i></span>
+      <div class="wkC">${tick}</div>
       <button class="wksw${SW.run?' on':''}" onclick="swToggle()">
         <span id="sw-t">${fmtDur(swMs()/1000)}</span></button>
-      ${(SW.run||SW.base>0)?`<button class="wkx" onclick="swReset()">↺ reset</button>`:`<span class="wkx idle">stopwatch</span>`}
+    </div>
+    <div class="wkrow2">
+      <button class="wkx" onclick="cancelWorkout()" ${w?'':'disabled'}>✕&nbsp; CANCEL TIMER</button>
+      <button class="wkx" onclick="swReset()" ${(SW.run||SW.base>0)?'':'disabled'}>↺&nbsp; RESET STOPWATCH</button>
     </div>`;
   syncTicks();
 }
@@ -2117,43 +2143,130 @@ function syncTicks(){
   },250);
 }
 
+/* Everything that happened on a day, wherever it was recorded. The calendar is
+   only useful if tapping a square tells you what you did — and if you can put
+   something on a square that no other page would ever hold. */
+function dayOf(ds){
+  const logs=D.logs.filter(l=>l.date===ds);
+  return {
+    ds:ds,
+    logs:logs,
+    sets:sum(logs,l=>(l.sets||[]).length),
+    sessions:D.sessions.filter(x=>x.date===ds),
+    entries:D.entries.filter(e=>e.date===ds).sort((a,b)=>a.ts-b.ts),
+    spends:D.spends.filter(x=>x.date===ds),
+    fuel:D.fuel.filter(f=>f.date===ds),
+    service:D.service.filter(v=>v.date===ds)
+  };
+}
+const dayBusy=d=>d.logs.length+d.entries.length+d.spends.length+d.fuel.length+d.service.length;
+
 function renderHistory(){
   const m=CALM||new Date();
   const y=m.getFullYear(),mo=m.getMonth();
   const first=new Date(y,mo,1),pad=(first.getDay()+6)%7;
   const days=new Date(y,mo+1,0).getDate();
-  const trained=D.logs.filter(l=>ymOf(l.date)===ymOf(ymd(first))).length;
 
-  let cells='';
+  let cells='',trained=0,busy=0;
   for(let i=0;i<pad;i++)cells+=`<div class="cd pad"></div>`;
   for(let d=1;d<=days;d++){
-    const ds=ymd(new Date(y,mo,d)),went=trainedOn(ds),isT=ds===today();
-    const fut=new Date(y,mo,d)>new Date();
-    cells+=`<div class="cd${went?' went':''}${isT?' today':''}${fut?' future':''}">${d}</div>`;
+    const ds=ymd(new Date(y,mo,d)),day=dayOf(ds);
+    const went=day.logs.length>0||day.sessions.length>0;
+    const other=dayBusy(day)-day.logs.length>0;
+    if(went)trained++;
+    if(dayBusy(day))busy++;
+    const isT=ds===today(),fut=new Date(y,mo,d)>new Date();
+    cells+=`<button class="cd${went?' went':''}${isT?' today':''}${fut?' future':''}"
+      onclick="daySheet('${ds}')" aria-label="${ds}">${d}${other?'<i class="mk"></i>':''}</button>`;
   }
-  const all=D.logs.length,sess=D.sessions.length;
-  const totalMs=sum(D.sessions,s=>(s.end||0)-(s.start||0));
+  const totalMs=sum(D.sessions,x=>(x.end||0)-(x.start||0));
   const prs=D.exercises.map(e=>({e:e,b:bestEffort(e)})).filter(x=>x.b)
     .sort((a,b)=>b.b.date.localeCompare(a.b.date)).slice(0,8);
 
-  return `<div class="top"><h1>History</h1><div class="meta">${all} LOGS</div></div>
+  return `<div class="top"><h1>${MONS[mo]} ${y}</h1><div class="meta">${D.logs.length} LOGS</div></div>
   <div class="cal-nav">
     <button onclick="calMove(-1)" aria-label="Previous month">‹</button>
-    <span class="mo">${MONS[mo]} ${y}</span>
+    <span class="mo">${trained} trained · ${busy} with something on</span>
     <button onclick="calMove(1)" aria-label="Next month">›</button></div>
   <div class="dow">${['M','T','W','T','F','S','S'].map(d=>`<div>${d}</div>`).join('')}</div>
   <div class="grid7">${cells}</div>
-  <div class="strip" style="margin-top:16px">
-    <div><div class="n">${trained}</div><div class="l">LOGS THIS MONTH</div></div>
-    <div><div class="n">${sess}</div><div class="l">SESSIONS</div></div>
-    <div><div class="n">${sess?fmtMins(totalMs/sess):'—'}</div><div class="l">AVERAGE</div></div>
+  <div class="gnote">Tap any day to see what was on it, or to put something there.</div>
+  <div class="strip">
+    <div><div class="n">${trained}</div><div class="l">TRAINED</div></div>
+    <div><div class="n">${D.sessions.length}</div><div class="l">SESSIONS</div></div>
+    <div><div class="n">${D.sessions.length?fmtMins(totalMs/D.sessions.length):'—'}</div><div class="l">AVERAGE</div></div>
   </div>
-  <div class="lab">Recent bests<span class="r">${all} LOGS</span></div>
+  <div class="lab">Recent bests</div>
   ${prs.length?prs.map(x=>`<div class="row"><div class="nm">${esc(x.e.name)}<i>${relDate(x.b.date)}</i></div>
     <span class="v pos">${fmtKg(x.b.w)}kg × ${x.b.reps}</span></div>`).join('')
     :`<div class="row"><div class="nm" style="color:var(--mut)">Nothing logged yet</div></div>`}
   <div class="spacer"></div>`;
 }
+
+function daySheet(ds){
+  const d=dayOf(ds),dt=new Date(ds+'T00:00');
+  const title=DAYS[dt.getDay()]+' '+dt.getDate()+' '+MONS[dt.getMonth()];
+  let h=`<h2>${title}</h2><div class="sub">${
+    dayBusy(d)?`${relDate(ds)} · ${dayBusy(d)} thing${dayBusy(d)>1?'s':''} recorded`
+    :`${relDate(ds)} · nothing recorded`}</div>`;
+
+  if(d.logs.length){
+    h+=`<div class="brk"><div class="bh">Trained · ${d.logs.length} lifts, ${d.sets} sets</div>`;
+    d.logs.forEach(l=>{
+      const e=exById(l.exId);
+      h+=`<div class="kv"><span class="k">${esc(e?e.name:'—')}</span>
+        <span class="v">${(l.sets||[]).map(x=>x.reps).join(', ')}${
+          l.w!=null?' <span style="color:var(--mut);font-weight:600">@ '+fmtKg(l.w)+'kg</span>':''}</span></div>`;
+    });
+    d.sessions.forEach(x=>{
+      h+=`<div class="kv"><span class="k">Session length</span>
+        <span class="v">${fmtMins((x.end||0)-(x.start||0))}</span></div>`;
+    });
+    h+=`</div>`;
+  }
+  const money_=[].concat(
+    d.spends.map(x=>['Spent · '+(x.kind==='food'?'food':'fuel')+(x.note?' · '+x.note:''),x.amount]),
+    d.fuel.map(f=>['Fuel · '+(+f.litres||0).toFixed(1)+'L at '+(+f.odo||0).toLocaleString('en-GB')+' mi',f.cost]),
+    d.service.map(v=>['Car · '+v.name,v.cost]));
+  if(money_.length){
+    h+=`<div class="brk"><div class="bh">Money</div>`;
+    money_.forEach(([k,v])=>{h+=`<div class="kv"><span class="k">${esc(k)}</span>
+      <span class="v">${money(v,true)}</span></div>`;});
+    h+=`</div>`;
+  }
+  h+=`<div class="brk"><div class="bh">Written down</div>`;
+  if(d.entries.length)d.entries.forEach(e=>{
+    const t=new Date(e.ts);
+    h+=`<div class="kv"><span class="k">${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')} · ${esc(e.text)}</span>
+      <span class="v">${e.amount!=null?money(e.amount,e.amount%1!==0):''}
+      <button onclick="delEntryFrom('${e.id}','${ds}')" aria-label="Remove"
+        style="color:var(--dim);padding-left:9px;font-weight:700">✕</button></span></div>`;
+  });
+  else h+=`<div class="kv"><span class="k" style="color:var(--dim)">Nothing written on this day</span></div>`;
+  h+=`<div class="ef" style="margin-top:12px"><label>Add something to this day</label>
+      <input id="day-t" placeholder="Booked the service · Bought running shoes £68"
+        onkeydown="if(event.key==='Enter')addOnDay('${ds}')"></div>
+    <div class="srow"><button class="sbtn solid" onclick="addOnDay('${ds}')">Add it</button></div></div>
+    <div class="srow"><button class="sbtn" onclick="closeSheet()">Done</button></div>`;
+  openSheet(h);
+}
+/* Same parser as the day page, so "£68 running shoes" files itself the same
+   way whether it is typed today or against a date last March. */
+function addOnDay(ds){
+  const el=document.getElementById('day-t');
+  const t=(el.value||'').trim();
+  if(!t){toast('Type something first');return;}
+  const p=parseEntry(t);
+  const noon=new Date(ds+'T12:00').getTime();
+  D.entries.push({id:uid('e'),date:ds,ts:noon+D.entries.filter(e=>e.date===ds).length,
+                  text:p.text,amount:p.amount});
+  save();haptic(8);toast('Added to '+relDate(ds));daySheet(ds);
+}
+function delEntryFrom(id,ds){
+  const i=D.entries.findIndex(e=>e.id===id);if(i<0)return;
+  D.entries.splice(i,1);save();haptic(6);daySheet(ds);
+}
+
 function calMove(d){
   const m=CALM||new Date();
   CALM=new Date(m.getFullYear(),m.getMonth()+d,1);render();haptic(4);
@@ -2225,8 +2338,13 @@ function renderCar(){
   const open=D.fixes.filter(x=>!x.done),doneFix=D.fixes.filter(x=>x.done);
   const openCost=sum(open,x=>x.cost);
 
-  let h=`<div class="top"><h1>Car</h1><div class="meta">${
+  const c=D.car||{};
+  const named=[c.year,c.make,c.model].filter(Boolean).join(' ');
+  let h=`<div class="top"><h1>${named?esc(c.reg||'Car'):'Car'}</h1><div class="meta">${
     f.odo?f.odo.toLocaleString('en-GB')+' MI':'NO MILEAGE YET'}</div></div>`;
+  if(named)h+=`<div class="carid"><div class="cn">${esc(named)}${
+    c.variant?' '+esc(c.variant):''}</div>${
+    c.colour?`<div class="cs">${esc(c.colour)}</div>`:''}</div>`;
 
   if(f.legs.length){
     h+=`<div class="hero"><div class="v">${(f.cpm*100).toFixed(1)}<small>p</small></div>
@@ -2287,6 +2405,27 @@ function renderCar(){
       <span class="v">${money(x.cost)}</span></div>`;
   });
 
+  h+=fold('cardet','The car',c.reg?esc(c.reg):'ADD DETAILS',()=>{
+    const rows=[['Registration','reg'],['Make','make'],['Model','model'],['Trim','variant'],
+      ['Year','year'],['Colour','colour'],['VIN','vin'],['Engine','engine'],['Fuel','fuelType'],
+      ['Gearbox','gearbox'],['Driven wheels','drive'],['Power','power'],['Torque','torque'],
+      ['Fuel tank','tank'],['Claimed MPG','claimedMpg'],['CO₂','co2'],['Insurance group','insGroup']];
+    let a='';
+    rows.forEach(([label,k])=>{
+      if(!c[k])return;
+      a+=`<div class="row"><div class="nm">${label}</div><span class="v">${esc(c[k])}</span></div>`;
+    });
+    if(!a)a=`<div class="row"><div class="nm" style="color:var(--mut)">Nothing filled in yet</div></div>`;
+    if(c.claimedMpg&&f.mpg){
+      const claim=parseFloat(c.claimedMpg)||0;
+      if(claim)a+=`<div class="gnote">You are getting <b>${f.mpg.toFixed(1)} mpg</b> against a claimed
+        <b>${claim.toFixed(0)}</b> — ${f.mpg>=claim?'ahead of the book.':
+        Math.round((1-f.mpg/claim)*100)+'% under, which is about normal for a real road.'}</div>`;
+    }
+    return a+`<div class="row tap"><button class="nm" onclick="carSheet()"
+      style="text-align:left;color:var(--mut)">Edit the details</button></div>`;
+  });
+
   h+=`<div class="lab">Service history<span class="r">${D.service.length}</span>
     <button onclick="editService(null)">+ ADD</button></div>`;
   if(!D.service.length)
@@ -2298,6 +2437,28 @@ function renderCar(){
       ${x.cost?`<span class="v">${money(x.cost)}</span>`:''}</div>`;
   });
   return h+`<div class="spacer"></div>`;
+}
+function carSheet(){
+  const c=D.car||{};
+  form({
+    title:'The car',
+    sub:'Whatever is worth having to hand — the V5 details, and the figures the fuel log can be measured against.',
+    value:Object.assign({reg:'',make:'',model:'',variant:'',year:'',colour:'',vin:'',engine:'',
+      fuelType:'',gearbox:'',drive:'',power:'',torque:'',tank:'',claimedMpg:'',co2:'',insGroup:''},c),
+    fields:[
+      {k:'reg',label:'Registration'},
+      {k:'make',label:'Make',half:true},{k:'model',label:'Model',half:true},
+      {k:'variant',label:'Trim'},
+      {k:'year',label:'Year',half:true},{k:'colour',label:'Colour',half:true},
+      {k:'vin',label:'VIN'},
+      {k:'engine',label:'Engine',half:true},{k:'fuelType',label:'Fuel',half:true},
+      {k:'gearbox',label:'Gearbox',half:true},{k:'drive',label:'Driven wheels',half:true},
+      {k:'power',label:'Power',half:true},{k:'torque',label:'Torque',half:true},
+      {k:'tank',label:'Fuel tank',half:true},{k:'claimedMpg',label:'Claimed MPG',half:true},
+      {k:'co2',label:'CO₂',half:true},{k:'insGroup',label:'Insurance group',half:true}
+    ],
+    save:v=>{D.car=Object.assign({},D.car,v);}
+  });
 }
 function toggleFix(id){
   const x=D.fixes.find(f=>f.id===id);if(!x)return;
