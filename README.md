@@ -20,7 +20,8 @@ show: **Bank**, what you have, and **Net**, what this month does to it.
 
 Then a small calculator — *3rd to 24th: £231.54* — which answers any period
 without touching anything else. A switch beside it swaps between what is still
-to pay in those days and what they cost in total, paid or not. It wraps, so
+to pay in those days and what they cost in total, paid or not, and stays where
+you left it. It wraps, so
 17th to 5th reaches into next month, because pay cycles do.
 
 Then the month's bills, all of them, first to last. Paid ones greyed in place;
