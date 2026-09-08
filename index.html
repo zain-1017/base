@@ -3288,18 +3288,38 @@ function resetAll(){
 /* ═══ chrome ══════════════════════════════════════════════════
    position:fixed pins to the layout viewport, so pinching magnifies the top
    bar and the tab bar along with everything else and shoves them off screen.
-   These two are furniture: hold them against the visual viewport at a
-   constant size, whatever the zoom. */
+   Hold them against the visual viewport instead, at a constant size.
+
+   Two rules learned the hard way. transform:translate moves an element from
+   where it already is, not to an absolute point — so every offset here is a
+   delta measured from where CSS put it. And at normal zoom nothing is touched
+   at all, so the ordinary case cannot be broken by any of this. */
 function pinChrome(){
   const v=window.visualViewport;if(!v)return;
-  const z=v.scale||1,inv=1/z;
-  [['bar',0],['nav',1]].forEach(([id,atBottom])=>{
-    const el=document.getElementById(id);if(!el)return;
-    const h=el.offsetHeight;
-    const y=atBottom ? v.offsetTop+v.height-h*inv : v.offsetTop;
-    el.style.transformOrigin='0 0';
-    el.style.transform='translate('+v.offsetLeft+'px,'+y+'px) scale('+inv+')';
-  });
+  const els=['bar','nav','wk'].map(id=>document.getElementById(id)).filter(Boolean);
+  const z=v.scale||1;
+  if(Math.abs(z-1)<0.01){els.forEach(el=>{el.style.transform='';});return;}
+  try{
+    const lh=document.documentElement.clientHeight;
+    els.forEach(el=>{
+      el.style.transform='';                       // measure where CSS puts it
+      const r=el.getBoundingClientRect();
+      if(!r.height)return;
+      const o=chromeOffset(r,v,lh);
+      el.style.transformOrigin='0 0';
+      el.style.transform='translate('+o.dx+'px,'+o.dy+'px) scale('+o.scale+')';
+    });
+  }catch(e){els.forEach(el=>{el.style.transform='';});}
+}
+/* Where a piece of furniture has to move to sit against the visual viewport at
+   its unzoomed size. Anything anchored to the bottom half of the layout keeps
+   its gap from the bottom; anything else keeps its gap from the top. */
+function chromeOffset(r,v,lh){
+  const inv=1/(v.scale||1);
+  const wantTop=r.top>lh/2
+    ? v.offsetTop+v.height-(lh-r.bottom)*inv-r.height*inv
+    : v.offsetTop+r.top*inv;
+  return {dx:v.offsetLeft-r.left,dy:wantTop-r.top,scale:inv};
 }
 if(window.visualViewport){
   ['resize','scroll'].forEach(ev=>window.visualViewport.addEventListener(ev,pinChrome));
