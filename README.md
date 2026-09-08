@@ -155,8 +155,14 @@ starts empty, and you add things by hand or import a file you exported.
 import to move a snapshot between them. Money → *Back up your data* does both.
 Keep a copy somewhere that isn't the device it came from.
 
-A fixed bar across the top carries today's date and a one-tap **Save a copy**,
-so backing up never means going hunting for it.
+A fixed bar across the top carries today's date, a text-size control and a
+one-tap **Save**, so backing up never means going hunting for it.
+
+Browser pinch-zoom is off, deliberately. It drags `position:fixed` chrome around
+with it on iOS and no amount of counter-transforming wins that fight, so the
+page does not zoom at all — the content inside it does, in six steps under
+**A−/A+**, and the top bar and tab bar cannot move because nothing is asking
+them to.
 
 ## Design
 

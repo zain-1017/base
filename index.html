@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=6,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -39,11 +39,18 @@ body{height:100%;background:var(--bg);color:var(--ink);
   border-bottom:1px solid var(--line);padding:calc(var(--safe-t) + 9px) 16px 9px;
   display:flex;align-items:center;gap:10px}
 #bar #bar-d{font-size:10px;font-weight:800;letter-spacing:1.3px;color:var(--mut)}
-#bar button{margin-left:auto;font-size:9px;font-weight:800;letter-spacing:1px;color:var(--ink);
+#bar button{font-size:9px;font-weight:800;letter-spacing:1px;color:var(--ink);
   border:1px solid var(--line2);border-radius:13px;height:26px;padding:0 12px;flex-shrink:0}
+#bar .zb{margin-left:0;padding:0 9px;letter-spacing:0;font-size:11px;color:var(--mut)}
+#bar .zb:first-of-type{margin-left:auto}
 #bar button:active{background:var(--hl)}
 #app{position:fixed;top:calc(var(--safe-t) + 39px);left:0;right:0;
   bottom:calc(50px + var(--safe-b));overflow-y:auto;-webkit-overflow-scrolling:touch}
+/* Pinching the page drags the fixed chrome around with it and no amount of
+   counter-transforming wins that fight on iOS. So the page does not zoom at
+   all — the content inside it does, under a control the app owns, and the top
+   bar and tab bar cannot move because nothing is asking them to. */
+.zw{zoom:var(--z,1)}
 button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;touch-action:manipulation}
 input,select,textarea{font-family:inherit;font-size:16px;color:inherit;background:var(--bg);border:none}
 input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible{outline:2px solid var(--ink);outline-offset:1px}
@@ -478,8 +485,9 @@ table.g td.act button:active{color:var(--crit)}
 
 #nav{position:fixed;left:0;right:0;bottom:0;background:var(--bg);border-top:1px solid var(--line);
   display:flex;z-index:30;padding-bottom:var(--safe-b)}
-.ni{flex:1;height:50px;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:3px;color:var(--dim);font-size:8.5px;font-weight:800;letter-spacing:.5px}
+.ni{flex:1 1 0;min-width:0;height:50px;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:3px;color:var(--dim);font-size:8.5px;font-weight:800;letter-spacing:.4px;
+  overflow:hidden;white-space:nowrap}
 .ni svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.7;
   stroke-linecap:round;stroke-linejoin:round}
 .ni.on{color:var(--ink)}
@@ -496,7 +504,10 @@ table.g td.act button:active{color:var(--crit)}
 </style>
 </head>
 <body>
-<div id="bar"><span id="bar-d"></span><button onclick="exportData()">SAVE A COPY</button></div>
+<div id="bar"><span id="bar-d"></span>
+  <button class="zb" onclick="stepZoom(-1)" aria-label="Smaller text">A−</button>
+  <button class="zb" onclick="stepZoom(1)" aria-label="Larger text">A+</button>
+  <button onclick="exportData()">SAVE</button></div>
 <div id="app"></div>
 <div id="wk"></div>
 <nav id="nav">
@@ -1207,7 +1218,8 @@ function render(){
   document.getElementById('bar-d').textContent=
     DAYS[n.getDay()].slice(0,3).toUpperCase()+' '+n.getDate()+' '+MONS[n.getMonth()].toUpperCase();
   const app=document.getElementById('app'),y=app.scrollTop;
-  app.innerHTML=PAGES[TAB]();
+  document.documentElement.style.setProperty('--z',zoomLevel());
+  app.innerHTML='<div class="zw">'+PAGES[TAB]()+'</div>';
   /* The topmost section on a page has the page above it already, so it does not
      need a rule of its own. */
   const first=app.querySelector('.lab');
@@ -1218,6 +1230,13 @@ function render(){
   const ta=document.getElementById('capin');
   if(ta){ta.value=DRAFT;autoGrow(ta);}
   paintWorkoutBar();
+}
+const ZOOMS=[0.85,0.925,1,1.1,1.25,1.4];
+const zoomLevel=()=>{const z=+D.settings.zoom;return ZOOMS.indexOf(z)>=0?z:1;};
+function stepZoom(d){
+  const i=ZOOMS.indexOf(zoomLevel());
+  D.settings.zoom=ZOOMS[clamp(i+d,0,ZOOMS.length-1)];
+  save();haptic(4);render();
 }
 function autoGrow(ta){ta.style.height='auto';ta.style.height=Math.min(150,ta.scrollHeight)+'px';}
 function onDraft(v,el){
@@ -3285,47 +3304,6 @@ function resetAll(){
   attachCatalogue();save();closeSheet();render();toast('Erased');
 }
 
-/* ═══ chrome ══════════════════════════════════════════════════
-   position:fixed pins to the layout viewport, so pinching magnifies the top
-   bar and the tab bar along with everything else and shoves them off screen.
-   Hold them against the visual viewport instead, at a constant size.
-
-   Two rules learned the hard way. transform:translate moves an element from
-   where it already is, not to an absolute point — so every offset here is a
-   delta measured from where CSS put it. And at normal zoom nothing is touched
-   at all, so the ordinary case cannot be broken by any of this. */
-function pinChrome(){
-  const v=window.visualViewport;if(!v)return;
-  const els=['bar','nav','wk'].map(id=>document.getElementById(id)).filter(Boolean);
-  const z=v.scale||1;
-  if(Math.abs(z-1)<0.01){els.forEach(el=>{el.style.transform='';});return;}
-  try{
-    const lh=document.documentElement.clientHeight;
-    els.forEach(el=>{
-      el.style.transform='';                       // measure where CSS puts it
-      const r=el.getBoundingClientRect();
-      if(!r.height)return;
-      const o=chromeOffset(r,v,lh);
-      el.style.transformOrigin='0 0';
-      el.style.transform='translate('+o.dx+'px,'+o.dy+'px) scale('+o.scale+')';
-    });
-  }catch(e){els.forEach(el=>{el.style.transform='';});}
-}
-/* Where a piece of furniture has to move to sit against the visual viewport at
-   its unzoomed size. Anything anchored to the bottom half of the layout keeps
-   its gap from the bottom; anything else keeps its gap from the top. */
-function chromeOffset(r,v,lh){
-  const inv=1/(v.scale||1);
-  const wantTop=r.top>lh/2
-    ? v.offsetTop+v.height-(lh-r.bottom)*inv-r.height*inv
-    : v.offsetTop+r.top*inv;
-  return {dx:v.offsetLeft-r.left,dy:wantTop-r.top,scale:inv};
-}
-if(window.visualViewport){
-  ['resize','scroll'].forEach(ev=>window.visualViewport.addEventListener(ev,pinChrome));
-  window.addEventListener('orientationchange',()=>setTimeout(pinChrome,200));
-}
-
 /* Tapping a figure should let you type over it, not make you clear it first. */
 document.addEventListener('focusin',e=>{
   const t=e.target;
@@ -3334,7 +3312,7 @@ document.addEventListener('focusin',e=>{
 });
 
 /* ═══ boot ════════════════════════════════════════════════════ */
-load();render();pinChrome();
+load();render();
 window.addEventListener('pageshow',()=>{if(TAB==='home')render();});
 if('serviceWorker' in navigator)
   window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
